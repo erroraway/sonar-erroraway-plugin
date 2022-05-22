@@ -86,7 +86,6 @@ public class ErrorAwayIT {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	void analyzeSimpleProject() {
 		// Create the sample project
 		CreateRequest createRequest = new CreateRequest();
@@ -104,6 +103,9 @@ public class ErrorAwayIT {
 		MavenBuild build = MavenBuild.create()
 				.setPom(new File("src/test/resources/projects/simple/pom.xml").getAbsoluteFile())
 				.setProperty(NullAwayOption.ANNOTATED_PACKAGES.getKey(), "com.bugs,application")
+				.setProperty("sonar.host.url", ORCHESTRATOR.getServer().getUrl())
+				.setProperty("sonar.login", "admin")
+				.setProperty("sonar.password", "admin")
 				.setGoals("clean package sonar:sonar");
 		
 		ORCHESTRATOR.executeBuild(build);
@@ -115,6 +117,14 @@ public class ErrorAwayIT {
 
 		assertThat(issues.size(), is(16));
 
+		assertSimpleIssues(issues);
+		assertAndroidActivityIssues(issues);
+		assertApplicationSimpleIssues(issues);
+		assertBugsSamplesIssues(issues);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void assertSimpleIssues(List<Issue> issues) {
 		Predicate<Issue> simpleJavaPredicate = component(SIMPLE_PROJECT_KEY, "src/main/java/Simple.java");
 		assertThat(issues, containsIssueMatching(simpleJavaPredicate, rule("errorprone:DefaultPackage"), startLine(1)));
 		assertThat(issues, containsIssueMatching(simpleJavaPredicate, rule("errorprone-slf4j:Slf4jLoggerShouldBePrivate"), startLine(8)));
@@ -122,10 +132,16 @@ public class ErrorAwayIT {
 		assertThat(issues, containsIssueMatching(simpleJavaPredicate, rule("errorprone:EqualsNaN"), startLine(20)));
 		assertThat(issues, containsIssueMatching(simpleJavaPredicate, rule("errorprone:UnusedMethod"), startLine(25)));
 		assertThat(issues, containsIssueMatching(simpleJavaPredicate, rule("errorprone-slf4j:Slf4jPlaceholderMismatch"), startLine(26)));
+	}
 
+	@SuppressWarnings("unchecked")
+	private void assertAndroidActivityIssues(List<Issue> issues) {
 		Predicate<Issue> androidActivityJavaPredicate = component(SIMPLE_PROJECT_KEY, "src/main/java/application/AndroidActivity.java");
 		assertThat(issues, containsIssueMatching(androidActivityJavaPredicate, rule("errorprone:CheckReturnValue"), startLine(15)));
+	}
 
+	@SuppressWarnings("unchecked")
+	private void assertApplicationSimpleIssues(List<Issue> issues) {
 		Predicate<Issue> applicationSimpleJavaPredicate = component(SIMPLE_PROJECT_KEY, "src/main/java/application/Simple.java");
 		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("errorprone:ClassNewInstance"), startLine(15)));
 		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("nullaway:NullAway"), startLine(22)));
@@ -135,7 +151,10 @@ public class ErrorAwayIT {
 		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("nullaway:NullAway"), startLine(45)));
 		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("errorprone:UnusedMethod"), startLine(48)));
 		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("errorprone-slf4j:Slf4jPlaceholderMismatch"), startLine(49)));
+	}
 
+	@SuppressWarnings("unchecked")
+	private void assertBugsSamplesIssues(List<Issue> issues) {
 		Predicate<Issue> bugsJavaPredicate = component(SIMPLE_PROJECT_KEY, "src/main/java/com/bugs/BugsSamples.java");
 		assertThat(issues, containsIssueMatching(bugsJavaPredicate, rule("errorprone:ZoneIdOfZ"), startLine(8)));
 	}
