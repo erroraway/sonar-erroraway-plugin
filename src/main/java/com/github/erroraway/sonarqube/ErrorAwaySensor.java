@@ -39,8 +39,6 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.config.Configuration;
 import org.sonar.api.rule.RuleKey;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import com.google.errorprone.BugCheckerInfo;
@@ -55,8 +53,6 @@ import com.google.errorprone.scanner.ScannerSupplier;
  *
  */
 public class ErrorAwaySensor implements Sensor {
-	private static final Logger LOGGER = Loggers.get(ErrorAwaySensor.class);
-
 	private JavaResourceLocator javaResourceLocator;
 
 	public ErrorAwaySensor(JavaResourceLocator javaResourceLocator) {
