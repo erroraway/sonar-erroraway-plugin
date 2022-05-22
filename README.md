@@ -1,4 +1,5 @@
 # SonarQube Error Prone Plugin
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=erroraway_sonar-erroraway-plugin&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=erroraway_sonar-erroraway-plugin)
 
 This [SonarQube](https://www.sonarqube.org/) uses [Error Prone](https://errorprone.info/) and reports findings in your project.
 Additionally, some Error Prone plugins are included:
