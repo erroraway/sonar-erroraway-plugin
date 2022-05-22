@@ -40,6 +40,9 @@
 		<autodispose2.version>2.1.1</autodispose2.version>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<sonar.organization>erroraway</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
 
 	<dependencies>
