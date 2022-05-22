@@ -1,0 +1,204 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.github.erroraway</groupId>
+	<artifactId>sonar-erroraway-plugin</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>sonar-plugin</packaging>
+
+	<name>Error Away SonarQube plugin</name>
+	<description>Analyze Java Code with ErrorProne, NullAway, errorprone-slf4j and Autodispose2</description>
+	<url>https://github.com/erroraway/sonar-erroraway-plugin</url>
+
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<scm>
+		<url>https://github.com/erroraway/sonar-erroraway-plugin/tree/main</url>
+	</scm>
+
+	<developers>
+		<developer>
+			<id>gtoison</id>
+			<name>Guillaume Toison</name>
+		</developer>
+	</developers>
+
+	<properties>
+		<sonar.version>8.9.7.52159</sonar.version>
+		<sonar-java.version>6.0.0.20538</sonar-java.version>
+
+		<errorprone.version>2.13.1</errorprone.version>
+		<nullaway.version>0.9.7</nullaway.version>
+		<errorprone.slf4j.version>0.1.6</errorprone.slf4j.version>
+		<autodispose2.version>2.1.1</autodispose2.version>
+
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.google.errorprone</groupId>
+			<artifactId>error_prone_core</artifactId>
+			<version>${errorprone.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.errorprone</groupId>
+					<artifactId>javac</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- Error prone plugins -->
+		<dependency>
+			<groupId>com.uber.nullaway</groupId>
+			<artifactId>nullaway</artifactId>
+			<version>${nullaway.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>jp.skypencil.errorprone.slf4j</groupId>
+			<artifactId>errorprone-slf4j</artifactId>
+			<version>${errorprone.slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.uber.autodispose2</groupId>
+			<artifactId>autodispose-error-prone</artifactId>
+			<version>${autodispose2.version}</version>
+		</dependency>
+
+		<!-- SonarQube dependencies -->
+		<dependency>
+			<groupId>org.sonarsource.sonarqube</groupId>
+			<artifactId>sonar-plugin-api</artifactId>
+			<version>${sonar.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.sonarsource.java</groupId>
+			<artifactId>sonar-java-plugin</artifactId>
+			<version>${sonar-java.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Unit tests dependencies -->
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<version>5.8.2</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>4.5.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<version>3.21.0</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- Integration tests dependencies -->
+		<dependency>
+			<groupId>org.sonarsource.orchestrator</groupId>
+			<artifactId>sonar-orchestrator</artifactId>
+			<version>3.37.0.87</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.sonarsource.sonarqube</groupId>
+			<artifactId>sonar-ws</artifactId>
+			<version>9.1.0.47736</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<finalName>${project.artifactId}</finalName>
+
+		<plugins>
+			<plugin>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.4</version>
+				<executions>
+					<execution>
+						<id>attach-source</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.3.1</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.1</version>
+				<configuration>
+					<source>11</source>
+					<target>11</target>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
+				<artifactId>sonar-packaging-maven-plugin</artifactId>
+				<version>1.19.0.397</version>
+				<extensions>true</extensions>
+				<configuration>
+					<pluginClass>com.github.erroraway.sonarqube.ErrorAwayPlugin</pluginClass>
+					<pluginName>ErrorAway</pluginName>
+					<pluginDescription>Analyze Java Code with ErrorProne, NullAway, errorprone-slf4j and Autodispose2</pluginDescription>
+					<pluginOrganizationName>ErrorAway</pluginOrganizationName>
+					<pluginOrganizationUrl>https://github.com/erroraway</pluginOrganizationUrl>
+					<jreMinVersion>11</jreMinVersion>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>3.0.0-M6</version>
+				<configuration>
+					<argLine>${failsafeArgLine}</argLine>
+					<disableModules>false</disableModules>
+					<useModulePath>false</useModulePath>
+					<systemPropertyVariables>
+						<sonar.version>${sonar.version}</sonar.version>
+					</systemPropertyVariables>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
