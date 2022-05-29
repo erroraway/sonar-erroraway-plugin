@@ -99,7 +99,7 @@ public class ErrorAwaySensor implements Sensor {
 		FileSystem fs = context.fileSystem();
 
 		try (StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnosticListener, Locale.getDefault(), fs.encoding())) {
-			Iterable<? extends JavaFileObject> compilationUnits = buildCompilationUnits(context, fileManager);
+			Iterable<? extends JavaFileObject> compilationUnits = buildCompilationUnits(context);
 			
 			 configureClasspath(fileManager, context.config());
 			 configureAnnotationProcessors(fileManager, context.config());
@@ -148,7 +148,7 @@ public class ErrorAwaySensor implements Sensor {
 		return context.activeRules().find(ruleKey) != null;
 	}
 
-	private Iterable<? extends JavaFileObject> buildCompilationUnits(SensorContext context, StandardJavaFileManager fileManager) throws IOException {
+	private Iterable<? extends JavaFileObject> buildCompilationUnits(SensorContext context) {
 		FileSystem fs = context.fileSystem();
 		FilePredicates p = fs.predicates();
 
