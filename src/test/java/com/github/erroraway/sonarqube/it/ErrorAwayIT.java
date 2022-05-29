@@ -115,7 +115,7 @@ public class ErrorAwayIT {
 		issueRequest.setProjects(Collections.singletonList(SIMPLE_PROJECT_KEY));
 		List<Issue> issues = ISSUES_SERVICES.search(issueRequest).getIssuesList();
 
-		assertThat(issues.size(), is(21));
+		assertThat(issues.size(), is(22));
 
 		assertSimpleIssues(issues);
 		assertAndroidActivityIssues(issues);
@@ -123,6 +123,7 @@ public class ErrorAwayIT {
 		assertBugsSamplesIssues(issues);
 		assertHibernateEntityIssues(issues);
 		assertAutoValueSamplesIssues(issues);
+        assertGrammarListenerIssues(issues);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -171,10 +172,16 @@ public class ErrorAwayIT {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void assertAutoValueSamplesIssues(List<Issue> issues) {
-		Predicate<Issue> applicationSimpleJavaPredicate = component(SIMPLE_PROJECT_KEY,	"src/main/java/application/AutoValueSamples.java");
-		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("errorprone:DurationTemporalUnit"), startLine(13)));
+	private void assertGrammarListenerIssues(List<Issue> issues) {
+		Predicate<Issue> applicationSimpleJavaPredicate = component(SIMPLE_PROJECT_KEY,	"src/main/java/application/GrammarListener.java");
+		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("errorprone:MissingOverride"), startLine(8)));
 	}
+
+    @SuppressWarnings("unchecked")
+    private void assertAutoValueSamplesIssues(List<Issue> issues) {
+        Predicate<Issue> applicationSimpleJavaPredicate = component(SIMPLE_PROJECT_KEY, "src/main/java/application/AutoValueSamples.java");
+        assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("errorprone:DurationTemporalUnit"), startLine(13)));
+    }
 
 	@SuppressWarnings("unchecked")
 	private Matcher<List<Issue>> containsIssueMatching(Predicate<Issue>... issuePredicates) {
