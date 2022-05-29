@@ -106,7 +106,7 @@ public class ErrorAwayIT {
 				.setProperty("sonar.host.url", ORCHESTRATOR.getServer().getUrl())
 				.setProperty("sonar.login", "admin")
 				.setProperty("sonar.password", "admin")
-				.setGoals("clean package sonar:sonar");
+				.setGoals("clean package org.sonarsource.scanner.maven:sonar-maven-plugin:sonar");
 		
 		ORCHESTRATOR.executeBuild(build);
 
