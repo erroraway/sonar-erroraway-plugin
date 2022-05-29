@@ -28,8 +28,6 @@ import java.util.stream.Collectors;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rule.Severity;
 import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
 
 import com.google.errorprone.BugCheckerInfo;
 import com.google.errorprone.bugpatterns.BugChecker;
@@ -40,8 +38,6 @@ import com.google.errorprone.scanner.BuiltInCheckerSuppliers;
  *
  */
 public class ErrorAwayRulesDefinition implements RulesDefinition {
-	private static final Logger LOGGER = Loggers.get(ErrorAwayRulesDefinition.class);
-
 	public static final String ERRORPRONE_REPOSITORY = "errorprone";
 	public static final String NULLAWAY_REPOSITORY = "nullaway";
 	public static final String ERRORPRONE_SLF4J_REPOSITORY = "errorprone-slf4j";
@@ -149,7 +145,6 @@ public class ErrorAwayRulesDefinition implements RulesDefinition {
 		if (resource != null) {
 			rule.setMarkdownDescription(resource);
 		} else {
-			LOGGER.warn("No description for checker {}", bugCheckerInfo);
 			rule.setMarkdownDescription(bugCheckerInfo.message());
 		}
 	}
