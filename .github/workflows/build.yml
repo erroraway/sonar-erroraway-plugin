@@ -6,6 +6,32 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
+  tests:
+    name: Unit and integration tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - SONAR_VERSION: 8.9.8.54436
+            SONAR_JAVA_VERSION: 6.15.1.26025
+          - SONAR_VERSION: 9.4.0.54424
+            SONAR_JAVA_VERSION: 7.11.0.29148
+      steps:
+        - uses: actions/checkout@v2
+        - uses: actions/setup-java@v3
+          with:
+            distribution: 'temurin'
+            java-version: 11
+            cache: 'maven'
+        - uses: actions/cache@v3
+          with:
+            path: |
+              ~/.sonar/cache
+              ~/.sonar/orchestrator/cache
+            key: ${{ runner.os }}-sonar
+            restore-keys: ${{ runner.os }}-sonar
+        - name: Build and Test
+          run mvn -B test
   build:
     name: Build
     runs-on: ubuntu-latest
@@ -33,7 +59,7 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
       - name: Build and analyze
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=erroraway_sonar-erroraway-plugin
+        run: mvn -B test org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=erroraway_sonar-erroraway-plugin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
