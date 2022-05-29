@@ -35,6 +35,6 @@ class ErrorAwayPluginTest {
 		ErrorAwayPlugin rulesDefinition = new ErrorAwayPlugin();
 		rulesDefinition.define(context);
 
-		verify(context, times(3 + NullAwayOption.values().length)).addExtension(Mockito.any());
+		verify(context, times(11 + NullAwayOption.values().length)).addExtension(Mockito.any());
 	}
 }

@@ -15,8 +15,10 @@
  */
 package com.github.erroraway.sonarqube;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -39,6 +41,7 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.config.Configuration;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.utils.TempFolder;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import com.google.errorprone.BugCheckerInfo;
@@ -54,9 +57,13 @@ import com.google.errorprone.scanner.ScannerSupplier;
  */
 public class ErrorAwaySensor implements Sensor {
 	private JavaResourceLocator javaResourceLocator;
+	private ErrorAwayDependencyManager dependencyManager;
+	private TempFolder tempFolder;
 
-	public ErrorAwaySensor(JavaResourceLocator javaResourceLocator) {
+	public ErrorAwaySensor(JavaResourceLocator javaResourceLocator, ErrorAwayDependencyManager dependencyManager, TempFolder tempFolder) {
 		this.javaResourceLocator = javaResourceLocator;
+		this.dependencyManager = dependencyManager;
+		this.tempFolder = tempFolder;
 	}
 
 	@Override
@@ -93,6 +100,10 @@ public class ErrorAwaySensor implements Sensor {
 
 		try (StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnosticListener, Locale.getDefault(), fs.encoding())) {
 			Iterable<? extends JavaFileObject> compilationUnits = buildCompilationUnits(context, fileManager);
+			
+			 configureClasspath(fileManager, context.config());
+			 configureAnnotationProcessors(fileManager, context.config());
+			 configureOutputFolders(fileManager);
 
 			CompilationTask task = compiler.getTask(null, fileManager, diagnosticListener, Collections.emptyList(), classes, compilationUnits);
 			task.call();
@@ -106,9 +117,16 @@ public class ErrorAwaySensor implements Sensor {
 		List<String> options = new ArrayList<>();
 
 		// Fail here if the option was not set instead a showing a giant stacktrace
-		if (!configuration.hasKey(NullAwayOption.ANNOTATED_PACKAGES.getKey()) 
-				&& context.activeRules().find(RuleKey.of("nullaway", "NullAway")) != null) {
-			throw new ErrorAwayException("The " + NullAwayOption.ANNOTATED_PACKAGES.getKey() + " option must be set when the NullAway rule is enabled");
+		if (!configuration.hasKey(NullAwayOption.ANNOTATED_PACKAGES.getKey())) {
+			if (context.activeRules().find(RuleKey.of("nullaway", "NullAway")) != null) {
+				throw new ErrorAwayException("The " + NullAwayOption.ANNOTATED_PACKAGES.getKey() + " option must be set when the NullAway rule is enabled");
+			}
+			
+			// When some annotation processors are enabled com.google.errorprone.ErrorPronePlugins turns on plugin
+			// scanning and tries to instanciate NullAway
+			if (configuration.hasKey(ErrorAwayPlugin.ANNOTATION_PROCESSORS_MAVEN_COORDINATES)) {
+				options.add("-XepOpt:NullAway:" + NullAwayOption.ANNOTATED_PACKAGES.getErrorproneOption() + "=foo.bar");
+			}
 		}
 
 		for (NullAwayOption option : NullAwayOption.values()) {
@@ -140,9 +158,31 @@ public class ErrorAwaySensor implements Sensor {
 			paths.add(new InputFileJavaFileObject(inputFile));
 		}
 
-		fileManager.setLocation(StandardLocation.CLASS_PATH, javaResourceLocator.classpath());
-
 		return paths;
+	}
+
+	private void configureClasspath(StandardJavaFileManager fileManager, Configuration configuration) throws IOException {
+		Collection<File> classpath = new ArrayList<>(javaResourceLocator.classpath());
+		if (configuration.hasKey(ErrorAwayPlugin.CLASS_PATH_MAVEN_COORDINATES)) {
+			String[] coordinates = configuration.getStringArray(ErrorAwayPlugin.CLASS_PATH_MAVEN_COORDINATES);
+			classpath.addAll(dependencyManager.downloadDependencies(coordinates));
+		}
+
+		fileManager.setLocation(StandardLocation.CLASS_PATH, classpath);
+	}
+
+	private void configureAnnotationProcessors(StandardJavaFileManager fileManager, Configuration configuration) throws IOException {
+		if (configuration.hasKey(ErrorAwayPlugin.ANNOTATION_PROCESSORS_MAVEN_COORDINATES)) {
+			String[] coordinates = configuration.getStringArray(ErrorAwayPlugin.ANNOTATION_PROCESSORS_MAVEN_COORDINATES);
+			Collection<File> annotationProcessors = dependencyManager.downloadDependencies(coordinates);
+
+			fileManager.setLocation(StandardLocation.ANNOTATION_PROCESSOR_PATH, annotationProcessors);
+		}
+	}
+
+	private void configureOutputFolders(StandardJavaFileManager fileManager) throws IOException {
+		fileManager.setLocation(StandardLocation.SOURCE_OUTPUT, Collections.singletonList(tempFolder.newDir("sourceOutput")));
+		fileManager.setLocation(StandardLocation.CLASS_OUTPUT, Collections.singletonList(tempFolder.newDir("classOutput")));
 	}
 
 	private void addErrorProneCheckers(SensorContext context, List<Class<? extends BugChecker>> checkers, Set<BugCheckerInfo> checkersInfos) {

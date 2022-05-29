@@ -17,6 +17,7 @@ package com.github.erroraway.sonarqube;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.io.TempDir;
 import org.sonar.api.batch.fs.FilePredicate;
 import org.sonar.api.batch.fs.FilePredicates;
 import org.sonar.api.batch.fs.FileSystem;
@@ -41,10 +43,12 @@ import org.sonar.api.batch.rule.ActiveRule;
 import org.sonar.api.batch.rule.ActiveRules;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
+import org.sonar.api.batch.sensor.error.NewAnalysisError;
 import org.sonar.api.batch.sensor.issue.NewIssue;
 import org.sonar.api.batch.sensor.issue.NewIssueLocation;
 import org.sonar.api.config.Configuration;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.utils.TempFolder;
 import org.sonar.api.utils.log.LogAndArguments;
 import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
@@ -57,7 +61,10 @@ import org.sonar.plugins.java.api.JavaResourceLocator;
 class ErrorAwaySensorTest {
 
 	@RegisterExtension
-	LogTesterJUnit5 logTester = new LogTesterJUnit5();
+	private LogTesterJUnit5 logTester = new LogTesterJUnit5();
+
+	@TempDir
+	private Path tempDirPath;
 
 	private Configuration configuration;
 	private FileSystem fs;
@@ -65,8 +72,11 @@ class ErrorAwaySensorTest {
 	private ActiveRules activeRules;
 	private FilePredicates filePredicates;
 	private JavaResourceLocator javaResourceLocator;
+	private TempFolder tempFolder;
 	private NewIssue newIssue;
 	private NewIssueLocation location;
+	private NewAnalysisError analisysError;
+	private ErrorAwayDependencyManager dependencyManager;
 
 	private FilePredicate mainJavaFilePredicate;
 	private FilePredicate uriFilePredicate;
@@ -74,12 +84,27 @@ class ErrorAwaySensorTest {
 
 	@BeforeEach
 	void setup() {
+		configuration = mock(Configuration.class);
+		tempFolder = mock(TempFolder.class);
+
+		when(tempFolder.newDir(anyString())).thenAnswer(i -> {
+			String name = i.getArgument(0);
+
+			File dir = new File(tempDirPath.toFile(), name);
+			dir.mkdir();
+
+			return dir;
+		});
+	}
+
+	/**
+	 * @param relativePath The path of the source file (e.g. com/bug/BugSamples.java)
+	 */
+	void setup(Path relativePath) {
 		Path path = Path.of("src/test/resources/samples");
-		Path relativePath = Path.of("com/bug/BugSamples.java");
 		Charset charset = Charset.forName("UTF-8");
 		
 		// Mocked dependencies
-		configuration = mock(Configuration.class);
 		fs = mock(FileSystem.class);
 		context = mock(SensorContext.class);
 		activeRules = mock(ActiveRules.class);
@@ -87,6 +112,9 @@ class ErrorAwaySensorTest {
 		javaResourceLocator = mock(JavaResourceLocator.class);
 		newIssue = mock(NewIssue.class);
 		location = mock(NewIssueLocation.class);
+		analisysError = mock(NewAnalysisError.class);
+
+		dependencyManager = new ErrorAwayDependencyManager(tempFolder, configuration);
 
 		// Sample data
 		FilePredicate javaFilePredicate = inputFile -> inputFile.filename().endsWith("java");
@@ -114,29 +142,73 @@ class ErrorAwaySensorTest {
 		when(javaResourceLocator.classpath()).thenReturn(classpath);
 		
 		when(context.newIssue()).thenReturn(newIssue);
+		when(context.newAnalysisError()).thenReturn(analisysError);
 
 		when(newIssue.newLocation()).thenReturn(location);
 	}
 
+	private void setConfigurationStringArray(String key, String[] value) {
+		ErrorAwayTestUtil.setConfigurationStringArray(configuration, key, value);
+	}
+
+	private void setConfigurationBoolean(String key, boolean value) {
+		ErrorAwayTestUtil.setConfigurationBoolean(configuration, key, value);
+	}
+
+	private void enableRule(RuleKey ruleKey) {
+		when(activeRules.find(ruleKey)).thenReturn(mock(ActiveRule.class));
+	}
+
 	@Test
 	void analyzeWithErrorProneRule() {
-		when(activeRules.find(RuleKey.of("errorprone", "DurationTemporalUnit"))).thenReturn(mock(ActiveRule.class));
+		setup(Path.of("com/bug/BugSamples.java"));
+		enableRule(RuleKey.of("errorprone", "DurationTemporalUnit"));
 
 		// Call the sensor
-		ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator);
+		ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
 		sensor.execute(context);
 
 		verify(context, times(1)).newIssue();
 	}
 
 	@Test
-	void analyzeWithNullAway() {
-		when(activeRules.find(RuleKey.of("nullaway", "NullAway"))).thenReturn(mock(ActiveRule.class));
-		when(configuration.hasKey(NullAwayOption.ANNOTATED_PACKAGES.getKey())).thenReturn(true);
-		when(configuration.getStringArray(NullAwayOption.ANNOTATED_PACKAGES.getKey())).thenReturn(new String[] { "foo", "com.bug", "bar" });
+	void analyzeWithAnnotationProcessor() {
+		setConfigurationStringArray(ErrorAwayPlugin.CLASS_PATH_MAVEN_COORDINATES, new String[]{"com.google.auto.value:auto-value-annotations:1.9"});
+		setConfigurationStringArray(ErrorAwayPlugin.ANNOTATION_PROCESSORS_MAVEN_COORDINATES, new String[]{"com.google.auto.value:auto-value:1.9"});
+		setConfigurationBoolean(ErrorAwayPlugin.MAVEN_USE_TEMP_LOCAL_REPOSITORY, true);
+		setConfigurationStringArray(ErrorAwayPlugin.MAVEN_REPOSITORIES, new String[]{"https://repo1.maven.org/maven2/"});
+	
+		setup(Path.of("com/bug/AutoValueSamples.java"));
+		enableRule(RuleKey.of("errorprone", "DurationTemporalUnit"));
 
 		// Call the sensor
-		ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator);
+		ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
+		sensor.execute(context);
+
+		verify(context, times(1)).newIssue();
+	}
+
+	@Test
+	void missingDependencies() {
+		setup(Path.of("com/bug/AutoValueSamples.java"));
+		enableRule(RuleKey.of("errorprone", "DurationTemporalUnit"));
+
+		// Call the sensor
+		ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
+		sensor.execute(context);
+
+		verify(context, times(3)).newAnalysisError();
+	}
+
+	@Test
+	void analyzeWithNullAway() {
+		setup(Path.of("com/bug/BugSamples.java"));
+		when(activeRules.find(RuleKey.of("nullaway", "NullAway"))).thenReturn(mock(ActiveRule.class));
+		
+		setConfigurationStringArray(NullAwayOption.ANNOTATED_PACKAGES.getKey(), new String[] { "foo", "com.bug", "bar" });
+
+		// Call the sensor
+		ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
 		sensor.execute(context);
 
 		verify(context, times(1)).newIssue();
@@ -144,20 +216,22 @@ class ErrorAwaySensorTest {
 
 	@Test
 	void analyzeWithNullAwayWithoutAnnotatedPackageOption() {
+		setup(Path.of("com/bug/BugSamples.java"));
 		when(activeRules.find(RuleKey.of("nullaway", "NullAway"))).thenReturn(mock(ActiveRule.class));
 
 		// Call the sensor
-		ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator);
+		ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
 		assertThrows(ErrorAwayException.class, () -> sensor.execute(context));
 	}
 
 	@Test
 	void missingInputFile() {
-		when(activeRules.find(RuleKey.of("errorprone", "DurationTemporalUnit"))).thenReturn(mock(ActiveRule.class));
+		setup(Path.of("com/bug/BugSamples.java"));
+		enableRule(RuleKey.of("errorprone", "DurationTemporalUnit"));
 		when(fs.inputFile(uriFilePredicate)).thenReturn(null);
 
 		// Call the sensor
-		ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator);
+		ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
 		sensor.execute(context);
 
 		assertThat(logTester.getLogs(LoggerLevel.WARN).stream().map(LogAndArguments::getRawMsg).collect(Collectors.toList())).contains("Could not file input file for source {}");
@@ -165,9 +239,10 @@ class ErrorAwaySensorTest {
 
 	@Test
 	void describe() {
+		setup(Path.of("com/bug/BugSamples.java"));
 		SensorDescriptor descriptor = mock(SensorDescriptor.class);
 
-		ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator);
+		ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
 		sensor.describe(descriptor);
 
 		verify(descriptor, times(1)).onlyOnLanguage("java");

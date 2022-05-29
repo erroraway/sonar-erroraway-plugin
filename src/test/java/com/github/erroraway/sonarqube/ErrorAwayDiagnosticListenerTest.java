@@ -15,6 +15,9 @@
  */
 package com.github.erroraway.sonarqube;
 
+import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -25,30 +28,81 @@ import javax.tools.JavaFileObject;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.sonar.api.batch.fs.FilePredicates;
+import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.sensor.SensorContext;
+import org.sonar.api.batch.sensor.error.NewAnalysisError;
 
 /**
- * @author Guillaume
+ * @author Guillaume Toison
  *
  */
 class ErrorAwayDiagnosticListenerTest {
 	private SensorContext context;
+	private NewAnalysisError analysisError;
+	private FileSystem fs;
+	private FilePredicates filePredicates;
 
 	@BeforeEach
 	void setup() {
 		context = mock(SensorContext.class);
+		analysisError = mock(NewAnalysisError.class);
+		fs = mock(FileSystem.class);
+		filePredicates = mock(FilePredicates.class);
+
+		when(context.newAnalysisError()).thenReturn(analysisError);
+		when(context.fileSystem()).thenReturn(fs);
+
+		when(fs.predicates()).thenReturn(filePredicates);
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	void ignoreCompilerError() {
-		Diagnostic<? extends JavaFileObject> diagnostic = mock(Diagnostic.class);
+		Diagnostic<JavaFileObject> diagnostic = mock(Diagnostic.class);
+		JavaFileObject javaFileObject = mock(JavaFileObject.class);
+
 		when(diagnostic.getCode()).thenReturn("compiler.note.deprecated.filename");
+		when(diagnostic.getSource()).thenReturn(javaFileObject);
 
 		ErrorAwayDiagnosticListener listener = new ErrorAwayDiagnosticListener(context);
 
 		listener.report(diagnostic);
 
 		verify(context, never()).newIssue();
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void compilerCrash() {
+		Diagnostic<JavaFileObject> diagnostic = mock(Diagnostic.class);
+		when(diagnostic.getCode()).thenReturn(ErrorAwayDiagnosticListener.ERROR_PRONE_COMPILER_CRASH_CODE);
+
+		ErrorAwayDiagnosticListener listener = new ErrorAwayDiagnosticListener(context);
+
+		assertThrows(ErrorAwayException.class, () -> listener.checkDiagnostic(diagnostic));
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void invalidErrorDiagnostic() {
+		Diagnostic<JavaFileObject> diagnostic = mock(Diagnostic.class);
+		when(diagnostic.getCode()).thenReturn("compiler.warn.error.prone");
+		when(diagnostic.getMessage(any())).thenReturn("[Xyz 13213");
+
+		ErrorAwayDiagnosticListener listener = new ErrorAwayDiagnosticListener(context);
+
+		assertThrows(ErrorAwayException.class, () -> listener.report(diagnostic));
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void nullSourceDiagnostic() {
+		Diagnostic<JavaFileObject> diagnostic = mock(Diagnostic.class);
+		when(diagnostic.getSource()).thenReturn(null);
+
+		ErrorAwayDiagnosticListener listener = new ErrorAwayDiagnosticListener(context);
+
+		assertNull(listener.getInputFile(diagnostic, fs));
 	}
 }

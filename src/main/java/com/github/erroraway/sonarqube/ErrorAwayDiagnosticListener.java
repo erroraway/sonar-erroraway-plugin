@@ -24,7 +24,9 @@ import javax.tools.JavaFileObject;
 
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.fs.TextPointer;
 import org.sonar.api.batch.sensor.SensorContext;
+import org.sonar.api.batch.sensor.error.NewAnalysisError;
 import org.sonar.api.batch.sensor.issue.NewIssue;
 import org.sonar.api.batch.sensor.issue.NewIssueLocation;
 import org.sonar.api.rule.RuleKey;
@@ -38,11 +40,10 @@ import org.sonar.api.utils.log.Loggers;
 public class ErrorAwayDiagnosticListener implements DiagnosticListener<JavaFileObject> {
 	private static final Logger LOGGER = Loggers.get(ErrorAwayDiagnosticListener.class);
 
-	private static final Set<String> IGNORED_DIAGNOSTIC_CODES = Set.of("compiler.warn.pkg-info.already.seen",
-			"compiler.err.doesnt.exist", 
-			"compiler.note.deprecated.filename",
-			"compiler.note.deprecated.plural",
-			"compiler.note.deprecated.recompile");
+	public static final String ERROR_PRONE_COMPILER_CRASH_CODE = "compiler.err.error.prone.crash";
+	private static final Set<String> ERROR_RPRONE_DIAGNOSTIC_CODES = Set.of("compiler.warn.error.prone",
+			"compiler.err.error.prone",
+			"compiler.note.error.prone");
 	private SensorContext context;
 
 	public ErrorAwayDiagnosticListener(SensorContext context) {
@@ -51,7 +52,7 @@ public class ErrorAwayDiagnosticListener implements DiagnosticListener<JavaFileO
 
 	@Override
 	public void report(Diagnostic<? extends JavaFileObject> diagnostic) {
-		if (ignore(diagnostic)) {
+		if (!checkDiagnostic(diagnostic)) {
 			return;
 		}
 		String message = diagnostic.getMessage(Locale.ENGLISH);
@@ -84,7 +85,11 @@ public class ErrorAwayDiagnosticListener implements DiagnosticListener<JavaFileO
 		}
 	}
 
-	private InputFile getInputFile(Diagnostic<? extends JavaFileObject> diagnostic, FileSystem fs) {
+	public InputFile getInputFile(Diagnostic<? extends JavaFileObject> diagnostic, FileSystem fs) {
+		if (diagnostic.getSource() == null) {
+			return null;
+		}
+
 		InputFile inputFile = fs.inputFile(fs.predicates().hasURI(diagnostic.getSource().toUri()));
 
 		if (inputFile == null) {
@@ -94,8 +99,40 @@ public class ErrorAwayDiagnosticListener implements DiagnosticListener<JavaFileO
 		return inputFile;
 	}
 
-	private boolean ignore(Diagnostic<? extends JavaFileObject> diagnostic) {
-		return IGNORED_DIAGNOSTIC_CODES.contains(diagnostic.getCode());
+	/**
+	 * @param diagnostic
+	 *            The {@link Diagnostic} to check
+	 * @return <code>true</code> if the diagnostic is from Error Prone
+	 */
+	public boolean checkDiagnostic(Diagnostic<? extends JavaFileObject> diagnostic) {
+		String code = diagnostic.getCode();
+
+		if (ERROR_PRONE_COMPILER_CRASH_CODE.equals(diagnostic.getCode())) {
+			throw new ErrorAwayException("Compiler crash during code analysis, this is most likely a bug in the ErrorAway plugin, not in ErrorProne:\n" + diagnostic);
+		}
+		if (ERROR_RPRONE_DIAGNOSTIC_CODES.contains(code)) {
+			return true;
+		} else {
+			NewAnalysisError analysisError = context.newAnalysisError();
+			analysisError.message(diagnostic.getMessage(Locale.ENGLISH));
+
+			FileSystem fs = context.fileSystem();
+			InputFile inputFile = getInputFile(diagnostic, fs);
+
+			if (inputFile != null) {
+				int startLine = Math.max(1, (int) diagnostic.getLineNumber());
+				int column = Math.max(1, (int) diagnostic.getColumnNumber());
+
+				TextPointer location = inputFile.newPointer(startLine, column);
+
+				analysisError.onFile(inputFile);
+				analysisError.at(location);
+			}
+
+			analysisError.save();
+
+			return false;
+		}
 	}
 
 	private String parseRule(Diagnostic<? extends JavaFileObject> diagnostic, String message) {

@@ -115,12 +115,14 @@ public class ErrorAwayIT {
 		issueRequest.setProjects(Collections.singletonList(SIMPLE_PROJECT_KEY));
 		List<Issue> issues = ISSUES_SERVICES.search(issueRequest).getIssuesList();
 
-		assertThat(issues.size(), is(16));
+		assertThat(issues.size(), is(21));
 
 		assertSimpleIssues(issues);
 		assertAndroidActivityIssues(issues);
 		assertApplicationSimpleIssues(issues);
 		assertBugsSamplesIssues(issues);
+		assertHibernateEntityIssues(issues);
+		assertAutoValueSamplesIssues(issues);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -157,6 +159,21 @@ public class ErrorAwayIT {
 	private void assertBugsSamplesIssues(List<Issue> issues) {
 		Predicate<Issue> bugsJavaPredicate = component(SIMPLE_PROJECT_KEY, "src/main/java/com/bugs/BugsSamples.java");
 		assertThat(issues, containsIssueMatching(bugsJavaPredicate, rule("errorprone:ZoneIdOfZ"), startLine(8)));
+	}
+
+	@SuppressWarnings("unchecked")
+	private void assertHibernateEntityIssues(List<Issue> issues) {
+		Predicate<Issue> applicationSimpleJavaPredicate = component(SIMPLE_PROJECT_KEY, "src/main/java/application/HibernateEntity.java");
+		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("nullaway:NullAway"), startLine(15)));
+		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("nullaway:NullAway"), startLine(16)));
+		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("errorprone:DurationTemporalUnit"), startLine(31)));
+		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("nullaway:NullAway"), startLine(32)));
+	}
+
+	@SuppressWarnings("unchecked")
+	private void assertAutoValueSamplesIssues(List<Issue> issues) {
+		Predicate<Issue> applicationSimpleJavaPredicate = component(SIMPLE_PROJECT_KEY,	"src/main/java/application/AutoValueSamples.java");
+		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("errorprone:DurationTemporalUnit"), startLine(13)));
 	}
 
 	@SuppressWarnings("unchecked")
