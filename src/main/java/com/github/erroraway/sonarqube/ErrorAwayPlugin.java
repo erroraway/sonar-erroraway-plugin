@@ -56,7 +56,6 @@ public class ErrorAwayPlugin implements Plugin {
 				.category(PROPERTY_ERRORAWAY_CATEGORY)
 				.subCategory(PROPERTY_MAVEN_SUBCATEGORY)
 				.onQualifiers(Qualifiers.PROJECT)
-				.multiValues(true)
 				.build());
 		
 		context.addExtension(PropertyDefinition
@@ -66,7 +65,6 @@ public class ErrorAwayPlugin implements Plugin {
 				.category(PROPERTY_ERRORAWAY_CATEGORY)
 				.subCategory(PROPERTY_MAVEN_SUBCATEGORY)
 				.onQualifiers(Qualifiers.PROJECT)
-				.multiValues(true)
 				.build());
 		
 		context.addExtension(PropertyDefinition
