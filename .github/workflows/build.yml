@@ -31,7 +31,7 @@ jobs:
             key: ${{ runner.os }}-sonar
             restore-keys: ${{ runner.os }}-sonar
         - name: Build and Test
-          run mvn -B test
+          run: mvn -B test
   build:
     name: Build
     runs-on: ubuntu-latest
