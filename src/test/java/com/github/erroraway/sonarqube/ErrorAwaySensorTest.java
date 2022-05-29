@@ -236,6 +236,22 @@ class ErrorAwaySensorTest {
 
         verify(context, times(1)).newIssue();
     }
+    
+    @Test
+    void analyzeWithAutodispose2() {
+        setup(Path.of("com/bug/AndroidActivity.java"));
+        enableRule(RuleKey.of("autodispose2", "AutoDispose"));
+        setConfigurationStringArray(ErrorAwayPlugin.CLASS_PATH_MAVEN_COORDINATES, new String[]{
+                "com.google.android:android:4.1.1.4",
+                "io.reactivex.rxjava3:rxjava:3.1.4"
+                });
+        
+        // Call the sensor
+        ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
+        sensor.execute(context);
+
+        verify(context, times(1)).newIssue();
+    }
 
 	@Test
 	void missingInputFile() {
