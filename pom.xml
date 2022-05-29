@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.github.erroraway</groupId>
 	<artifactId>sonar-erroraway-plugin</artifactId>
-	<version>0.0.2</version>
+	<version>0.0.3-SNAPSHOT</version>
 	<packaging>sonar-plugin</packaging>
 
 	<name>Error Away SonarQube plugin</name>
@@ -32,9 +32,9 @@
 		<sonar.version>8.9.7.52159</sonar.version>
 		<sonar-java.version>6.0.0.20538</sonar-java.version>
 
-		<errorprone.version>2.13.1</errorprone.version>
+		<errorprone.version>2.14.0</errorprone.version>
 		<nullaway.version>0.9.7</nullaway.version>
-		<errorprone.slf4j.version>0.1.6</errorprone.slf4j.version>
+		<errorprone.slf4j.version>0.1.12</errorprone.slf4j.version>
 		<autodispose2.version>2.1.1</autodispose2.version>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
