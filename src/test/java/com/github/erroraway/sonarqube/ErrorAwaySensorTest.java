@@ -55,7 +55,7 @@ import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
 /**
- * @author Guillaume
+ * @author Guillaume Toison
  *
  */
 class ErrorAwaySensorTest {
@@ -223,6 +223,19 @@ class ErrorAwaySensorTest {
 		ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
 		assertThrows(ErrorAwayException.class, () -> sensor.execute(context));
 	}
+	
+    @Test
+    void analyzeWithErrorProneSlf4j() {
+        setup(Path.of("com/bug/Slf4jSamples.java"));
+        enableRule(RuleKey.of("errorprone-slf4j", "Slf4jPlaceholderMismatch"));
+        setConfigurationStringArray(ErrorAwayPlugin.CLASS_PATH_MAVEN_COORDINATES, new String[]{"org.slf4j:slf4j-api:1.7.36"});
+        
+        // Call the sensor
+        ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
+        sensor.execute(context);
+
+        verify(context, times(1)).newIssue();
+    }
 
 	@Test
 	void missingInputFile() {
