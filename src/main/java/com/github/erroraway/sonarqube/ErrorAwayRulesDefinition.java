@@ -15,7 +15,13 @@
  */
 package com.github.erroraway.sonarqube;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -25,19 +31,27 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.stream.Collectors;
 
+import org.commonmark.node.Node;
+import org.commonmark.parser.Parser;
+import org.commonmark.renderer.html.HtmlRenderer;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rule.Severity;
 import org.sonar.api.server.rule.RulesDefinition;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 
 import com.google.errorprone.BugCheckerInfo;
+import com.google.errorprone.BugPattern;
 import com.google.errorprone.bugpatterns.BugChecker;
 import com.google.errorprone.scanner.BuiltInCheckerSuppliers;
 
 /**
- * @author Guillaume
+ * @author Guillaume Toison
  *
  */
 public class ErrorAwayRulesDefinition implements RulesDefinition {
+    private static final Logger LOGGER = Loggers.get(ErrorAwayRulesDefinition.class);
+    
 	public static final String ERRORPRONE_REPOSITORY = "errorprone";
 	public static final String NULLAWAY_REPOSITORY = "nullaway";
 	public static final String ERRORPRONE_SLF4J_REPOSITORY = "errorprone-slf4j";
@@ -143,11 +157,39 @@ public class ErrorAwayRulesDefinition implements RulesDefinition {
 	private void loadDescription(BugCheckerInfo bugCheckerInfo, String ruleName, NewRule rule) {
 		URL resource = findDescriptionResource(ruleName);
 		if (resource != null) {
-			rule.setMarkdownDescription(resource);
+		    try (InputStream in =  resource.openStream(); InputStreamReader reader = new InputStreamReader(in, StandardCharsets.UTF_8)) {
+	            String html = convertMdToHtml(reader);
+                rule.setHtmlDescription(html);
+		    } catch (Exception e) {
+		        handleDescriptionReadException(ruleName, rule, resource, e);
+		    }
 		} else {
-			rule.setMarkdownDescription(bugCheckerInfo.message());
+		    try (StringReader reader = new StringReader(bugCheckerInfo.message())) {
+		        String html = convertMdToHtml(reader);
+		        String link = getBugCheckerLink(bugCheckerInfo);
+		        
+		        html += "\n<b>See: </b><a href=\"" + link + "\" target=\"_blank\">" + link + "</a>";
+		        
+                rule.setHtmlDescription(html);
+		    } catch (Exception e) {
+                handleDescriptionReadException(ruleName, rule, resource, e);
+            }
 		}
 	}
+
+    public void handleDescriptionReadException(String ruleName, NewRule rule, URL resource, Exception e) {
+        LOGGER.warn("Error parsing MD description for {}", ruleName, e);
+        rule.setMarkdownDescription(resource);
+    }
+
+    public String convertMdToHtml(Reader reader) throws IOException {
+        Parser parser = Parser.builder().build();
+        HtmlRenderer renderer = HtmlRenderer.builder().build();
+        
+        Node node = parser.parseReader(reader);
+        
+        return renderer.render(node);
+    }
 
 	private URL findDescriptionResource(String ruleName) {
 		for (String folder : DESCRIPTION_FOLDERS) {
@@ -191,6 +233,10 @@ public class ErrorAwayRulesDefinition implements RulesDefinition {
 		return RuleKey.of(repository(type), asRuleKey(type));
 	}
 
+    public static String repository(BugCheckerInfo bugCheckerInfo) {
+        return repository(bugCheckerInfo.checkerClass());
+    }
+
 	public static String repository(Class<? extends BugChecker> type) {
 		String className = type.getName();
 		if (className.startsWith("com.uber.nullaway.")) {
@@ -203,4 +249,20 @@ public class ErrorAwayRulesDefinition implements RulesDefinition {
 			throw new ErrorAwayException("Could not find rules repository for class " + className);
 		}
 	}
+	
+    /**
+     * Some plugins do not declare their link on the {@link BugPattern} annotation
+     */
+    public String getBugCheckerLink(BugCheckerInfo bugCheckerInfo) {
+        switch (repository(bugCheckerInfo)) {
+        case NULLAWAY_REPOSITORY:
+            return "https://github.com/uber/NullAway/wiki/Error-Messages";
+        case ERRORPRONE_SLF4J_REPOSITORY:
+            return "https://github.com/KengoTODA/findbugs-slf4j#provided-bug-patterns";
+        case AUTODISPOSE2_REPOSITORY:
+            return "https://github.com/uber/AutoDispose/wiki/Error-Prone-Checker";
+        default:
+            return bugCheckerInfo.linkUrl();
+        }
+    }
 }
