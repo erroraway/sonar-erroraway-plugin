@@ -239,7 +239,9 @@ public class ErrorAwayRulesDefinition implements RulesDefinition {
 
 	public static String repository(Class<? extends BugChecker> type) {
 		String className = type.getName();
-		if (className.startsWith("com.uber.nullaway.")) {
+		if (className.startsWith("com.google.errorprone.")) {
+            return ERRORPRONE_REPOSITORY;
+        } else if (className.startsWith("com.uber.nullaway.")) {
 			return NULLAWAY_REPOSITORY;
 		} else if (className.startsWith("jp.skypencil.errorprone.slf4j.")) {
 			return ERRORPRONE_SLF4J_REPOSITORY;
