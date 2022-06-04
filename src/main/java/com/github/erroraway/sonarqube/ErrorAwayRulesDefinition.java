@@ -254,8 +254,10 @@ public class ErrorAwayRulesDefinition implements RulesDefinition {
 	
     /**
      * Some plugins do not declare their link on the {@link BugPattern} annotation
+     * @param bugCheckerInfo The {@link BugCheckerInfo}
+     * @return The link for the give {@link BugCheckerInfo}
      */
-    public String getBugCheckerLink(BugCheckerInfo bugCheckerInfo) {
+    private String getBugCheckerLink(BugCheckerInfo bugCheckerInfo) {
         switch (repository(bugCheckerInfo)) {
         case NULLAWAY_REPOSITORY:
             return "https://github.com/uber/NullAway/wiki/Error-Messages";
