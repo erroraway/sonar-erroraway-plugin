@@ -41,7 +41,7 @@ public class ErrorAwayDiagnosticListener implements DiagnosticListener<JavaFileO
 	private static final Logger LOGGER = Loggers.get(ErrorAwayDiagnosticListener.class);
 
 	public static final String ERROR_PRONE_COMPILER_CRASH_CODE = "compiler.err.error.prone.crash";
-	private static final Set<String> ERROR_RPRONE_DIAGNOSTIC_CODES = Set.of("compiler.warn.error.prone",
+	private static final Set<String> ERROR_PRONE_DIAGNOSTIC_CODES = Set.of("compiler.warn.error.prone",
 			"compiler.err.error.prone",
 			"compiler.note.error.prone");
 	private SensorContext context;
@@ -110,7 +110,7 @@ public class ErrorAwayDiagnosticListener implements DiagnosticListener<JavaFileO
 		if (ERROR_PRONE_COMPILER_CRASH_CODE.equals(diagnostic.getCode())) {
 			throw new ErrorAwayException("Compiler crash during code analysis, this is most likely a bug in the ErrorAway plugin, not in ErrorProne:\n" + diagnostic);
 		}
-		if (ERROR_RPRONE_DIAGNOSTIC_CODES.contains(code)) {
+		if (ERROR_PRONE_DIAGNOSTIC_CODES.contains(code)) {
 			return true;
 		} else {
 			NewAnalysisError analysisError = context.newAnalysisError();
@@ -120,13 +120,17 @@ public class ErrorAwayDiagnosticListener implements DiagnosticListener<JavaFileO
 			InputFile inputFile = getInputFile(diagnostic, fs);
 
 			if (inputFile != null) {
-				int startLine = Math.max(1, (int) diagnostic.getLineNumber());
-				int column = Math.max(1, (int) diagnostic.getColumnNumber());
+			    analysisError.onFile(inputFile);
 
-				TextPointer location = inputFile.newPointer(startLine, column);
+			    try {
+			        int startLine = Math.max(1, (int) diagnostic.getLineNumber());
 
-				analysisError.onFile(inputFile);
-				analysisError.at(location);
+			        TextPointer location = inputFile.newPointer(startLine, 0);
+
+			        analysisError.at(location);
+			    } catch (IllegalArgumentException e) {
+			        LOGGER.error("Error setting pointer on file {} for diagnostic {}", inputFile, diagnostic, e);
+			    }
 			}
 
 			analysisError.save();

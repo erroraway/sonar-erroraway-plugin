@@ -42,6 +42,8 @@ import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.config.Configuration;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.TempFolder;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import com.google.errorprone.BugCheckerInfo;
@@ -56,6 +58,8 @@ import com.google.errorprone.scanner.ScannerSupplier;
  *
  */
 public class ErrorAwaySensor implements Sensor {
+    private static final Logger LOGGER = Loggers.get(ErrorAwaySensor.class);
+    
 	private JavaResourceLocator javaResourceLocator;
 	private ErrorAwayDependencyManager dependencyManager;
 	private TempFolder tempFolder;
@@ -97,6 +101,8 @@ public class ErrorAwaySensor implements Sensor {
 		Iterable<String> classes = Collections.emptyList();
 
 		FileSystem fs = context.fileSystem();
+		
+		LOGGER.info("Starting project analysis with encoding {}", fs.encoding());
 
 		try (StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnosticListener, Locale.getDefault(), fs.encoding())) {
 			Iterable<? extends JavaFileObject> compilationUnits = buildCompilationUnits(context);

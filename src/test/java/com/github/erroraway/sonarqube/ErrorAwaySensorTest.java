@@ -253,6 +253,19 @@ class ErrorAwaySensorTest {
         verify(context, times(1)).newIssue();
     }
 
+    @Test
+    void compilerWarning() {
+        setup(Path.of("com/bug/VarArgsArray.java"));
+        enableRule(RuleKey.of("errorprone", "DurationTemporalUnit"));
+
+        // Call the sensor
+        ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
+        sensor.execute(context);
+        
+        // One compiler warning that there are unsage operations in the file and another to recompile for more details
+        verify(context, times(2)).newAnalysisError();
+    }
+
 	@Test
 	void missingInputFile() {
 		setup(Path.of("com/bug/BugSamples.java"));
