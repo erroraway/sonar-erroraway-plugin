@@ -43,6 +43,7 @@ import com.github.erroraway.sonarqube.ErrorAwayQualityProfile;
 import com.github.erroraway.sonarqube.NullAwayOption;
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.OrchestratorBuilder;
+import com.sonar.orchestrator.build.GradleBuild;
 import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.locator.FileLocation;
 
@@ -52,7 +53,8 @@ import com.sonar.orchestrator.locator.FileLocation;
  */
 public class ErrorAwayIT {
 
-	private static final String SIMPLE_PROJECT_KEY = "sonar-error-away-plugin:simple";
+	private static final String SIMPLE_MAVEN_PROJECT_KEY = "sonar-error-away-plugin:simple";
+    private static final String SIMPLE_GRADLE_PROJECT_KEY = "sonar-error-away-plugin:gradle-simple";
 
 	private static Orchestrator ORCHESTRATOR;
 
@@ -85,20 +87,24 @@ public class ErrorAwayIT {
 		ORCHESTRATOR.stop();
 	}
 
-	@Test
-	void analyzeSimpleProject() {
-		// Create the sample project
-		CreateRequest createRequest = new CreateRequest();
-		createRequest.setName("ErrorAway");
-		createRequest.setProject(SIMPLE_PROJECT_KEY);
-		PROJECT_SERVICES.create(createRequest);
+    private void setupProjectAndProfile(String projectKey, String projectName) {
+        // Create the sample project
+        CreateRequest createRequest = new CreateRequest();
+        createRequest.setName(projectName);
+        createRequest.setProject(projectKey);
+        PROJECT_SERVICES.create(createRequest);
 
-		// Enable the quality profile
-		AddProjectRequest addProjectRequest = new AddProjectRequest();
-		addProjectRequest.setLanguage("java");
-		addProjectRequest.setProject(SIMPLE_PROJECT_KEY);
-		addProjectRequest.setQualityProfile(ErrorAwayQualityProfile.ERROR_PRONE_AND_PLUGINS_PROFILE_NAME);
-		QUALITY_PROFILES_SERVICE.addProject(addProjectRequest);
+        // Enable the quality profile
+        AddProjectRequest addProjectRequest = new AddProjectRequest();
+        addProjectRequest.setLanguage("java");
+        addProjectRequest.setProject(projectKey);
+        addProjectRequest.setQualityProfile(ErrorAwayQualityProfile.ERROR_PRONE_AND_PLUGINS_PROFILE_NAME);
+        QUALITY_PROFILES_SERVICE.addProject(addProjectRequest);
+    }
+
+	@Test
+	void analyzeSimpleMavenProject() {
+		setupProjectAndProfile(SIMPLE_MAVEN_PROJECT_KEY, "Simple - Maven");
 
 		MavenBuild build = MavenBuild.create()
 				.setPom(new File("src/test/resources/projects/simple/pom.xml").getAbsoluteFile())
@@ -109,26 +115,49 @@ public class ErrorAwayIT {
 				.setGoals("clean package org.sonarsource.scanner.maven:sonar-maven-plugin:sonar");
 		
 		ORCHESTRATOR.executeBuild(build);
+		
+		checkIssues(SIMPLE_MAVEN_PROJECT_KEY);
+	}
 
+    @Test
+    void analyzeSimpleGradleProject() {
+        setupProjectAndProfile(SIMPLE_GRADLE_PROJECT_KEY, "Simple - Gradle");
+
+        // Can't seem to set property nullaway.annotated.packages here, so it is set in build.gradle
+        GradleBuild build = GradleBuild.create()
+                .setProjectDirectory(FileLocation.of(new File("src/test/resources/projects/simple").getAbsoluteFile()))
+                .setProperty("sonar.host.url", ORCHESTRATOR.getServer().getUrl())
+                .setProperty("sonar.login", "admin")
+                .setProperty("sonar.password", "admin")
+                .setTasks("clean", "build")
+                .addArgument("--stacktrace")
+                .addSonarTask();
+        
+        ORCHESTRATOR.executeBuild(build);
+        
+        checkIssues(SIMPLE_GRADLE_PROJECT_KEY);
+    }
+	
+	private void checkIssues(String projectKey) {
 		// Check the issues reported in SonarQube
 		SearchRequest issueRequest = new SearchRequest();
-		issueRequest.setProjects(Collections.singletonList(SIMPLE_PROJECT_KEY));
+		issueRequest.setProjects(Collections.singletonList(projectKey));
 		List<Issue> issues = ISSUES_SERVICES.search(issueRequest).getIssuesList();
 
 		assertThat(issues.size(), is(23));
 
-		assertSimpleIssues(issues);
-		assertAndroidActivityIssues(issues);
-		assertApplicationSimpleIssues(issues);
-		assertBugsSamplesIssues(issues);
-		assertHibernateEntityIssues(issues);
-		assertAutoValueSamplesIssues(issues);
-        assertGrammarListenerIssues(issues);
+		assertSimpleIssues(issues, projectKey);
+		assertAndroidActivityIssues(issues, projectKey);
+		assertApplicationSimpleIssues(issues, projectKey);
+		assertBugsSamplesIssues(issues, projectKey);
+		assertHibernateEntityIssues(issues, projectKey);
+		assertAutoValueSamplesIssues(issues, projectKey);
+        assertGrammarListenerIssues(issues, projectKey);
 	}
 
 	@SuppressWarnings("unchecked")
-	private void assertSimpleIssues(List<Issue> issues) {
-		Predicate<Issue> simpleJavaPredicate = component(SIMPLE_PROJECT_KEY, "src/main/java/Simple.java");
+	private void assertSimpleIssues(List<Issue> issues, String projectKey) {
+		Predicate<Issue> simpleJavaPredicate = component(projectKey, "src/main/java/Simple.java");
 		assertThat(issues, containsIssueMatching(simpleJavaPredicate, rule("errorprone:DefaultPackage"), startLine(1)));
 		assertThat(issues, containsIssueMatching(simpleJavaPredicate, rule("errorprone-slf4j:Slf4jLoggerShouldBePrivate"), startLine(8)));
 		assertThat(issues, containsIssueMatching(simpleJavaPredicate, rule("errorprone:ClassNewInstance"), startLine(11)));
@@ -138,15 +167,15 @@ public class ErrorAwayIT {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void assertAndroidActivityIssues(List<Issue> issues) {
-		Predicate<Issue> androidActivityJavaPredicate = component(SIMPLE_PROJECT_KEY, "src/main/java/application/AndroidActivity.java");
+	private void assertAndroidActivityIssues(List<Issue> issues, String projectKey) {
+		Predicate<Issue> androidActivityJavaPredicate = component(projectKey, "src/main/java/application/AndroidActivity.java");
 		assertThat(issues, containsIssueMatching(androidActivityJavaPredicate, rule("errorprone:CheckReturnValue"), startLine(15)));
         assertThat(issues, containsIssueMatching(androidActivityJavaPredicate, rule("autodispose2:AutoDispose"), startLine(15)));
 	}
 
 	@SuppressWarnings("unchecked")
-	private void assertApplicationSimpleIssues(List<Issue> issues) {
-		Predicate<Issue> applicationSimpleJavaPredicate = component(SIMPLE_PROJECT_KEY, "src/main/java/application/Simple.java");
+	private void assertApplicationSimpleIssues(List<Issue> issues, String projectKey) {
+		Predicate<Issue> applicationSimpleJavaPredicate = component(projectKey, "src/main/java/application/Simple.java");
 		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("errorprone:ClassNewInstance"), startLine(15)));
 		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("nullaway:NullAway"), startLine(22)));
 		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("errorprone:EqualsNaN"), startLine(24)));
@@ -158,14 +187,14 @@ public class ErrorAwayIT {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void assertBugsSamplesIssues(List<Issue> issues) {
-		Predicate<Issue> bugsJavaPredicate = component(SIMPLE_PROJECT_KEY, "src/main/java/com/bugs/BugsSamples.java");
+	private void assertBugsSamplesIssues(List<Issue> issues, String projectKey) {
+		Predicate<Issue> bugsJavaPredicate = component(projectKey, "src/main/java/com/bugs/BugsSamples.java");
 		assertThat(issues, containsIssueMatching(bugsJavaPredicate, rule("errorprone:ZoneIdOfZ"), startLine(8)));
 	}
 
 	@SuppressWarnings("unchecked")
-	private void assertHibernateEntityIssues(List<Issue> issues) {
-		Predicate<Issue> applicationSimpleJavaPredicate = component(SIMPLE_PROJECT_KEY, "src/main/java/application/HibernateEntity.java");
+	private void assertHibernateEntityIssues(List<Issue> issues, String projectKey) {
+		Predicate<Issue> applicationSimpleJavaPredicate = component(projectKey, "src/main/java/application/HibernateEntity.java");
 		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("nullaway:NullAway"), startLine(15)));
 		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("nullaway:NullAway"), startLine(16)));
 		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("errorprone:DurationTemporalUnit"), startLine(31)));
@@ -173,14 +202,14 @@ public class ErrorAwayIT {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void assertGrammarListenerIssues(List<Issue> issues) {
-		Predicate<Issue> applicationSimpleJavaPredicate = component(SIMPLE_PROJECT_KEY,	"src/main/java/application/GrammarListener.java");
+	private void assertGrammarListenerIssues(List<Issue> issues, String projectKey) {
+		Predicate<Issue> applicationSimpleJavaPredicate = component(projectKey,	"src/main/java/application/GrammarListener.java");
 		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("errorprone:MissingOverride"), startLine(8)));
 	}
 
     @SuppressWarnings("unchecked")
-    private void assertAutoValueSamplesIssues(List<Issue> issues) {
-        Predicate<Issue> applicationSimpleJavaPredicate = component(SIMPLE_PROJECT_KEY, "src/main/java/application/AutoValueSamples.java");
+    private void assertAutoValueSamplesIssues(List<Issue> issues, String projectKey) {
+        Predicate<Issue> applicationSimpleJavaPredicate = component(projectKey, "src/main/java/application/AutoValueSamples.java");
         assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("errorprone:DurationTemporalUnit"), startLine(13)));
     }
 

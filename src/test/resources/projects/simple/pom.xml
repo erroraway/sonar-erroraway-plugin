@@ -101,6 +101,9 @@
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<sourceDirectory>${basedir}/src/main/antlr</sourceDirectory>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
