@@ -41,7 +41,8 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
       - name: Build and Test
-        run: mvn -B verify \
+        run: |
+          mvn -B verify \
           -Dsonar.server.version=${{ matrix.SONAR_SERVER_VERSION }} \
           -Dsonar-plugin-api.version=${{ matrix.SONAR_PLUGIN_API_VERSION }} \
           -Dsonar-plugin-api.groupId=${{ matrix.SONAR_PLUGIN_API_GROUPID }} \
