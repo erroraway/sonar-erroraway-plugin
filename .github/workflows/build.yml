@@ -12,10 +12,18 @@ jobs:
     strategy:
       matrix:
         include:
-          - SONAR_VERSION: 8.9.8.54436
+          - SONAR_SERVER_VERSION: 8.9.8.54436
+            SONAR_PLUGIN_API_VERSION: 8.9.8.54436
+            SONAR_PLUGIN_API_GROUPID: org.sonarsource.sonarqube
             SONAR_JAVA_VERSION: 6.15.1.26025
-          - SONAR_VERSION: 9.4.0.54424
+          - SONAR_SERVER_VERSION: 9.4.0.54424
+            SONAR_PLUGIN_API_VERSION: 9.4.0.54424
+            SONAR_PLUGIN_API_GROUPID: org.sonarsource.sonarqube
             SONAR_JAVA_VERSION: 7.11.0.29148
+          - SONAR_SERVER_VERSION: 9.5.0.56709
+            SONAR_PLUGIN_API_VERSION: 9.5.0.71
+            SONAR_PLUGIN_API_GROUPID: org.sonarsource.api.plugin
+            SONAR_JAVA_VERSION: 7.12.0.29739
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 11
@@ -33,7 +41,11 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
       - name: Build and Test
-        run: mvn -B verify
+        run: mvn -B verify \
+          -Dsonar.server.version=${{ matrix.SONAR_SERVER_VERSION }} \
+          -Dsonar-plugin-api.version=${{ matrix.SONAR_PLUGIN_API_VERSION }} \
+          -Dsonar-plugin-api.groupId=${{ matrix.SONAR_PLUGIN_API_GROUPID }} \
+          -Dsonar-java.version=${{ matrix.SONAR_JAVA_VERSION }}
   build:
     name: Build
     runs-on: ubuntu-latest

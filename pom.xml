@@ -29,7 +29,9 @@
 	</developers>
 
 	<properties>
-		<sonar.version>8.9.7.52159</sonar.version>
+		<sonar.server.version>8.9.7.52159</sonar.server.version>
+		<sonar-plugin-api.version>8.9.7.52159</sonar-plugin-api.version>
+		<sonar-plugin-api.groupId>org.sonarsource.sonarqube</sonar-plugin-api.groupId>
 		<sonar-java.version>6.0.0.20538</sonar-java.version>
 
 		<errorprone.version>2.14.0</errorprone.version>
@@ -75,9 +77,9 @@
 
 		<!-- SonarQube dependencies -->
 		<dependency>
-			<groupId>org.sonarsource.sonarqube</groupId>
+			<groupId>${sonar-plugin-api.groupId}</groupId>
 			<artifactId>sonar-plugin-api</artifactId>
-			<version>${sonar.version}</version>
+			<version>${sonar-plugin-api.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -207,7 +209,7 @@
 					<disableModules>false</disableModules>
 					<useModulePath>false</useModulePath>
 					<systemPropertyVariables>
-						<sonar.version>${sonar.version}</sonar.version>
+						<sonar.server.version>${sonar.server.version}</sonar.server.version>
 					</systemPropertyVariables>
 				</configuration>
 				<executions>

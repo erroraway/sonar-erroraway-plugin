@@ -62,7 +62,7 @@ public class ErrorAwayIT {
 
 	@BeforeAll
 	public static void startOrchestrator() {
-		String sonarVersion = System.getProperty("sonar.version", "9.4");
+		String sonarVersion = System.getProperty("sonar.server.version", "9.4");
 	    
 	    OrchestratorBuilder orchestratorBuilder = Orchestrator.builderEnv()
 				.addPlugin(FileLocation.of("./target/sonar-erroraway-plugin.jar"))
