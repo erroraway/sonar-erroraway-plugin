@@ -62,7 +62,7 @@ public class ErrorAwayIT {
 
 	@BeforeAll
 	public static void startOrchestrator() {
-		String sonarVersion = System.getProperty("sonar.server.version", "9.4");
+		String sonarVersion = System.getProperty("sonar.server.version", "9.5");
 	    
 	    OrchestratorBuilder orchestratorBuilder = Orchestrator.builderEnv()
 				.addPlugin(FileLocation.of("./target/sonar-erroraway-plugin.jar"))
@@ -115,7 +115,7 @@ public class ErrorAwayIT {
 		issueRequest.setProjects(Collections.singletonList(SIMPLE_PROJECT_KEY));
 		List<Issue> issues = ISSUES_SERVICES.search(issueRequest).getIssuesList();
 
-		assertThat(issues.size(), is(22));
+		assertThat(issues.size(), is(23));
 
 		assertSimpleIssues(issues);
 		assertAndroidActivityIssues(issues);
@@ -141,6 +141,7 @@ public class ErrorAwayIT {
 	private void assertAndroidActivityIssues(List<Issue> issues) {
 		Predicate<Issue> androidActivityJavaPredicate = component(SIMPLE_PROJECT_KEY, "src/main/java/application/AndroidActivity.java");
 		assertThat(issues, containsIssueMatching(androidActivityJavaPredicate, rule("errorprone:CheckReturnValue"), startLine(15)));
+        assertThat(issues, containsIssueMatching(androidActivityJavaPredicate, rule("autodispose2:AutoDispose"), startLine(15)));
 	}
 
 	@SuppressWarnings("unchecked")
