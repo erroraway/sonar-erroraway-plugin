@@ -102,7 +102,7 @@ public class ErrorAwaySensor implements Sensor {
 
 		FileSystem fs = context.fileSystem();
 		
-		LOGGER.info("Starting project analysis with encoding {}", fs.encoding());
+		LOGGER.info("Starting project analysis with encoding {} and base dir {}", fs.encoding(), fs.baseDir());
 
 		try (StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnosticListener, Locale.getDefault(), fs.encoding())) {
 			Iterable<? extends JavaFileObject> compilationUnits = buildCompilationUnits(context);
