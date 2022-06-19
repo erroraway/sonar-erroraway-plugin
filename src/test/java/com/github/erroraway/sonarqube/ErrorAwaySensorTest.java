@@ -226,9 +226,10 @@ class ErrorAwaySensorTest {
 	
     @Test
     void analyzeWithErrorProneSlf4j() {
-        setup(Path.of("com/bug/Slf4jSamples.java"));
-        enableRule(RuleKey.of("errorprone-slf4j", "Slf4jPlaceholderMismatch"));
         setConfigurationStringArray(ErrorAwayPlugin.MAVEN_REPOSITORIES, new String[] {"https://repo1.maven.org/maven2/"});
+        setup(Path.of("com/bug/Slf4jSamples.java"));
+        
+        enableRule(RuleKey.of("errorprone-slf4j", "Slf4jPlaceholderMismatch"));
         setConfigurationStringArray(ErrorAwayPlugin.CLASS_PATH_MAVEN_COORDINATES, new String[]{"org.slf4j:slf4j-api:1.7.36"});
         
         // Call the sensor
@@ -240,9 +241,10 @@ class ErrorAwaySensorTest {
     
     @Test
     void analyzeWithAutodispose2() {
-        setup(Path.of("com/bug/AndroidActivity.java"));
-        enableRule(RuleKey.of("autodispose2", "AutoDispose"));
         setConfigurationStringArray(ErrorAwayPlugin.MAVEN_REPOSITORIES, new String[] {"https://repo1.maven.org/maven2/"});
+        setup(Path.of("com/bug/AndroidActivity.java"));
+        
+        enableRule(RuleKey.of("autodispose2", "AutoDispose"));
         setConfigurationStringArray(ErrorAwayPlugin.CLASS_PATH_MAVEN_COORDINATES, new String[]{
                 "com.google.android:android:4.1.1.4",
                 "io.reactivex.rxjava3:rxjava:3.1.4"
