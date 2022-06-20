@@ -38,7 +38,7 @@ jobs:
           path: |
             ~/.sonar/cache
             ~/.sonar/orchestrator/cache
-          key: ${{ runner.os }}-sonar
+          key: ${{ runner.os }}-sonar-${{ matrix.SONAR_SERVER_VERSION }}
           restore-keys: ${{ runner.os }}-sonar-${{ matrix.SONAR_SERVER_VERSION }}
       - name: Build and Test
         run: |
