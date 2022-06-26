@@ -6,8 +6,24 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
-  tests:
-    name: Unit and integration tests
+  unit-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [ '8', '11', '17', '18' ]
+    name: Unit tests Java ${{ matrix.Java }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK ${{ matrix.Java }}
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.Java }}
+          cache: 'maven'
+      - name: Build and Test
+        run: mvn -B test
+  integration-tests:
+    name: Integration tests
     runs-on: ubuntu-latest
     strategy:
       matrix:
