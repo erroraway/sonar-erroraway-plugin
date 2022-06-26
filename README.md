@@ -2,7 +2,7 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=erroraway_sonar-erroraway-plugin&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=erroraway_sonar-erroraway-plugin)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=erroraway_sonar-erroraway-plugin&metric=coverage)](https://sonarcloud.io/summary/new_code?id=erroraway_sonar-erroraway-plugin)
 
-This [SonarQube](https://www.sonarqube.org/) uses [Error Prone](https://errorprone.info/) and reports findings in your project.
+This [SonarQube](https://www.sonarqube.org/) plugin uses [Error Prone](https://errorprone.info/) and reports findings in your project.
 Additionally, some Error Prone plugins are included:
 - [Uber's NullAway](https://github.com/uber/NullAway)
 - [errorprone-slf4j](https://github.com/KengoTODA/errorprone-slf4j)
@@ -14,7 +14,7 @@ Enable a quality profile including some rules, for NullAway you will need to con
 
 ## Compatibility
 
-The plugin is compatible with SonarQube 8.9 LTS and 9.4.
+The plugin is compatible with SonarQube 8.9 LTS and 9.5.
 
 The Sonar analyzer and Error Prone must run on JDK 11 or newer but can analyze Java 8 code.
 When running on JDK 16 or newer add the following options due to [JEP 396](https://openjdk.java.net/jeps/396):
