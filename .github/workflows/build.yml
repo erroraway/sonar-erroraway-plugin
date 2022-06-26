@@ -88,9 +88,8 @@ jobs:
         with:
           path: |
             ~/.sonar/cache
-            ~/.sonar/orchestrator/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
+          key: ${{ runner.os }}-sonarcloud
+          restore-keys: ${{ runner.os }}-sonarcloud
       - name: Build and analyze
         run: mvn -B test org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=erroraway_sonar-erroraway-plugin
         env:
