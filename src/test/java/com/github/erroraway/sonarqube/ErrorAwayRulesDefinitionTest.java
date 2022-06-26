@@ -21,6 +21,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.sonar.api.server.rule.RulesDefinition.Context;
@@ -48,7 +53,7 @@ class ErrorAwayRulesDefinitionTest {
 		when(newRepository.createRule(Mockito.anyString())).thenReturn(newRule);
 		when(newRepository.setName(Mockito.anyString())).thenReturn(newRepository);
 
-		ErrorAwayRulesDefinition rulesDefinition = new ErrorAwayRulesDefinition();
+		ErrorAwayRulesDefinition rulesDefinition = new TestErrorAwayRulesDefinition();
 		rulesDefinition.define(context);
 		
 		verify(context, times(1)).createRepository(ErrorAwayRulesDefinition.ERRORPRONE_REPOSITORY, "java");
@@ -68,5 +73,26 @@ class ErrorAwayRulesDefinitionTest {
 	private static class UnknownBugChecker extends BugChecker {
 		private static final long serialVersionUID = 1L;
 
+	}
+	
+	/**
+	 * Injects errors to test the exception handling
+	 */
+	private static class TestErrorAwayRulesDefinition extends ErrorAwayRulesDefinition {
+	    private boolean hasThrownExceptionForInputStreamReader;
+        private boolean hasThrownExceptionForStringReader;
+	    
+	    @Override
+	    public String convertMdToHtml(Reader reader) throws IOException {
+	        if (!hasThrownExceptionForInputStreamReader && reader instanceof InputStreamReader) {
+                hasThrownExceptionForInputStreamReader = true;
+                throw new IOException("Test exception");
+            } else if (!hasThrownExceptionForStringReader && reader instanceof StringReader) {
+                hasThrownExceptionForStringReader = true;
+                throw new IOException("Test exception");
+            } else {
+	            return super.convertMdToHtml(reader);
+	        }
+	    }
 	}
 }
