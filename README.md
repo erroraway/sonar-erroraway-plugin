@@ -32,6 +32,13 @@ When running on JDK 16 or newer add the following options due to [JEP 396](https
 --add-opens jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED
 ```
 
+When these options are not set you will receive errors: 
+```
+Exception in thread "main" java.util.ServiceConfigurationError: com.google.errorprone.bugpatterns.BugChecker: Provider ... could not be instantiated
+...
+Caused by: java.lang.IllegalAccessError: class ... (in unnamed module @...) cannot access class com.sun.tools.javac.code.Symbol (in module jdk.compiler) because module jdk.compiler does not export com.sun.tools.javac.code to unnamed module @...
+```
+
 ## NullAway configuration
 
 NullAway needs to be configured with the `nullaway.annotated.packages` option, for instance:
