@@ -89,8 +89,9 @@ public class ErrorAwaySensor implements Sensor {
 			}
 		}
 
-		// ErrorProne options
+		// Compiler options
 		ErrorProneOptions errorProneOptions = buildErrorProneOptions(context);
+		List<String> javacOptions = buildJavacOptions();
 
 		// Setup the compiler and analyze the code
 		ScannerSupplier scannerSupplier = ScannerSupplier.fromBugCheckerClasses(checkers).applyOverrides(errorProneOptions);
@@ -111,14 +112,14 @@ public class ErrorAwaySensor implements Sensor {
 			 configureAnnotationProcessors(fileManager, context.config());
 			 configureOutputFolders(fileManager);
 
-			CompilationTask task = compiler.getTask(null, fileManager, diagnosticListener, Collections.emptyList(), classes, compilationUnits);
+            CompilationTask task = compiler.getTask(null, fileManager, diagnosticListener, javacOptions, classes, compilationUnits);
 			task.call();
 		} catch (IOException e) {
 			throw new ErrorAwayException("Error analyzing project", e);
 		}
 	}
 
-	private ErrorProneOptions buildErrorProneOptions(SensorContext context) {
+    private ErrorProneOptions buildErrorProneOptions(SensorContext context) {
 		Configuration configuration = context.config();
 		List<String> options = new ArrayList<>();
 
@@ -148,6 +149,21 @@ public class ErrorAwaySensor implements Sensor {
 		return ErrorProneOptions.processArgs(options);
 	}
 
+
+    private List<String> buildJavacOptions() {
+        List<String> options = new ArrayList<>();
+        
+        // By default javac gives up after 100 errors
+        // Surely in the future we'll have programs with more bugs, but we are limited by the technology of our time
+        options.add("-Xmaxerrs");
+        options.add(Integer.toString(Integer.MAX_VALUE));
+
+        options.add("-Xmaxwarns");
+        options.add(Integer.toString(Integer.MAX_VALUE));
+        
+        return options;
+    }
+    
 	private boolean isCheckerActive(SensorContext context, BugChecker bugChecker) {
 		RuleKey ruleKey = ErrorAwayRulesDefinition.ruleKey(bugChecker.getClass());
 

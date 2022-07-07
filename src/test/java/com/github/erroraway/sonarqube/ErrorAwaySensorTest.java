@@ -256,6 +256,22 @@ class ErrorAwaySensorTest {
 
         verify(context, times(1)).newIssue();
     }
+    
+    @Test
+    void analyzeManyBugs() {
+        setup(Path.of("com/bug/ManyBugs.java"));
+        
+        enableRule(RuleKey.of("errorprone", "BadShiftAmount"));
+        enableRule(RuleKey.of("errorprone", "ComparingThisWithNull"));
+        enableRule(RuleKey.of("errorprone", "EqualsNaN"));
+        enableRule(RuleKey.of("errorprone", "NullTernary"));
+        
+        // Call the sensor
+        ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
+        sensor.execute(context);
+
+        verify(context, times(256)).newIssue();
+    }
 
     @Test
     void compilerWarning() {
