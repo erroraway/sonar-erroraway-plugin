@@ -309,4 +309,11 @@ class ErrorAwaySensorTest {
 
 		verify(descriptor, times(1)).onlyOnLanguage("java");
 	}
+	
+	@Test
+	void getVersionError() {
+	    ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
+        
+        assertThat(sensor.getVersion("/foo/bar.properties")).startsWith("UNKNOWN");
+	}
 }

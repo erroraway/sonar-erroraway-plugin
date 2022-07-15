@@ -225,12 +225,16 @@ public class ErrorAwaySensor implements Sensor {
 	}
 	
     protected String getVersion() {
-        try (InputStream input = getClass().getResourceAsStream("/com/github/erroraway/sonarqube/erroraway-plugin.properties")) {
+        return getVersion("/com/github/erroraway/sonarqube/erroraway-plugin.properties");
+    }
+    
+    protected String getVersion(String propertiesPath) {
+        try (InputStream input = getClass().getResourceAsStream(propertiesPath)) {
             Properties properties = new Properties();
             properties.load(input);
             
             return properties.getProperty("erroraway.plugin.version");
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOGGER.error("Could not find version", e);
             return "UNKNOWN: " + e.getMessage();
         }
