@@ -17,12 +17,14 @@ package com.github.erroraway.sonarqube;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.tools.DiagnosticListener;
@@ -103,7 +105,7 @@ public class ErrorAwaySensor implements Sensor {
 
 		FileSystem fs = context.fileSystem();
 		
-		LOGGER.info("Starting project analysis with encoding {} and base dir {}", fs.encoding(), fs.baseDir());
+		LOGGER.info("Starting project analysis with encoding {} and base dir {}, plugin version is: {}", fs.encoding(), fs.baseDir(), getVersion());
 
 		try (StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnosticListener, Locale.getDefault(), fs.encoding())) {
 			Iterable<? extends JavaFileObject> compilationUnits = buildCompilationUnits(context);
@@ -221,4 +223,16 @@ public class ErrorAwaySensor implements Sensor {
 		descriptor.onlyOnLanguage("java");
 		descriptor.name("Errorprone sensor");
 	}
+	
+    protected String getVersion() {
+        try (InputStream input = getClass().getResourceAsStream("/com/github/erroraway/sonarqube/erroraway-plugin.properties")) {
+            Properties properties = new Properties();
+            properties.load(input);
+            
+            return properties.getProperty("erroraway.plugin.version");
+        } catch (IOException e) {
+            LOGGER.error("Could not find version", e);
+            return "UNKNOWN: " + e.getMessage();
+        }
+    }
 }
