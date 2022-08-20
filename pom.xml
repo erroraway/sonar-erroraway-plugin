@@ -34,8 +34,8 @@
 		<sonar-plugin-api.groupId>org.sonarsource.sonarqube</sonar-plugin-api.groupId>
 		<sonar-java.version>6.0.0.20538</sonar-java.version>
 
-		<errorprone.version>2.14.0</errorprone.version>
-		<nullaway.version>0.9.8</nullaway.version>
+		<errorprone.version>2.15.0</errorprone.version>
+		<nullaway.version>0.9.9</nullaway.version>
 		<errorprone.slf4j.version>0.1.13</errorprone.slf4j.version>
 		<autodispose2.version>2.1.1</autodispose2.version>
 
