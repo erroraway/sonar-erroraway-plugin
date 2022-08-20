@@ -36,7 +36,7 @@
 
 		<errorprone.version>2.15.0</errorprone.version>
 		<nullaway.version>0.9.9</nullaway.version>
-		<errorprone.slf4j.version>0.1.12</errorprone.slf4j.version>
+		<errorprone.slf4j.version>0.1.13</errorprone.slf4j.version>
 		<autodispose2.version>2.1.1</autodispose2.version>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
