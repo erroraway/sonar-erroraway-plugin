@@ -261,8 +261,6 @@ public class ErrorAwayRulesDefinition implements RulesDefinition {
         switch (repository(bugCheckerInfo)) {
         case NULLAWAY_REPOSITORY:
             return "https://github.com/uber/NullAway/wiki/Error-Messages";
-        case ERRORPRONE_SLF4J_REPOSITORY:
-            return "https://github.com/KengoTODA/findbugs-slf4j#provided-bug-patterns";
         case AUTODISPOSE2_REPOSITORY:
             return "https://github.com/uber/AutoDispose/wiki/Error-Prone-Checker";
         default:
