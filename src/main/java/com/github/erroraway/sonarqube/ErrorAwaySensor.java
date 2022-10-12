@@ -105,7 +105,7 @@ public class ErrorAwaySensor implements Sensor {
 
 		FileSystem fs = context.fileSystem();
 		
-		LOGGER.info("Starting project analysis with encoding {} and base dir {}, plugin version is: {}", fs.encoding(), fs.baseDir(), getVersion());
+		LOGGER.info("Starting project analysis with encoding {} and base dir {}, plugin version is: {}, java version is {}", fs.encoding(), fs.baseDir(), getVersion(), Runtime.version());
 
 		try (StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnosticListener, Locale.getDefault(), fs.encoding())) {
 			Iterable<? extends JavaFileObject> compilationUnits = buildCompilationUnits(context);
