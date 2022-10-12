@@ -57,7 +57,7 @@ public class ErrorAwayRulesDefinition implements RulesDefinition {
 	public static final String ERRORPRONE_SLF4J_REPOSITORY = "errorprone-slf4j";
 	public static final String AUTODISPOSE2_REPOSITORY = "autodispose2";
 
-	public static final int ERRORPRONE_REPOSITORY_RULES_COUNT = 406;
+	public static final int ERRORPRONE_REPOSITORY_RULES_COUNT = 407;
 	public static final int NULLAWAY_REPOSITORY_RULES_COUNT = 1;
 	public static final int ERRORPRONE_SLF4J_REPOSITORY_RULES_COUNT = 8;
 	public static final int AUTODISPOSE2_REPOSITORY_RULES_COUNT = 1;
