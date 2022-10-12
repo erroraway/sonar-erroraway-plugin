@@ -51,6 +51,7 @@ import com.sonar.orchestrator.locator.FileLocation;
  * @author Guillaume
  *
  */
+@IntegrationTest
 public class ErrorAwayIT {
 
 	private static final String SIMPLE_MAVEN_PROJECT_KEY = "sonar-error-away-plugin:simple";
