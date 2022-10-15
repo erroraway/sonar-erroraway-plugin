@@ -207,17 +207,51 @@
 			</plugin>
 
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.4.0</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<transformers>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer">
+									<addHeader>false</addHeader>
+								</transformer>
+							</transformers>
+
+							<filters>
+								<filter>
+									<artifact>*:*</artifact>
+									<excludes>
+										<exclude>META-INF/*.SF</exclude>
+										<exclude>META-INF/*.DSA</exclude>
+										<exclude>META-INF/*.RSA</exclude>
+									</excludes>
+								</filter>
+							</filters>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
 				<groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
 				<artifactId>sonar-packaging-maven-plugin</artifactId>
-				<version>1.19.0.397</version>
+				<version>1.21.0.505</version>
 				<extensions>true</extensions>
 				<configuration>
 					<pluginClass>com.github.erroraway.sonarqube.ErrorAwayPlugin</pluginClass>
 					<pluginName>ErrorAway</pluginName>
-					<pluginDescription>Analyze Java Code with ErrorProne, NullAway, errorprone-slf4j and Autodispose2</pluginDescription>
+					<pluginDescription>Analyze Java Code with ErrorProne, NullAway, errorprone-slf4j, Picnic ErrorProne support and Autodispose2</pluginDescription>
 					<pluginOrganizationName>ErrorAway</pluginOrganizationName>
 					<pluginOrganizationUrl>https://github.com/erroraway</pluginOrganizationUrl>
 					<jreMinVersion>11</jreMinVersion>
+					<skipDependenciesPackaging>true</skipDependenciesPackaging>
 				</configuration>
 			</plugin>
 
