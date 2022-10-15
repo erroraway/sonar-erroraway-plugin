@@ -37,6 +37,7 @@ public class ErrorAwayQualityProfile implements BuiltInQualityProfilesDefinition
 	public static final String NULL_AWAY_PROFILE_NAME = "Null Away";
 	public static final String ERROR_PRONE_SLF4J_PROFILE_NAME = "Error Prone SLF4J";
 	public static final String AUTODISPOSE2_PROFILE_NAME = "Autodispose2";
+    public static final String PICNIC_PROFILE_NAME = "Picnic Error Prone Support";
 	public static final String ERROR_PRONE_AND_PLUGINS_PROFILE_NAME = "Error Prone and plugins";
 
 	@Override
@@ -45,7 +46,8 @@ public class ErrorAwayQualityProfile implements BuiltInQualityProfilesDefinition
 		NewBuiltInQualityProfile nullAwayProfile = context.createBuiltInQualityProfile(NULL_AWAY_PROFILE_NAME, "java");
 		NewBuiltInQualityProfile errorProneSlf4jProfile = context.createBuiltInQualityProfile(ERROR_PRONE_SLF4J_PROFILE_NAME, "java");
 		NewBuiltInQualityProfile autodisposeProfile = context.createBuiltInQualityProfile(AUTODISPOSE2_PROFILE_NAME, "java");
-		NewBuiltInQualityProfile errorProneAndPluginsProfile = context.createBuiltInQualityProfile(ERROR_PRONE_AND_PLUGINS_PROFILE_NAME, "java");
+		NewBuiltInQualityProfile picnicEerrorProneProfile = context.createBuiltInQualityProfile(PICNIC_PROFILE_NAME, "java");
+        NewBuiltInQualityProfile errorProneAndPluginsProfile = context.createBuiltInQualityProfile(ERROR_PRONE_AND_PLUGINS_PROFILE_NAME, "java");
 
 		// Built-in checkers
 		processCheckers(errorProneProfile, BuiltInCheckerSuppliers.ENABLED_WARNINGS, ErrorAwayRulesDefinition.ERRORPRONE_REPOSITORY);
@@ -59,6 +61,7 @@ public class ErrorAwayQualityProfile implements BuiltInQualityProfilesDefinition
 		pluginRepositories.put(ErrorAwayRulesDefinition.NULLAWAY_REPOSITORY, nullAwayProfile);
 		pluginRepositories.put(ErrorAwayRulesDefinition.ERRORPRONE_SLF4J_REPOSITORY, errorProneSlf4jProfile);
 		pluginRepositories.put(ErrorAwayRulesDefinition.AUTODISPOSE2_REPOSITORY, autodisposeProfile);
+        pluginRepositories.put(ErrorAwayRulesDefinition.PICNIC_REPOSITORY, picnicEerrorProneProfile);
 
 		Map<String, List<Class<? extends BugChecker>>> pluginCheckers = ErrorAwayRulesDefinition.checkerClassesByRepository();
 
@@ -77,6 +80,7 @@ public class ErrorAwayQualityProfile implements BuiltInQualityProfilesDefinition
 		nullAwayProfile.done();
 		errorProneSlf4jProfile.done();
 		autodisposeProfile.done();
+		picnicEerrorProneProfile.done();
 		errorProneAndPluginsProfile.done();
 	}
 
