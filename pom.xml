@@ -6,7 +6,7 @@
 	<packaging>sonar-plugin</packaging>
 
 	<name>Error Away SonarQube plugin</name>
-	<description>Analyze Java Code with ErrorProne, NullAway, errorprone-slf4j and Autodispose2</description>
+	<description>Analyze Java Code with ErrorProne, NullAway, errorprone-slf4j, Picnic Error Prone Support and Autodispose2</description>
 	<url>https://github.com/erroraway/sonar-erroraway-plugin</url>
 
 	<licenses>
@@ -38,6 +38,7 @@
 		<nullaway.version>0.10.2</nullaway.version>
 		<errorprone.slf4j.version>0.1.16</errorprone.slf4j.version>
 		<autodispose2.version>2.1.1</autodispose2.version>
+		<picnic.errorprone.support.version>0.4.0</picnic.errorprone.support.version>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -75,6 +76,11 @@
 			<groupId>com.uber.autodispose2</groupId>
 			<artifactId>autodispose-error-prone</artifactId>
 			<version>${autodispose2.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>tech.picnic.error-prone-support</groupId>
+			<artifactId>error-prone-contrib</artifactId>
+			<version>${picnic.errorprone.support.version}</version>
 		</dependency>
 
 		<!-- SonarQube dependencies -->

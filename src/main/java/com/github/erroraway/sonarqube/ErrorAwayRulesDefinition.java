@@ -56,22 +56,26 @@ public class ErrorAwayRulesDefinition implements RulesDefinition {
 	public static final String NULLAWAY_REPOSITORY = "nullaway";
 	public static final String ERRORPRONE_SLF4J_REPOSITORY = "errorprone-slf4j";
 	public static final String AUTODISPOSE2_REPOSITORY = "autodispose2";
+    public static final String PICNIC_REPOSITORY = "picnic-errorprone";
 
 	public static final int ERRORPRONE_REPOSITORY_RULES_COUNT = 407;
 	public static final int NULLAWAY_REPOSITORY_RULES_COUNT = 1;
 	public static final int ERRORPRONE_SLF4J_REPOSITORY_RULES_COUNT = 8;
 	public static final int AUTODISPOSE2_REPOSITORY_RULES_COUNT = 1;
+	public static final int PICNIC_REPOSITORY_RULES_COUNT = 32;
 
 	public static final int RULES_COUNT = ERRORPRONE_REPOSITORY_RULES_COUNT 
 			+ NULLAWAY_REPOSITORY_RULES_COUNT 
 			+ ERRORPRONE_SLF4J_REPOSITORY_RULES_COUNT
-			+ AUTODISPOSE2_REPOSITORY_RULES_COUNT;
+			+ AUTODISPOSE2_REPOSITORY_RULES_COUNT
+			+ PICNIC_REPOSITORY_RULES_COUNT;
 
 	protected static final String[] REPOSITORIES = new String[] { 
 			ERRORPRONE_REPOSITORY, 
 			NULLAWAY_REPOSITORY, 
 			ERRORPRONE_SLF4J_REPOSITORY, 
-			AUTODISPOSE2_REPOSITORY };
+			AUTODISPOSE2_REPOSITORY,
+			PICNIC_REPOSITORY};
 
 	private static final String[] DESCRIPTION_FOLDERS = new String[] { 
 			null, 
@@ -89,6 +93,7 @@ public class ErrorAwayRulesDefinition implements RulesDefinition {
 		NewRepository nullAwayRepository = context.createRepository(NULLAWAY_REPOSITORY, "java").setName("Null Away");
 		NewRepository errorProneSlf4jRepository = context.createRepository(ERRORPRONE_SLF4J_REPOSITORY, "java").setName("Error Prone SLF4J");
 		NewRepository autodisposeRepository = context.createRepository(AUTODISPOSE2_REPOSITORY, "java").setName("AutoDispose");
+        NewRepository picnicErrorProneSupportRepository = context.createRepository(PICNIC_REPOSITORY, "java").setName("Picnic Error Prone Support");
 
 		// Built-in checkers
 		processCheckers(errorProneRepository, BuiltInCheckerSuppliers.ENABLED_WARNINGS, Severity.MINOR);
@@ -99,6 +104,7 @@ public class ErrorAwayRulesDefinition implements RulesDefinition {
 		pluginRepositories.put(NULLAWAY_REPOSITORY, nullAwayRepository);
 		pluginRepositories.put(ERRORPRONE_SLF4J_REPOSITORY, errorProneSlf4jRepository);
 		pluginRepositories.put(AUTODISPOSE2_REPOSITORY, autodisposeRepository);
+        pluginRepositories.put(PICNIC_REPOSITORY, picnicErrorProneSupportRepository);
 
 		Map<String, List<Class<? extends BugChecker>>> pluginCheckers = checkerClassesByRepository();
 
@@ -115,6 +121,7 @@ public class ErrorAwayRulesDefinition implements RulesDefinition {
 		nullAwayRepository.done();
 		errorProneSlf4jRepository.done();
 		autodisposeRepository.done();
+		picnicErrorProneSupportRepository.done();
 	}
 
 	public static Map<String, List<Class<? extends BugChecker>>> checkerClassesByRepository() {
@@ -247,7 +254,9 @@ public class ErrorAwayRulesDefinition implements RulesDefinition {
 			return ERRORPRONE_SLF4J_REPOSITORY;
 		} else if (className.startsWith("autodispose2.")) {
 			return AUTODISPOSE2_REPOSITORY;
-		} else {
+		} else if (className.startsWith("tech.picnic.errorprone.")) {
+            return PICNIC_REPOSITORY;
+        } else {
 			throw new ErrorAwayException("Could not find rules repository for class " + className);
 		}
 	}

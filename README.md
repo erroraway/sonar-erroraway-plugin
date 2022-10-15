@@ -7,6 +7,7 @@ Additionally, some Error Prone plugins are included:
 - [Uber's NullAway](https://github.com/uber/NullAway)
 - [errorprone-slf4j](https://github.com/KengoTODA/errorprone-slf4j)
 - [Autodispose2](https://uber.github.io/AutoDispose/lint-check/)
+- [Picnic Error Prone Support](https://github.com/PicnicSupermarket/error-prone-support)
 
 ## Usage
 
@@ -14,7 +15,7 @@ Enable a quality profile including some rules, for NullAway you will need to con
 
 ## Compatibility
 
-The plugin is compatible with SonarQube 8.9 LTS and 9.5.
+The plugin is compatible with SonarQube 8.9 LTS and 9.6.
 
 The Sonar analyzer and Error Prone must run on JDK 11 or newer but can analyze Java 8 code.
 When running on JDK 16 or newer add the following options due to [JEP 396](https://openjdk.java.net/jeps/396):
