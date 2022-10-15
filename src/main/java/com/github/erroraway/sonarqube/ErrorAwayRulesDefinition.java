@@ -96,8 +96,8 @@ public class ErrorAwayRulesDefinition implements RulesDefinition {
         NewRepository picnicErrorProneSupportRepository = context.createRepository(PICNIC_REPOSITORY, "java").setName("Picnic Error Prone Support");
 
 		// Built-in checkers
-		processCheckers(errorProneRepository, BuiltInCheckerSuppliers.ENABLED_WARNINGS, Severity.MINOR);
-		processCheckers(errorProneRepository, BuiltInCheckerSuppliers.ENABLED_ERRORS, Severity.MAJOR);
+		processCheckers(errorProneRepository, BuiltInCheckerSuppliers.ENABLED_WARNINGS);
+		processCheckers(errorProneRepository, BuiltInCheckerSuppliers.ENABLED_ERRORS);
 
 		// Plugin checkers
 		Map<String, NewRepository> pluginRepositories = new HashMap<>();
@@ -114,7 +114,7 @@ public class ErrorAwayRulesDefinition implements RulesDefinition {
 
 			List<BugCheckerInfo> checkersInfos = checkers.stream().map(BugCheckerInfo::create).collect(Collectors.toList());
 
-			processCheckers(repository, checkersInfos, Severity.MAJOR);
+			processCheckers(repository, checkersInfos);
 		}
 
 		errorProneRepository.done();
@@ -138,13 +138,13 @@ public class ErrorAwayRulesDefinition implements RulesDefinition {
 		return pluginCheckers;
 	}
 
-	private void processCheckers(NewRepository repository, Collection<BugCheckerInfo> bugCheckerInfos, String severity) {
+	private void processCheckers(NewRepository repository, Collection<BugCheckerInfo> bugCheckerInfos) {
 		for (BugCheckerInfo bugCheckerInfo : bugCheckerInfos) {
 			String ruleKey = asRuleKey(bugCheckerInfo);
 			NewRule rule = repository.createRule(ruleKey);
 
 			rule.setName(bugCheckerInfo.canonicalName());
-			rule.setSeverity(severity);
+			rule.setSeverity(getSeverity(bugCheckerInfo));
 
 			for (String tag : bugCheckerInfo.getTags()) {
 				rule.addTags(normalizeTag(tag));
@@ -154,7 +154,20 @@ public class ErrorAwayRulesDefinition implements RulesDefinition {
 		}
 	}
 
-	/**
+	private String getSeverity(BugCheckerInfo bugCheckerInfo) {
+	    switch (bugCheckerInfo.defaultSeverity()) {
+        case ERROR:
+            return Severity.MAJOR;
+        case WARNING:
+            return Severity.MINOR;
+        case SUGGESTION:
+            return Severity.INFO;
+        default:
+            throw new IllegalArgumentException("Unexpected severity: " + bugCheckerInfo.defaultSeverity());
+        }
+    }
+
+    /**
 	 * Rule tags accept only the characters: a-z, 0-9, '+', '-', '#', '.'
 	 */
 	private String normalizeTag(String tag) {
