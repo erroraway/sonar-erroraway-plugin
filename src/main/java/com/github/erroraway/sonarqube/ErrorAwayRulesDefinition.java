@@ -50,13 +50,13 @@ import com.google.errorprone.scanner.BuiltInCheckerSuppliers;
  *
  */
 public class ErrorAwayRulesDefinition implements RulesDefinition {
-    private static final Logger LOGGER = Loggers.get(ErrorAwayRulesDefinition.class);
-    
+	private static final Logger LOGGER = Loggers.get(ErrorAwayRulesDefinition.class);
+	
 	public static final String ERRORPRONE_REPOSITORY = "errorprone";
 	public static final String NULLAWAY_REPOSITORY = "nullaway";
 	public static final String ERRORPRONE_SLF4J_REPOSITORY = "errorprone-slf4j";
 	public static final String AUTODISPOSE2_REPOSITORY = "autodispose2";
-    public static final String PICNIC_REPOSITORY = "picnic-errorprone";
+	public static final String PICNIC_REPOSITORY = "picnic-errorprone";
 
 	public static final int ERRORPRONE_REPOSITORY_RULES_COUNT = 407;
 	public static final int NULLAWAY_REPOSITORY_RULES_COUNT = 1;
@@ -93,7 +93,7 @@ public class ErrorAwayRulesDefinition implements RulesDefinition {
 		NewRepository nullAwayRepository = context.createRepository(NULLAWAY_REPOSITORY, "java").setName("Null Away");
 		NewRepository errorProneSlf4jRepository = context.createRepository(ERRORPRONE_SLF4J_REPOSITORY, "java").setName("Error Prone SLF4J");
 		NewRepository autodisposeRepository = context.createRepository(AUTODISPOSE2_REPOSITORY, "java").setName("AutoDispose");
-        NewRepository picnicErrorProneSupportRepository = context.createRepository(PICNIC_REPOSITORY, "java").setName("Picnic Error Prone Support");
+		NewRepository picnicErrorProneSupportRepository = context.createRepository(PICNIC_REPOSITORY, "java").setName("Picnic Error Prone Support");
 
 		// Built-in checkers
 		processCheckers(errorProneRepository, BuiltInCheckerSuppliers.ENABLED_WARNINGS);
@@ -104,7 +104,7 @@ public class ErrorAwayRulesDefinition implements RulesDefinition {
 		pluginRepositories.put(NULLAWAY_REPOSITORY, nullAwayRepository);
 		pluginRepositories.put(ERRORPRONE_SLF4J_REPOSITORY, errorProneSlf4jRepository);
 		pluginRepositories.put(AUTODISPOSE2_REPOSITORY, autodisposeRepository);
-        pluginRepositories.put(PICNIC_REPOSITORY, picnicErrorProneSupportRepository);
+		pluginRepositories.put(PICNIC_REPOSITORY, picnicErrorProneSupportRepository);
 
 		Map<String, List<Class<? extends BugChecker>>> pluginCheckers = checkerClassesByRepository();
 
@@ -155,19 +155,19 @@ public class ErrorAwayRulesDefinition implements RulesDefinition {
 	}
 
 	private String getSeverity(BugCheckerInfo bugCheckerInfo) {
-	    switch (bugCheckerInfo.defaultSeverity()) {
-        case ERROR:
-            return Severity.MAJOR;
-        case WARNING:
-            return Severity.MINOR;
-        case SUGGESTION:
-            return Severity.INFO;
-        default:
-            throw new IllegalArgumentException("Unexpected severity: " + bugCheckerInfo.defaultSeverity());
-        }
-    }
+		switch (bugCheckerInfo.defaultSeverity()) {
+		case ERROR:
+			return Severity.MAJOR;
+		case WARNING:
+			return Severity.MINOR;
+		case SUGGESTION:
+			return Severity.INFO;
+		default:
+			throw new IllegalArgumentException("Unexpected severity: " + bugCheckerInfo.defaultSeverity());
+		}
+	}
 
-    /**
+	/**
 	 * Rule tags accept only the characters: a-z, 0-9, '+', '-', '#', '.'
 	 */
 	private String normalizeTag(String tag) {
@@ -177,39 +177,39 @@ public class ErrorAwayRulesDefinition implements RulesDefinition {
 	private void loadDescription(BugCheckerInfo bugCheckerInfo, String ruleName, NewRule rule) {
 		URL resource = findDescriptionResource(ruleName);
 		if (resource != null) {
-		    try (InputStream in =  resource.openStream(); InputStreamReader reader = new InputStreamReader(in, StandardCharsets.UTF_8)) {
-	            String html = convertMdToHtml(reader);
-                rule.setHtmlDescription(html);
-		    } catch (Exception e) {
-		        handleDescriptionReadException(ruleName, rule, resource, e);
-		    }
+			try (InputStream in =  resource.openStream(); InputStreamReader reader = new InputStreamReader(in, StandardCharsets.UTF_8)) {
+				String html = convertMdToHtml(reader);
+				rule.setHtmlDescription(html);
+			} catch (Exception e) {
+				handleDescriptionReadException(ruleName, rule, resource, e);
+			}
 		} else {
-		    try (StringReader reader = new StringReader(bugCheckerInfo.message())) {
-		        String html = convertMdToHtml(reader);
-		        String link = getBugCheckerLink(bugCheckerInfo);
-		        
-		        html += "\n<b>See: </b><a href=\"" + link + "\" target=\"_blank\">" + link + "</a>";
-		        
-                rule.setHtmlDescription(html);
-		    } catch (Exception e) {
-                handleDescriptionReadException(ruleName, rule, resource, e);
-            }
+			try (StringReader reader = new StringReader(bugCheckerInfo.message())) {
+				String html = convertMdToHtml(reader);
+				String link = getBugCheckerLink(bugCheckerInfo);
+
+				html += "\n<b>See: </b><a href=\"" + link + "\" target=\"_blank\">" + link + "</a>";
+
+				rule.setHtmlDescription(html);
+			} catch (Exception e) {
+				handleDescriptionReadException(ruleName, rule, resource, e);
+			}
 		}
 	}
 
-    public void handleDescriptionReadException(String ruleName, NewRule rule, URL resource, Exception e) {
-        LOGGER.warn("Error parsing MD description for {}", ruleName, e);
-        rule.setMarkdownDescription(resource);
-    }
+	public void handleDescriptionReadException(String ruleName, NewRule rule, URL resource, Exception e) {
+		LOGGER.warn("Error parsing MD description for {}", ruleName, e);
+		rule.setMarkdownDescription(resource);
+	}
 
-    public String convertMdToHtml(Reader reader) throws IOException {
-        Parser parser = Parser.builder().build();
-        HtmlRenderer renderer = HtmlRenderer.builder().build();
-        
-        Node node = parser.parseReader(reader);
-        
-        return renderer.render(node);
-    }
+	public String convertMdToHtml(Reader reader) throws IOException {
+		Parser parser = Parser.builder().build();
+		HtmlRenderer renderer = HtmlRenderer.builder().build();
+
+		Node node = parser.parseReader(reader);
+
+		return renderer.render(node);
+	}
 
 	private URL findDescriptionResource(String ruleName) {
 		for (String folder : DESCRIPTION_FOLDERS) {
@@ -253,40 +253,40 @@ public class ErrorAwayRulesDefinition implements RulesDefinition {
 		return RuleKey.of(repository(type), asRuleKey(type));
 	}
 
-    public static String repository(BugCheckerInfo bugCheckerInfo) {
-        return repository(bugCheckerInfo.checkerClass());
-    }
+	public static String repository(BugCheckerInfo bugCheckerInfo) {
+		return repository(bugCheckerInfo.checkerClass());
+	}
 
 	public static String repository(Class<? extends BugChecker> type) {
 		String className = type.getName();
 		if (className.startsWith("com.google.errorprone.")) {
-            return ERRORPRONE_REPOSITORY;
-        } else if (className.startsWith("com.uber.nullaway.")) {
+			return ERRORPRONE_REPOSITORY;
+		} else if (className.startsWith("com.uber.nullaway.")) {
 			return NULLAWAY_REPOSITORY;
 		} else if (className.startsWith("jp.skypencil.errorprone.slf4j.")) {
 			return ERRORPRONE_SLF4J_REPOSITORY;
 		} else if (className.startsWith("autodispose2.")) {
 			return AUTODISPOSE2_REPOSITORY;
 		} else if (className.startsWith("tech.picnic.errorprone.")) {
-            return PICNIC_REPOSITORY;
-        } else {
+			return PICNIC_REPOSITORY;
+		} else {
 			throw new ErrorAwayException("Could not find rules repository for class " + className);
 		}
 	}
-	
-    /**
-     * Some plugins do not declare their link on the {@link BugPattern} annotation
-     * @param bugCheckerInfo The {@link BugCheckerInfo}
-     * @return The link for the give {@link BugCheckerInfo}
-     */
-    private String getBugCheckerLink(BugCheckerInfo bugCheckerInfo) {
-        switch (repository(bugCheckerInfo)) {
-        case NULLAWAY_REPOSITORY:
-            return "https://github.com/uber/NullAway/wiki/Error-Messages";
-        case AUTODISPOSE2_REPOSITORY:
-            return "https://github.com/uber/AutoDispose/wiki/Error-Prone-Checker";
-        default:
-            return bugCheckerInfo.linkUrl();
-        }
-    }
+
+	/**
+	 * Some plugins do not declare their link on the {@link BugPattern} annotation
+	 * @param bugCheckerInfo The {@link BugCheckerInfo}
+	 * @return The link for the give {@link BugCheckerInfo}
+	 */
+	private String getBugCheckerLink(BugCheckerInfo bugCheckerInfo) {
+		switch (repository(bugCheckerInfo)) {
+		case NULLAWAY_REPOSITORY:
+			return "https://github.com/uber/NullAway/wiki/Error-Messages";
+		case AUTODISPOSE2_REPOSITORY:
+			return "https://github.com/uber/AutoDispose/wiki/Error-Prone-Checker";
+		default:
+			return bugCheckerInfo.linkUrl();
+		}
+	}
 }

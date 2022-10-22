@@ -60,8 +60,8 @@ import com.google.errorprone.scanner.ScannerSupplier;
  *
  */
 public class ErrorAwaySensor implements Sensor {
-    private static final Logger LOGGER = Loggers.get(ErrorAwaySensor.class);
-    
+	private static final Logger LOGGER = Loggers.get(ErrorAwaySensor.class);
+
 	private JavaResourceLocator javaResourceLocator;
 	private ErrorAwayDependencyManager dependencyManager;
 	private TempFolder tempFolder;
@@ -110,18 +110,18 @@ public class ErrorAwaySensor implements Sensor {
 		try (StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnosticListener, Locale.getDefault(), fs.encoding())) {
 			Iterable<? extends JavaFileObject> compilationUnits = buildCompilationUnits(context);
 			
-			 configureClasspath(fileManager, context.config());
-			 configureAnnotationProcessors(fileManager, context.config());
-			 configureOutputFolders(fileManager);
+			configureClasspath(fileManager, context.config());
+			configureAnnotationProcessors(fileManager, context.config());
+			configureOutputFolders(fileManager);
 
-            CompilationTask task = compiler.getTask(null, fileManager, diagnosticListener, javacOptions, classes, compilationUnits);
+			CompilationTask task = compiler.getTask(null, fileManager, diagnosticListener, javacOptions, classes, compilationUnits);
 			task.call();
 		} catch (IOException e) {
 			throw new ErrorAwayException("Error analyzing project", e);
 		}
 	}
 
-    private ErrorProneOptions buildErrorProneOptions(SensorContext context) {
+	private ErrorProneOptions buildErrorProneOptions(SensorContext context) {
 		Configuration configuration = context.config();
 		List<String> options = new ArrayList<>();
 
@@ -151,21 +151,21 @@ public class ErrorAwaySensor implements Sensor {
 		return ErrorProneOptions.processArgs(options);
 	}
 
+	private List<String> buildJavacOptions() {
+		List<String> options = new ArrayList<>();
 
-    private List<String> buildJavacOptions() {
-        List<String> options = new ArrayList<>();
-        
-        // By default javac gives up after 100 errors
-        // Surely in the future we'll have programs with more bugs, but we are limited by the technology of our time
-        options.add("-Xmaxerrs");
-        options.add(Integer.toString(Integer.MAX_VALUE));
+		// By default javac gives up after 100 errors
+		// Surely in the future we'll have programs with more bugs, but we are limited
+		// by the technology of our time
+		options.add("-Xmaxerrs");
+		options.add(Integer.toString(Integer.MAX_VALUE));
 
-        options.add("-Xmaxwarns");
-        options.add(Integer.toString(Integer.MAX_VALUE));
-        
-        return options;
-    }
-    
+		options.add("-Xmaxwarns");
+		options.add(Integer.toString(Integer.MAX_VALUE));
+
+		return options;
+	}
+
 	private boolean isCheckerActive(SensorContext context, BugChecker bugChecker) {
 		RuleKey ruleKey = ErrorAwayRulesDefinition.ruleKey(bugChecker.getClass());
 
@@ -223,20 +223,20 @@ public class ErrorAwaySensor implements Sensor {
 		descriptor.onlyOnLanguage("java");
 		descriptor.name("Errorprone sensor");
 	}
-	
-    protected String getVersion() {
-        return getVersion("/com/github/erroraway/sonarqube/erroraway-plugin.properties");
-    }
-    
-    protected String getVersion(String propertiesPath) {
-        try (InputStream input = getClass().getResourceAsStream(propertiesPath)) {
-            Properties properties = new Properties();
-            properties.load(input);
-            
-            return properties.getProperty("erroraway.plugin.version");
-        } catch (Exception e) {
-            LOGGER.error("Could not find version", e);
-            return "UNKNOWN: " + e.getMessage();
-        }
-    }
+
+	protected String getVersion() {
+		return getVersion("/com/github/erroraway/sonarqube/erroraway-plugin.properties");
+	}
+
+	protected String getVersion(String propertiesPath) {
+		try (InputStream input = getClass().getResourceAsStream(propertiesPath)) {
+			Properties properties = new Properties();
+			properties.load(input);
+
+			return properties.getProperty("erroraway.plugin.version");
+		} catch (Exception e) {
+			LOGGER.error("Could not find version", e);
+			return "UNKNOWN: " + e.getMessage();
+		}
+	}
 }

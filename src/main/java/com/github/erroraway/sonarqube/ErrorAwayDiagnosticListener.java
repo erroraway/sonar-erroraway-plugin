@@ -120,17 +120,17 @@ public class ErrorAwayDiagnosticListener implements DiagnosticListener<JavaFileO
 			InputFile inputFile = getInputFile(diagnostic, fs);
 
 			if (inputFile != null) {
-			    analysisError.onFile(inputFile);
+				analysisError.onFile(inputFile);
 
-			    try {
-			        int startLine = Math.max(1, (int) diagnostic.getLineNumber());
+				try {
+					int startLine = Math.max(1, (int) diagnostic.getLineNumber());
 
-			        TextPointer location = inputFile.newPointer(startLine, 0);
+					TextPointer location = inputFile.newPointer(startLine, 0);
 
-			        analysisError.at(location);
-			    } catch (IllegalArgumentException e) {
-			        LOGGER.error("Error setting pointer on file {} for diagnostic {}", inputFile, diagnostic, e);
-			    }
+					analysisError.at(location);
+				} catch (IllegalArgumentException e) {
+					LOGGER.error("Error setting pointer on file {} for diagnostic {}", inputFile, diagnostic, e);
+				}
 			}
 
 			analysisError.save();
