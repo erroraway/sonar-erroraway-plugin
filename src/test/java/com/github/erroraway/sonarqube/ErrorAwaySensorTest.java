@@ -229,7 +229,8 @@ class ErrorAwaySensorTest {
         setConfigurationStringArray(ErrorAwayPlugin.MAVEN_REPOSITORIES, new String[] {"https://repo1.maven.org/maven2/"});
         setup(Path.of("com/bug/Slf4jSamples.java"));
         
-        enableRule(RuleKey.of("errorprone-slf4j", "Slf4jPlaceholderMismatch"));
+		RuleKey ruleKey = RuleKey.of("errorprone-slf4j", "Slf4jPlaceholderMismatch");
+		enableRule(ruleKey);
         setConfigurationStringArray(ErrorAwayPlugin.CLASS_PATH_MAVEN_COORDINATES, new String[]{"org.slf4j:slf4j-api:1.7.36"});
         
         // Call the sensor
@@ -237,6 +238,7 @@ class ErrorAwaySensorTest {
         sensor.execute(context);
 
         verify(context, times(1)).newIssue();
+		verify(newIssue, times(1)).forRule(ruleKey);
     }
     
     @Test
@@ -244,7 +246,8 @@ class ErrorAwaySensorTest {
         setConfigurationStringArray(ErrorAwayPlugin.MAVEN_REPOSITORIES, new String[] {"https://repo1.maven.org/maven2/"});
         setup(Path.of("com/bug/AndroidActivity.java"));
         
-        enableRule(RuleKey.of("autodispose2", "AutoDispose"));
+		RuleKey ruleKey = RuleKey.of("autodispose2", "AutoDispose");
+		enableRule(ruleKey);
         setConfigurationStringArray(ErrorAwayPlugin.CLASS_PATH_MAVEN_COORDINATES, new String[]{
                 "com.google.android:android:4.1.1.4",
                 "io.reactivex.rxjava3:rxjava:3.1.4"
@@ -255,8 +258,28 @@ class ErrorAwaySensorTest {
         sensor.execute(context);
 
         verify(context, times(1)).newIssue();
+		verify(newIssue, times(1)).forRule(ruleKey);
     }
-    
+
+	@Test
+	void analyzeWithPicnicErrorProneSupport() {
+		setConfigurationStringArray(ErrorAwayPlugin.MAVEN_REPOSITORIES, new String[]{"https://repo1.maven.org/maven2/"});
+		setup(Path.of("com/bug/PicnicErrorProneSupportSample.java"));
+
+		RuleKey ruleKey = RuleKey.of(ErrorAwayRulesDefinition.PICNIC_REPOSITORY, "IdentityConversion");
+		enableRule(ruleKey);
+		setConfigurationStringArray(
+				ErrorAwayPlugin.CLASS_PATH_MAVEN_COORDINATES,
+				new String[]{"com.google.guava:guava:31.1-jre"});
+
+		// Call the sensor
+		ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
+		sensor.execute(context);
+
+		verify(context, times(1)).newIssue();
+		verify(newIssue, times(1)).forRule(ruleKey);
+	}
+
     @Test
     void analyzeManyBugs() {
         setup(Path.of("com/bug/ManyBugs.java"));

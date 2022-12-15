@@ -58,7 +58,7 @@ public class ErrorAwayDiagnosticListener implements DiagnosticListener<JavaFileO
 		String message = diagnostic.getMessage(Locale.ENGLISH);
 		String rule = parseRule(diagnostic, message);
 
-		RuleKey ruleKey = RuleKey.of(findRepository(rule), rule);
+		RuleKey ruleKey = RuleKey.of(findRepository(rule, message), rule);
 
 		int startLine = (int) diagnostic.getLineNumber();
 
@@ -148,9 +148,13 @@ public class ErrorAwayDiagnosticListener implements DiagnosticListener<JavaFileO
 		}
 	}
 
-	private String findRepository(String rule) {
+	private String findRepository(String rule, String message) {
 		if (rule.startsWith("Slf4j")) {
 			return ErrorAwayRulesDefinition.ERRORPRONE_SLF4J_REPOSITORY;
+		}
+		
+		if (message.contains("see https://error-prone.picnic.tech/bugpatterns/")) {
+			return ErrorAwayRulesDefinition.PICNIC_REPOSITORY;
 		}
 
 		switch (rule) {

@@ -66,10 +66,11 @@ public class ErrorAwayIT {
 	@BeforeAll
 	public static void startOrchestrator() {
 		String sonarVersion = System.getProperty("sonar.server.version", "9.5");
-	    
-	    OrchestratorBuilder orchestratorBuilder = Orchestrator.builderEnv()
+		
+		OrchestratorBuilder orchestratorBuilder = Orchestrator.builderEnv()
 				.addPlugin(FileLocation.of("./target/sonar-erroraway-plugin.jar"))
-	    		.keepBundledPlugins()
+				.keepBundledPlugins()
+				.setServerProperty("sonar.web.port", "9000")
 				.setSonarVersion("LATEST_RELEASE[" + sonarVersion + "]");
 
 		ORCHESTRATOR = orchestratorBuilder.build();
@@ -145,7 +146,7 @@ public class ErrorAwayIT {
 		issueRequest.setProjects(Collections.singletonList(projectKey));
 		List<Issue> issues = ISSUES_SERVICES.search(issueRequest).getIssuesList();
 
-		assertThat(issues.size(), is(23));
+		assertThat(issues.size(), is(24));
 
 		assertSimpleIssues(issues, projectKey);
 		assertAndroidActivityIssues(issues, projectKey);
@@ -153,7 +154,8 @@ public class ErrorAwayIT {
 		assertBugsSamplesIssues(issues, projectKey);
 		assertHibernateEntityIssues(issues, projectKey);
 		assertAutoValueSamplesIssues(issues, projectKey);
-        assertGrammarListenerIssues(issues, projectKey);
+		assertPicnicSamplesIssues(issues, projectKey);
+		assertGrammarListenerIssues(issues, projectKey);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -203,16 +205,22 @@ public class ErrorAwayIT {
 	}
 
 	@SuppressWarnings("unchecked")
+	private void assertAutoValueSamplesIssues(List<Issue> issues, String projectKey) {
+		Predicate<Issue> applicationSimpleJavaPredicate = component(projectKey, "src/main/java/application/AutoValueSamples.java");
+		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("errorprone:DurationTemporalUnit"), startLine(13)));
+	}
+
+	@SuppressWarnings("unchecked")
+	private void assertPicnicSamplesIssues(List<Issue> issues, String projectKey) {
+		Predicate<Issue> applicationSimpleJavaPredicate = component(projectKey,	"src/main/java/application/GrammarListener.java");
+		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("picnic-errorprone:EmptyMethod"), startLine(12)));
+	}
+
+	@SuppressWarnings("unchecked")
 	private void assertGrammarListenerIssues(List<Issue> issues, String projectKey) {
 		Predicate<Issue> applicationSimpleJavaPredicate = component(projectKey,	"src/main/java/application/GrammarListener.java");
 		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("errorprone:MissingOverride"), startLine(8)));
 	}
-
-    @SuppressWarnings("unchecked")
-    private void assertAutoValueSamplesIssues(List<Issue> issues, String projectKey) {
-        Predicate<Issue> applicationSimpleJavaPredicate = component(projectKey, "src/main/java/application/AutoValueSamples.java");
-        assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("errorprone:DurationTemporalUnit"), startLine(13)));
-    }
 
 	@SuppressWarnings("unchecked")
 	private Matcher<List<Issue>> containsIssueMatching(Predicate<Issue>... issuePredicates) {
