@@ -68,6 +68,8 @@ public class ErrorAwayIT {
 		String sonarVersion = System.getProperty("sonar.server.version", "9.5");
 		
 		OrchestratorBuilder orchestratorBuilder = Orchestrator.builderEnv()
+				// Since SQ 9.8 permissions for 'Anyone' group has been limited for new instances
+				.useDefaultAdminCredentialsForBuilds(true)
 				.addPlugin(FileLocation.of("./target/sonar-erroraway-plugin.jar"))
 				.keepBundledPlugins()
 				.setServerProperty("sonar.web.port", "9000")
