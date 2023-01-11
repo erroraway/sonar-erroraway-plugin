@@ -58,7 +58,7 @@ public class ErrorAwayRulesDefinition implements RulesDefinition {
 	public static final String AUTODISPOSE2_REPOSITORY = "autodispose2";
 	public static final String PICNIC_REPOSITORY = "picnic-errorprone";
 
-	public static final int ERRORPRONE_REPOSITORY_RULES_COUNT = 411;
+	public static final int ERRORPRONE_REPOSITORY_RULES_COUNT = 412;
 	public static final int NULLAWAY_REPOSITORY_RULES_COUNT = 1;
 	public static final int ERRORPRONE_SLF4J_REPOSITORY_RULES_COUNT = 8;
 	public static final int AUTODISPOSE2_REPOSITORY_RULES_COUNT = 1;
