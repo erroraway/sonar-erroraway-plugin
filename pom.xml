@@ -38,7 +38,7 @@
 		<nullaway.version>0.10.8</nullaway.version>
 		<errorprone.slf4j.version>0.1.16</errorprone.slf4j.version>
 		<autodispose2.version>2.1.1</autodispose2.version>
-		<picnic.errorprone.support.version>0.7.0</picnic.errorprone.support.version>
+		<picnic.errorprone.support.version>0.8.0</picnic.errorprone.support.version>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
