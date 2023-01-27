@@ -24,6 +24,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import javax.tools.Diagnostic;
+import javax.tools.Diagnostic.Kind;
 import javax.tools.JavaFileObject;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -58,16 +59,17 @@ class ErrorAwayDiagnosticListenerTest {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	void ignoreCompilerError() {
+	void failOnCompilerError() {
 		Diagnostic<JavaFileObject> diagnostic = mock(Diagnostic.class);
 		JavaFileObject javaFileObject = mock(JavaFileObject.class);
 
 		when(diagnostic.getCode()).thenReturn("compiler.note.deprecated.filename");
 		when(diagnostic.getSource()).thenReturn(javaFileObject);
+		when(diagnostic.getKind()).thenReturn(Kind.ERROR);
 
 		ErrorAwayDiagnosticListener listener = new ErrorAwayDiagnosticListener(context);
 
-		listener.report(diagnostic);
+		assertThrows(ErrorAwayCompilationException.class, () -> listener.report(diagnostic));
 
 		verify(context, never()).newIssue();
 	}
