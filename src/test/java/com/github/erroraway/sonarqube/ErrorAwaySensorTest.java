@@ -17,6 +17,7 @@ package com.github.erroraway.sonarqube;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -195,9 +196,10 @@ class ErrorAwaySensorTest {
 
 		// Call the sensor
 		ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
-		sensor.execute(context);
+		// Javac wraps our exception in a RuntimeException
+		assertThrowsExactly(RuntimeException.class, () -> sensor.execute(context));
 
-		verify(context, times(3)).newAnalysisError();
+		verify(context, times(1)).newAnalysisError();
 	}
 
 	@Test

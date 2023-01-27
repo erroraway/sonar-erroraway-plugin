@@ -19,6 +19,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import javax.tools.Diagnostic;
+import javax.tools.Diagnostic.Kind;
 import javax.tools.DiagnosticListener;
 import javax.tools.JavaFileObject;
 
@@ -134,6 +135,10 @@ public class ErrorAwayDiagnosticListener implements DiagnosticListener<JavaFileO
 			}
 
 			analysisError.save();
+
+			if (diagnostic.getKind().equals(Kind.ERROR)) {
+				throw new ErrorAwayCompilationException("Compilation error: " + diagnostic);
+			}
 
 			return false;
 		}
