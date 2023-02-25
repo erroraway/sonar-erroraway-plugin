@@ -38,7 +38,7 @@ See [.mvn/jvm.config](src/test/resources/projects/simple/.mvn/jvm.config) for a 
 When the SonarQube server runs on JDK 17 (so for SonarQube 9.9 and above), these options also need to be set on the server:
 
 ```
-sonar.web.javaOpts=<YOUR OPTIONS> --add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED\
+sonar.web.javaOpts=<YOUR OPTIONS> --add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED \
 --add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED \
 --add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED \
 --add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED \
