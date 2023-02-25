@@ -12,7 +12,7 @@ allprojects {
     version = "$baseVersion" + (snapshotVersion ? "-SNAPSHOT" : "")
 }
 
-sonarqube {
+sonar {
     properties {
         property "sonar.projectName", "Simple Gradle Project"
         property "sonar.projectKey", "sonar-error-away-plugin:gradle-simple"
@@ -23,7 +23,7 @@ sonarqube {
 subprojects {
     apply plugin: 'java-library'
     apply plugin: 'org.sonarqube'
-    sonarqube {
+    sonar {
         properties {
             //property "sonar.java.libraries", 
    	    }
