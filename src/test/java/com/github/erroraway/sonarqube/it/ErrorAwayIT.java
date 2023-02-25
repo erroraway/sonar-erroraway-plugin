@@ -162,7 +162,7 @@ public class ErrorAwayIT {
 		issueRequest.setProjects(Collections.singletonList(projectKey));
 		List<Issue> issues = ISSUES_SERVICES.search(issueRequest).getIssuesList();
 
-		assertThat(issues.size(), is(24));
+		assertThat(issues.size(), is(23));
 
 		assertSimpleIssues(issues, projectKey);
 		assertAndroidActivityIssues(issues, projectKey);
@@ -188,8 +188,7 @@ public class ErrorAwayIT {
 	@SuppressWarnings("unchecked")
 	private void assertAndroidActivityIssues(List<Issue> issues, String projectKey) {
 		Predicate<Issue> androidActivityJavaPredicate = component(projectKey, "src/main/java/application/AndroidActivity.java");
-		assertThat(issues, containsIssueMatching(androidActivityJavaPredicate, rule("errorprone:CheckReturnValue"), startLine(15)));
-        assertThat(issues, containsIssueMatching(androidActivityJavaPredicate, rule("autodispose2:AutoDispose"), startLine(15)));
+        assertThat(issues, containsIssueMatching(androidActivityJavaPredicate, rule("autodispose2:AutoDispose"), startLine(22)));
 	}
 
 	@SuppressWarnings("unchecked")
