@@ -250,6 +250,7 @@ class ErrorAwaySensorTest {
         
 		RuleKey ruleKey = RuleKey.of("autodispose2", "AutoDispose");
 		enableRule(ruleKey);
+		enableRule(RuleKey.of("errorprone", "CheckReturnValue"));
         setConfigurationStringArray(ErrorAwayPlugin.CLASS_PATH_MAVEN_COORDINATES, new String[]{
                 "com.google.android:android:4.1.1.4",
                 "io.reactivex.rxjava3:rxjava:3.1.4"

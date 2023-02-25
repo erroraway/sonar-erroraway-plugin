@@ -46,6 +46,7 @@ import com.sonar.orchestrator.OrchestratorBuilder;
 import com.sonar.orchestrator.build.GradleBuild;
 import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.locator.FileLocation;
+import com.sonar.orchestrator.version.Version;
 
 /**
  * @author Guillaume
@@ -74,6 +75,19 @@ public class ErrorAwayIT {
 				.keepBundledPlugins()
 				.setServerProperty("sonar.web.port", "9000")
 				.setSonarVersion("LATEST_RELEASE[" + sonarVersion + "]");
+		
+		if (Version.create(sonarVersion).isGreaterThanOrEquals(9, 9)) {
+			orchestratorBuilder.setServerProperty("sonar.web.javaOpts", "--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED "
+					+ "--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED "
+					+ "--add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED "
+					+ "--add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED "
+					+ "--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED "
+					+ "--add-exports=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED "
+					+ "--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED "
+					+ "--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED "
+					+ "--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED "
+					+ "--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED");
+		}
 
 		ORCHESTRATOR = orchestratorBuilder.build();
 		ORCHESTRATOR.start();
@@ -148,7 +162,7 @@ public class ErrorAwayIT {
 		issueRequest.setProjects(Collections.singletonList(projectKey));
 		List<Issue> issues = ISSUES_SERVICES.search(issueRequest).getIssuesList();
 
-		assertThat(issues.size(), is(24));
+		assertThat(issues.size(), is(23));
 
 		assertSimpleIssues(issues, projectKey);
 		assertAndroidActivityIssues(issues, projectKey);
@@ -174,8 +188,7 @@ public class ErrorAwayIT {
 	@SuppressWarnings("unchecked")
 	private void assertAndroidActivityIssues(List<Issue> issues, String projectKey) {
 		Predicate<Issue> androidActivityJavaPredicate = component(projectKey, "src/main/java/application/AndroidActivity.java");
-		assertThat(issues, containsIssueMatching(androidActivityJavaPredicate, rule("errorprone:CheckReturnValue"), startLine(15)));
-        assertThat(issues, containsIssueMatching(androidActivityJavaPredicate, rule("autodispose2:AutoDispose"), startLine(15)));
+        assertThat(issues, containsIssueMatching(androidActivityJavaPredicate, rule("autodispose2:AutoDispose"), startLine(22)));
 	}
 
 	@SuppressWarnings("unchecked")
