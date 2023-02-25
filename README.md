@@ -15,22 +15,39 @@ Enable a quality profile including some rules, for NullAway you will need to con
 
 ## Compatibility
 
-The plugin is compatible with SonarQube 8.9 LTS and 9.7.
+The plugin is compatible with SonarQube 8.9 LTS and 9.9 LTS.
 
 The Sonar analyzer and Error Prone must run on JDK 11 or newer but can analyze Java 8 code.
 When running on JDK 16 or newer add the following options due to [JEP 396](https://openjdk.java.net/jeps/396):
 
 ```
---add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED
---add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED
---add-exports jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED
---add-exports jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED
---add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED
---add-exports jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED
---add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED
---add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED
---add-opens jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED
---add-opens jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED
+--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED
+--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED
+--add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED
+--add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED
+--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED
+--add-exports=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED
+--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED
+--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED
+--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED
+--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED
+```
+
+See [.mvn/jvm.config](src/test/resources/projects/simple/.mvn/jvm.config) for a way to do it with Maven and [gradle.properties](src/test/resources/projects/simple/gradle.properties) for a way to do it with Gradle
+
+When the SonarQube server runs on JDK 17 (so for SonarQube 9.9 and above), these options also need to be set on the server:
+
+```
+sonar.web.javaOpts=<YOUR OPTIONS> --add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED\
+--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED\
+--add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED\
+--add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED\
+--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED\
+--add-exports=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED\
+--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED\
+--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED\
+--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED\
+--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED\
 ```
 
 When these options are not set you will receive errors: 
