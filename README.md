@@ -39,15 +39,15 @@ When the SonarQube server runs on JDK 17 (so for SonarQube 9.9 and above), these
 
 ```
 sonar.web.javaOpts=<YOUR OPTIONS> --add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED\
---add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED\
---add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED\
---add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED\
---add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED\
---add-exports=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED\
---add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED\
---add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED\
---add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED\
---add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED\
+--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED \
+--add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED \
+--add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED \
+--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED \
+--add-exports=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED \
+--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED \
+--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED \
+--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED \
+--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED \
 ```
 
 When these options are not set you will receive errors: 
