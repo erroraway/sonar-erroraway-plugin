@@ -62,7 +62,7 @@ public class ErrorAwayRulesDefinition implements RulesDefinition {
 	public static final int NULLAWAY_REPOSITORY_RULES_COUNT = 1;
 	public static final int ERRORPRONE_SLF4J_REPOSITORY_RULES_COUNT = 8;
 	public static final int AUTODISPOSE2_REPOSITORY_RULES_COUNT = 1;
-	public static final int PICNIC_REPOSITORY_RULES_COUNT = 35;
+	public static final int PICNIC_REPOSITORY_RULES_COUNT = 39;
 
 	public static final int RULES_COUNT = ERRORPRONE_REPOSITORY_RULES_COUNT 
 			+ NULLAWAY_REPOSITORY_RULES_COUNT 
