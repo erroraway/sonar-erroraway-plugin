@@ -23,6 +23,32 @@
 			</exclusions>
 		</dependency>
 		
+		<!-- Plugins dependencies for tests only -->
+		<dependency>
+			<groupId>com.uber.nullaway</groupId>
+			<artifactId>nullaway</artifactId>
+			<version>${nullaway.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>jp.skypencil.errorprone.slf4j</groupId>
+			<artifactId>errorprone-slf4j</artifactId>
+			<version>${errorprone.slf4j.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.uber.autodispose2</groupId>
+			<artifactId>autodispose-error-prone</artifactId>
+			<version>${autodispose2.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>tech.picnic.error-prone-support</groupId>
+			<artifactId>error-prone-contrib</artifactId>
+			<version>${picnic.errorprone.support.version}</version>
+			<scope>test</scope>
+		</dependency>
+		
 		<!-- Unit tests dependencies -->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
