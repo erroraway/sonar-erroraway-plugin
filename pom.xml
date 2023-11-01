@@ -42,7 +42,11 @@
 		<picnic.errorprone.support.version>0.10.0</picnic.errorprone.support.version>
 		
 		<commonmark.version>0.20.0</commonmark.version>
-
+		
+		<junit.version>5.8.2</junit.version>
+		<mockito.version>4.5.1</mockito.version>
+		<assertj.version>3.21.0</assertj.version>
+		
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<sonar.organization>erroraway</sonar.organization>
