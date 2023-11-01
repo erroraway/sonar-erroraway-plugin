@@ -15,7 +15,6 @@
  */
 package com.github.erroraway.sonarqube;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -27,9 +26,7 @@ import org.sonar.api.server.rule.RulesDefinition.Context;
 import org.sonar.api.server.rule.RulesDefinition.NewRepository;
 import org.sonar.api.server.rule.RulesDefinition.NewRule;
 
-import com.google.errorprone.BugPattern;
-import com.google.errorprone.BugPattern.SeverityLevel;
-import com.google.errorprone.bugpatterns.BugChecker;
+import com.github.erroraway.rules.ErrorAwayRulesMapping;
 
 /**
  * @author Guillaume
@@ -56,22 +53,11 @@ class ErrorAwayRulesDefinitionTest {
 		ErrorAwayRulesDefinition rulesDefinition = new ErrorAwayRulesDefinition();
 		rulesDefinition.define(context);
 		
-		verify(context, times(1)).createRepository(ErrorAwayRulesDefinition.ERRORPRONE_REPOSITORY, "java");
-		verify(context, times(1)).createRepository(ErrorAwayRulesDefinition.NULLAWAY_REPOSITORY, "java");
-		verify(context, times(1)).createRepository(ErrorAwayRulesDefinition.ERRORPRONE_SLF4J_REPOSITORY, "java");
-		verify(context, times(1)).createRepository(ErrorAwayRulesDefinition.AUTODISPOSE2_REPOSITORY, "java");
+		verify(context, times(1)).createRepository(ErrorAwayRulesMapping.ERRORPRONE_REPOSITORY, "java");
+		verify(context, times(1)).createRepository(ErrorAwayRulesMapping.NULLAWAY_REPOSITORY, "java");
+		verify(context, times(1)).createRepository(ErrorAwayRulesMapping.ERRORPRONE_SLF4J_REPOSITORY, "java");
+		verify(context, times(1)).createRepository(ErrorAwayRulesMapping.AUTODISPOSE2_REPOSITORY, "java");
 
-		verify(newRepository, times(ErrorAwayRulesDefinition.RULES_COUNT)).createRule(Mockito.anyString());
-	}
-
-	@Test
-	void unknownRepository() {
-		assertThrows(ErrorAwayException.class, () -> ErrorAwayRulesDefinition.repository(UnknownBugChecker.class));
-	}
-
-	@BugPattern(summary = "", severity = SeverityLevel.ERROR)
-	private static class UnknownBugChecker extends BugChecker {
-		private static final long serialVersionUID = 1L;
-
+		verify(newRepository, times(ErrorAwayRulesMapping.RULES_COUNT)).createRule(Mockito.anyString());
 	}
 }

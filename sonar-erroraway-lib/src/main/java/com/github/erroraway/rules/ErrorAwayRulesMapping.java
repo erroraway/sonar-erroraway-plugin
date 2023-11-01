@@ -15,11 +15,18 @@
  */
 package com.github.erroraway.rules;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import com.github.erroraway.ErrorAwayException;
+import com.google.errorprone.bugpatterns.BugChecker;
+
 /**
  * @author Guillaume Toison
  *
  */
-public class ErrorAwayRulesDefinition {
+public final class ErrorAwayRulesMapping {
 	public static final String ERRORPRONE_REPOSITORY = "errorprone";
 	public static final String NULLAWAY_REPOSITORY = "nullaway";
 	public static final String ERRORPRONE_SLF4J_REPOSITORY = "errorprone-slf4j";
@@ -38,10 +45,30 @@ public class ErrorAwayRulesDefinition {
 			+ AUTODISPOSE2_REPOSITORY_RULES_COUNT
 			+ PICNIC_REPOSITORY_RULES_COUNT;
 
-	protected static final String[] REPOSITORIES = new String[] { 
+	public static final List<String> REPOSITORIES = Collections.unmodifiableList(Arrays.asList( 
 			ERRORPRONE_REPOSITORY, 
 			NULLAWAY_REPOSITORY, 
 			ERRORPRONE_SLF4J_REPOSITORY, 
 			AUTODISPOSE2_REPOSITORY,
-			PICNIC_REPOSITORY};
+			PICNIC_REPOSITORY));
+	
+	private ErrorAwayRulesMapping() {
+	}
+
+	public static String repository(Class<? extends BugChecker> type) {
+		String className = type.getName();
+		if (className.startsWith("com.google.errorprone.")) {
+			return ERRORPRONE_REPOSITORY;
+		} else if (className.startsWith("com.uber.nullaway.")) {
+			return NULLAWAY_REPOSITORY;
+		} else if (className.startsWith("jp.skypencil.errorprone.slf4j.")) {
+			return ERRORPRONE_SLF4J_REPOSITORY;
+		} else if (className.startsWith("autodispose2.")) {
+			return AUTODISPOSE2_REPOSITORY;
+		} else if (className.startsWith("tech.picnic.errorprone.")) {
+			return PICNIC_REPOSITORY;
+		} else {
+			throw new ErrorAwayException("Could not find rules repository for class " + className);
+		}
+	}
 }

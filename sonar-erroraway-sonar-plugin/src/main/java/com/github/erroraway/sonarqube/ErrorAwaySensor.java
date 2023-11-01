@@ -48,6 +48,8 @@ import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
+import com.github.erroraway.ErrorAwayException;
+import com.github.erroraway.rules.ErrorAwayRulesMapping;
 import com.google.errorprone.BugCheckerInfo;
 import com.google.errorprone.ErrorProneJavaCompiler;
 import com.google.errorprone.ErrorProneOptions;
@@ -219,7 +221,10 @@ public class ErrorAwaySensor implements Sensor {
 
 	@Override
 	public void describe(SensorDescriptor descriptor) {
-		descriptor.createIssuesForRuleRepository(ErrorAwayRulesDefinition.REPOSITORIES);
+		for (String repository : ErrorAwayRulesMapping.REPOSITORIES) {
+			descriptor.createIssuesForRuleRepository(repository);
+		}
+		
 		descriptor.onlyOnLanguage("java");
 		descriptor.name("Errorprone sensor");
 	}

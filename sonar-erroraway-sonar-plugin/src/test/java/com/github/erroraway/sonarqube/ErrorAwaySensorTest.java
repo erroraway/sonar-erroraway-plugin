@@ -55,6 +55,9 @@ import org.sonar.api.utils.log.LogTesterJUnit5;
 import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
+import com.github.erroraway.ErrorAwayException;
+import com.github.erroraway.rules.ErrorAwayRulesMapping;
+
 /**
  * @author Guillaume Toison
  *
@@ -269,7 +272,7 @@ class ErrorAwaySensorTest {
 		setConfigurationStringArray(ErrorAwayPlugin.MAVEN_REPOSITORIES, new String[]{"https://repo1.maven.org/maven2/"});
 		setup(Path.of("com/bug/PicnicErrorProneSupportSample.java"));
 
-		RuleKey ruleKey = RuleKey.of(ErrorAwayRulesDefinition.PICNIC_REPOSITORY, "IdentityConversion");
+		RuleKey ruleKey = RuleKey.of(ErrorAwayRulesMapping.PICNIC_REPOSITORY, "IdentityConversion");
 		enableRule(ruleKey);
 		setConfigurationStringArray(
 				ErrorAwayPlugin.CLASS_PATH_MAVEN_COORDINATES,

@@ -50,6 +50,8 @@ import org.sonar.api.config.Configuration;
 import org.sonar.api.scanner.ScannerSide;
 import org.sonar.api.utils.TempFolder;
 
+import com.github.erroraway.ErrorAwayException;
+
 /**
  * @author Guillaume Toison
  *
