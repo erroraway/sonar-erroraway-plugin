@@ -34,6 +34,9 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
+import com.github.erroraway.ErrorAwayException;
+import com.github.erroraway.rules.ErrorAwayRulesMapping;
+
 /**
  * @author Guillaume
  *
@@ -155,20 +158,20 @@ public class ErrorAwayDiagnosticListener implements DiagnosticListener<JavaFileO
 
 	private String findRepository(String rule, String message) {
 		if (rule.startsWith("Slf4j")) {
-			return ErrorAwayRulesDefinition.ERRORPRONE_SLF4J_REPOSITORY;
+			return ErrorAwayRulesMapping.ERRORPRONE_SLF4J_REPOSITORY;
 		}
 		
 		if (message.contains("see https://error-prone.picnic.tech/bugpatterns/")) {
-			return ErrorAwayRulesDefinition.PICNIC_REPOSITORY;
+			return ErrorAwayRulesMapping.PICNIC_REPOSITORY;
 		}
 
 		switch (rule) {
 		case "NullAway":
-			return ErrorAwayRulesDefinition.NULLAWAY_REPOSITORY;
+			return ErrorAwayRulesMapping.NULLAWAY_REPOSITORY;
 		case "AutoDispose":
-			return ErrorAwayRulesDefinition.AUTODISPOSE2_REPOSITORY;
+			return ErrorAwayRulesMapping.AUTODISPOSE2_REPOSITORY;
 		default:
-			return ErrorAwayRulesDefinition.ERRORPRONE_REPOSITORY;
+			return ErrorAwayRulesMapping.ERRORPRONE_REPOSITORY;
 		}
 	}
 }

@@ -15,6 +15,12 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>io.github.erroraway</groupId>
+		<artifactId>sonar-erroraway-lib</artifactId>
+		<version>${project.version}</version>
+		</dependency>
+		
+		<dependency>
 			<groupId>com.google.errorprone</groupId>
 			<artifactId>error_prone_core</artifactId>
 			<version>${errorprone.version}</version>

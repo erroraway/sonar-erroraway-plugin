@@ -32,6 +32,8 @@ import org.sonar.api.rules.RuleQuery;
 import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition.Context;
 import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition.NewBuiltInQualityProfile;
 
+import com.github.erroraway.rules.ErrorAwayRulesMapping;
+
 /**
  * @author Guillaume
  *
@@ -70,6 +72,6 @@ class ErrorAwayQualityProfileTest {
 		qualityProfile.define(context);
 
 		// There's one profile for each plugin plus one profile whith all the plugins so the number of rules is doubled up
-		verify(builtInQualityProfile, times(ErrorAwayRulesDefinition.RULES_COUNT * 2)).activateRule(Mockito.anyString(), Mockito.anyString());
+		verify(builtInQualityProfile, times(ErrorAwayRulesMapping.RULES_COUNT * 2)).activateRule(Mockito.anyString(), Mockito.anyString());
 	}
 }

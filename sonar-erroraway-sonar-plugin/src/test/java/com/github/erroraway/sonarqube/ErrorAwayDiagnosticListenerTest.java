@@ -34,6 +34,8 @@ import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.error.NewAnalysisError;
 
+import com.github.erroraway.ErrorAwayException;
+
 /**
  * @author Guillaume Toison
  *

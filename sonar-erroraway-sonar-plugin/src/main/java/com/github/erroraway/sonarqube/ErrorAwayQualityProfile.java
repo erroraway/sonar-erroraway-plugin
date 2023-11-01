@@ -24,6 +24,8 @@ import org.sonar.api.rules.RuleFinder;
 import org.sonar.api.rules.RuleQuery;
 import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
 
+import com.github.erroraway.rules.ErrorAwayRulesMapping;
+
 /**
  * @author Guillaume
  *
@@ -53,13 +55,13 @@ public class ErrorAwayQualityProfile implements BuiltInQualityProfilesDefinition
 		NewBuiltInQualityProfile errorProneAndPluginsProfile = context.createBuiltInQualityProfile(ERROR_PRONE_AND_PLUGINS_PROFILE_NAME, "java");
 
 		Map<String, NewBuiltInQualityProfile> pluginRepositories = new HashMap<>();		
-		pluginRepositories.put(ErrorAwayRulesDefinition.ERRORPRONE_REPOSITORY, errorProneProfile);
-		pluginRepositories.put(ErrorAwayRulesDefinition.NULLAWAY_REPOSITORY, nullAwayProfile);
-		pluginRepositories.put(ErrorAwayRulesDefinition.ERRORPRONE_SLF4J_REPOSITORY, errorProneSlf4jProfile);
-		pluginRepositories.put(ErrorAwayRulesDefinition.AUTODISPOSE2_REPOSITORY, autodisposeProfile);
-		pluginRepositories.put(ErrorAwayRulesDefinition.PICNIC_REPOSITORY, picnicEerrorProneProfile);
+		pluginRepositories.put(ErrorAwayRulesMapping.ERRORPRONE_REPOSITORY, errorProneProfile);
+		pluginRepositories.put(ErrorAwayRulesMapping.NULLAWAY_REPOSITORY, nullAwayProfile);
+		pluginRepositories.put(ErrorAwayRulesMapping.ERRORPRONE_SLF4J_REPOSITORY, errorProneSlf4jProfile);
+		pluginRepositories.put(ErrorAwayRulesMapping.AUTODISPOSE2_REPOSITORY, autodisposeProfile);
+		pluginRepositories.put(ErrorAwayRulesMapping.PICNIC_REPOSITORY, picnicEerrorProneProfile);
 
-		for (String repoKey : ErrorAwayRulesDefinition.REPOSITORIES) {
+		for (String repoKey : ErrorAwayRulesMapping.REPOSITORIES) {
 			RuleQuery query = RuleQuery.create().withRepositoryKey(repoKey);
 			Collection<Rule> rules = ruleFinder.findAll(query);
 			NewBuiltInQualityProfile repository = pluginRepositories.get(repoKey);

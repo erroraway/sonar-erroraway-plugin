@@ -15,6 +15,12 @@
  */
 package com.github.erroraway.sonarqube;
 
+import static com.github.erroraway.rules.ErrorAwayRulesMapping.AUTODISPOSE2_REPOSITORY;
+import static com.github.erroraway.rules.ErrorAwayRulesMapping.ERRORPRONE_REPOSITORY;
+import static com.github.erroraway.rules.ErrorAwayRulesMapping.ERRORPRONE_SLF4J_REPOSITORY;
+import static com.github.erroraway.rules.ErrorAwayRulesMapping.NULLAWAY_REPOSITORY;
+import static com.github.erroraway.rules.ErrorAwayRulesMapping.PICNIC_REPOSITORY;
+import static com.github.erroraway.rules.ErrorAwayRulesMapping.repository;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.ByteArrayOutputStream;
@@ -28,10 +34,9 @@ import java.util.ServiceLoader;
 
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
 import org.sonarsource.analyzer.commons.RuleMetadataLoader;
 
+import com.github.erroraway.ErrorAwayException;
 import com.google.errorprone.BugCheckerInfo;
 import com.google.errorprone.bugpatterns.BugChecker;
 import com.google.gson.JsonArray;
@@ -43,33 +48,6 @@ import com.google.gson.JsonParser;
  *
  */
 public class ErrorAwayRulesDefinition implements RulesDefinition {
-	private static final Logger LOGGER = Loggers.get(ErrorAwayRulesDefinition.class);
-	
-	public static final String ERRORPRONE_REPOSITORY = "errorprone";
-	public static final String NULLAWAY_REPOSITORY = "nullaway";
-	public static final String ERRORPRONE_SLF4J_REPOSITORY = "errorprone-slf4j";
-	public static final String AUTODISPOSE2_REPOSITORY = "autodispose2";
-	public static final String PICNIC_REPOSITORY = "picnic-errorprone";
-	
-	public static final int ERRORPRONE_REPOSITORY_RULES_COUNT = 412;
-	public static final int NULLAWAY_REPOSITORY_RULES_COUNT = 1;
-	public static final int ERRORPRONE_SLF4J_REPOSITORY_RULES_COUNT = 8;
-	public static final int AUTODISPOSE2_REPOSITORY_RULES_COUNT = 1;
-	public static final int PICNIC_REPOSITORY_RULES_COUNT = 40;
-
-	public static final int RULES_COUNT = ERRORPRONE_REPOSITORY_RULES_COUNT 
-			+ NULLAWAY_REPOSITORY_RULES_COUNT 
-			+ ERRORPRONE_SLF4J_REPOSITORY_RULES_COUNT
-			+ AUTODISPOSE2_REPOSITORY_RULES_COUNT
-			+ PICNIC_REPOSITORY_RULES_COUNT;
-
-	protected static final String[] REPOSITORIES = new String[] { 
-			ERRORPRONE_REPOSITORY, 
-			NULLAWAY_REPOSITORY, 
-			ERRORPRONE_SLF4J_REPOSITORY, 
-			AUTODISPOSE2_REPOSITORY,
-			PICNIC_REPOSITORY};
-	
 	private static final String RESOURCE_FOLDER = "com/github/erroraway/rules";
 
 	@Override
@@ -134,23 +112,6 @@ public class ErrorAwayRulesDefinition implements RulesDefinition {
 
 	public static RuleKey ruleKey(Class<? extends BugChecker> type) {
 		return RuleKey.of(repository(type), asRuleKey(type));
-	}
-
-	public static String repository(Class<? extends BugChecker> type) {
-		String className = type.getName();
-		if (className.startsWith("com.google.errorprone.")) {
-			return ERRORPRONE_REPOSITORY;
-		} else if (className.startsWith("com.uber.nullaway.")) {
-			return NULLAWAY_REPOSITORY;
-		} else if (className.startsWith("jp.skypencil.errorprone.slf4j.")) {
-			return ERRORPRONE_SLF4J_REPOSITORY;
-		} else if (className.startsWith("autodispose2.")) {
-			return AUTODISPOSE2_REPOSITORY;
-		} else if (className.startsWith("tech.picnic.errorprone.")) {
-			return PICNIC_REPOSITORY;
-		} else {
-			throw new ErrorAwayException("Could not find rules repository for class " + className);
-		}
 	}
 	
 	private String toString(String path, Charset charset) throws IOException {

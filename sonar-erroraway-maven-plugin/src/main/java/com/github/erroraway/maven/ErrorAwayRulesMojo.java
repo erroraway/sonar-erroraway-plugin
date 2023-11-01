@@ -3,8 +3,8 @@
  */
 package com.github.erroraway.maven;
 
-import static com.github.erroraway.rules.ErrorAwayRulesDefinition.AUTODISPOSE2_REPOSITORY;
-import static com.github.erroraway.rules.ErrorAwayRulesDefinition.NULLAWAY_REPOSITORY;
+import static com.github.erroraway.rules.ErrorAwayRulesMapping.AUTODISPOSE2_REPOSITORY;
+import static com.github.erroraway.rules.ErrorAwayRulesMapping.NULLAWAY_REPOSITORY;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -39,8 +39,7 @@ import org.sonar.api.rule.RuleStatus;
 import org.sonar.api.rule.Severity;
 import org.sonar.api.rules.RuleType;
 
-import com.github.erroraway.ErrorAwayException;
-import com.github.erroraway.rules.ErrorAwayRulesDefinition;
+import com.github.erroraway.rules.ErrorAwayRulesMapping;
 import com.google.errorprone.BugCheckerInfo;
 import com.google.errorprone.BugPattern;
 import com.google.errorprone.bugpatterns.BugChecker;
@@ -74,7 +73,7 @@ public class ErrorAwayRulesMojo extends AbstractMojo {
 		errorProneBugCheckerInfos.addAll(BuiltInCheckerSuppliers.ENABLED_WARNINGS);
 		errorProneBugCheckerInfos.addAll(BuiltInCheckerSuppliers.ENABLED_ERRORS);
 		
-		processCheckers(ErrorAwayRulesDefinition.ERRORPRONE_REPOSITORY, errorProneBugCheckerInfos);
+		processCheckers(ErrorAwayRulesMapping.ERRORPRONE_REPOSITORY, errorProneBugCheckerInfos);
 		
 		Map<String, List<Class<? extends BugChecker>>> pluginCheckers = checkerClassesByRepository();
 
@@ -94,7 +93,7 @@ public class ErrorAwayRulesMojo extends AbstractMojo {
 		Map<String, List<Class<? extends BugChecker>>> pluginCheckers = new HashMap<>();
 		while (checkersIterator.hasNext()) {
 			BugChecker bugChecker = checkersIterator.next();
-			String repository = repository(bugChecker.getClass());
+			String repository = ErrorAwayRulesMapping.repository(bugChecker.getClass());
 
 			pluginCheckers.computeIfAbsent(repository, r -> new ArrayList<>()).add(bugChecker.getClass());
 		}
@@ -103,7 +102,7 @@ public class ErrorAwayRulesMojo extends AbstractMojo {
 	}
 	
 	public static Iterator<BugChecker> pluginCheckers() {
-		ClassLoader loader = ErrorAwayRulesDefinition.class.getClassLoader();
+		ClassLoader loader = ErrorAwayRulesMapping.class.getClassLoader();
 
 		return ServiceLoader.load(BugChecker.class, loader).iterator();
 	}
@@ -246,7 +245,7 @@ public class ErrorAwayRulesMojo extends AbstractMojo {
 	}
 
 	public static String repository(BugCheckerInfo bugCheckerInfo) {
-		return repository(bugCheckerInfo.checkerClass());
+		return ErrorAwayRulesMapping.repository(bugCheckerInfo.checkerClass());
 	}
 
 	/**
@@ -269,23 +268,6 @@ public class ErrorAwayRulesMojo extends AbstractMojo {
 			return "https://github.com/uber/AutoDispose/wiki/Error-Prone-Checker";
 		default:
 			return bugCheckerInfo.linkUrl();
-		}
-	}
-
-	public static String repository(Class<? extends BugChecker> type) {
-		String className = type.getName();
-		if (className.startsWith("com.google.errorprone.")) {
-			return ErrorAwayRulesDefinition.ERRORPRONE_REPOSITORY;
-		} else if (className.startsWith("com.uber.nullaway.")) {
-			return NULLAWAY_REPOSITORY;
-		} else if (className.startsWith("jp.skypencil.errorprone.slf4j.")) {
-			return ErrorAwayRulesDefinition.ERRORPRONE_SLF4J_REPOSITORY;
-		} else if (className.startsWith("autodispose2.")) {
-			return AUTODISPOSE2_REPOSITORY;
-		} else if (className.startsWith("tech.picnic.errorprone.")) {
-			return ErrorAwayRulesDefinition.PICNIC_REPOSITORY;
-		} else {
-			throw new ErrorAwayException("Could not find rules repository for class " + className);
 		}
 	}
 }
