@@ -150,7 +150,9 @@ public class TestInputFile implements InputFile {
 		return path.toString();
 	}
 	
-	@Override
+	/**
+	 * Needed for The 10.3 sonar api
+	 */
 	public String md5Hash() {
 		return null;
 	}
