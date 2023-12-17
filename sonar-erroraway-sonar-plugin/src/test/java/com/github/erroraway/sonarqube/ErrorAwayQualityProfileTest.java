@@ -20,6 +20,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static com.github.erroraway.sonarqube.ErrorAwayQualityProfile.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,9 +46,17 @@ class ErrorAwayQualityProfileTest {
 		Context context = mock(Context.class);
 		RuleFinder ruleFinder = mock(RuleFinder.class);
 		
-		NewBuiltInQualityProfile builtInQualityProfile = mock(NewBuiltInQualityProfile.class);
+		NewBuiltInQualityProfile errorProneProfile = mock(NewBuiltInQualityProfile.class);
+		NewBuiltInQualityProfile nullAwayProfile = mock(NewBuiltInQualityProfile.class);
+		NewBuiltInQualityProfile errorProneSlf4jProfile = mock(NewBuiltInQualityProfile.class);
+		NewBuiltInQualityProfile picnicEerrorProneProfile = mock(NewBuiltInQualityProfile.class);
+		NewBuiltInQualityProfile errorProneAndPluginsProfile = mock(NewBuiltInQualityProfile.class);
 
-		when(context.createBuiltInQualityProfile(Mockito.anyString(), Mockito.anyString())).thenReturn(builtInQualityProfile);
+		when(context.createBuiltInQualityProfile(ERROR_PRONE_PROFILE_NAME, "java")).thenReturn(errorProneProfile);
+		when(context.createBuiltInQualityProfile(NULL_AWAY_PROFILE_NAME, "java")).thenReturn(nullAwayProfile);
+		when(context.createBuiltInQualityProfile(ERROR_PRONE_SLF4J_PROFILE_NAME, "java")).thenReturn(errorProneSlf4jProfile);
+		when(context.createBuiltInQualityProfile(PICNIC_PROFILE_NAME, "java")).thenReturn(picnicEerrorProneProfile);
+		when(context.createBuiltInQualityProfile(ERROR_PRONE_AND_PLUGINS_PROFILE_NAME, "java")).thenReturn(errorProneAndPluginsProfile);
 		
 		when(ruleFinder.findAll(any(RuleQuery.class))).then(i -> {
 			RuleQuery query = i.getArgument(0, RuleQuery.class);
@@ -71,7 +80,10 @@ class ErrorAwayQualityProfileTest {
 		ErrorAwayQualityProfile qualityProfile = new ErrorAwayQualityProfile(ruleFinder);
 		qualityProfile.define(context);
 
-		// There's one profile for each plugin plus one profile whith all the plugins so the number of rules is doubled up
-		verify(builtInQualityProfile, times(ErrorAwayRulesMapping.RULES_COUNT * 2)).activateRule(Mockito.anyString(), Mockito.anyString());
+		verify(errorProneProfile, times(ErrorAwayRulesMapping.ERRORPRONE_REPOSITORY_RULES_COUNT)).activateRule(Mockito.anyString(), Mockito.anyString());
+		verify(nullAwayProfile, times(ErrorAwayRulesMapping.NULLAWAY_REPOSITORY_RULES_COUNT)).activateRule(Mockito.anyString(), Mockito.anyString());
+		verify(errorProneSlf4jProfile, times(ErrorAwayRulesMapping.ERRORPRONE_SLF4J_REPOSITORY_RULES_COUNT)).activateRule(Mockito.anyString(), Mockito.anyString());
+		verify(picnicEerrorProneProfile, times(ErrorAwayRulesMapping.PICNIC_REPOSITORY_RULES_COUNT)).activateRule(Mockito.anyString(), Mockito.anyString());
+		verify(errorProneAndPluginsProfile, times(ErrorAwayRulesMapping.RULES_COUNT)).activateRule(Mockito.anyString(), Mockito.anyString());
 	}
 }

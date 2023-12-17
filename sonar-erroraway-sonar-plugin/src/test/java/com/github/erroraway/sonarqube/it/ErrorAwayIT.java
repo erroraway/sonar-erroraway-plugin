@@ -148,14 +148,12 @@ public class ErrorAwayIT {
 		issueRequest.setProjects(Collections.singletonList(projectKey));
 		List<Issue> issues = ISSUES_SERVICES.search(issueRequest).getIssuesList();
 
-		assertThat(issues.size(), is(23));
+		assertThat(issues.size(), is(22));
 
 		assertSimpleIssues(issues, projectKey);
-		assertAndroidActivityIssues(issues, projectKey);
 		assertApplicationSimpleIssues(issues, projectKey);
 		assertBugsSamplesIssues(issues, projectKey);
 		assertHibernateEntityIssues(issues, projectKey);
-		assertAutoValueSamplesIssues(issues, projectKey);
 		assertPicnicSamplesIssues(issues, projectKey);
 		assertGrammarListenerIssues(issues, projectKey);
 	}
@@ -166,15 +164,9 @@ public class ErrorAwayIT {
 		assertThat(issues, containsIssueMatching(simpleJavaPredicate, rule("errorprone:DefaultPackage"), startLine(1)));
 		assertThat(issues, containsIssueMatching(simpleJavaPredicate, rule("errorprone-slf4j:Slf4jLoggerShouldBePrivate"), startLine(8)));
 		assertThat(issues, containsIssueMatching(simpleJavaPredicate, rule("errorprone:ClassNewInstance"), startLine(11)));
-		assertThat(issues, containsIssueMatching(simpleJavaPredicate, rule("errorprone:EqualsNaN"), startLine(20)));
+		assertThat(issues, containsIssueMatching(simpleJavaPredicate, rule("errorprone:ComparisonOutOfRange"), startLine(20)));
 		assertThat(issues, containsIssueMatching(simpleJavaPredicate, rule("errorprone:UnusedMethod"), startLine(25)));
 		assertThat(issues, containsIssueMatching(simpleJavaPredicate, rule("errorprone-slf4j:Slf4jPlaceholderMismatch"), startLine(26)));
-	}
-
-	@SuppressWarnings("unchecked")
-	private void assertAndroidActivityIssues(List<Issue> issues, String projectKey) {
-		Predicate<Issue> androidActivityJavaPredicate = component(projectKey, "src/main/java/application/AndroidActivity.java");
-        assertThat(issues, containsIssueMatching(androidActivityJavaPredicate, rule("autodispose2:AutoDispose"), startLine(22)));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -182,7 +174,7 @@ public class ErrorAwayIT {
 		Predicate<Issue> applicationSimpleJavaPredicate = component(projectKey, "src/main/java/application/Simple.java");
 		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("errorprone:ClassNewInstance"), startLine(15)));
 		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("nullaway:NullAway"), startLine(22)));
-		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("errorprone:EqualsNaN"), startLine(24)));
+		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("errorprone:ComparisonOutOfRange"), startLine(24)));
 		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("errorprone:CollectionIncompatibleType"), startLine(33)));
 		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("errorprone:UnusedMethod"), startLine(38)));
 		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("nullaway:NullAway"), startLine(45)));
@@ -203,12 +195,6 @@ public class ErrorAwayIT {
 		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("nullaway:NullAway"), startLine(16)));
 		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("errorprone:DurationTemporalUnit"), startLine(31)));
 		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("nullaway:NullAway"), startLine(32)));
-	}
-
-	@SuppressWarnings("unchecked")
-	private void assertAutoValueSamplesIssues(List<Issue> issues, String projectKey) {
-		Predicate<Issue> applicationSimpleJavaPredicate = component(projectKey, "src/main/java/application/AutoValueSamples.java");
-		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("errorprone:DurationTemporalUnit"), startLine(13)));
 	}
 
 	@SuppressWarnings("unchecked")

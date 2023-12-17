@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
 import org.sonar.api.batch.fs.FilePredicate;
@@ -175,7 +176,7 @@ class ErrorAwaySensorTest {
 		verify(context, times(1)).newIssue();
 	}
 
-//	@Test
+	@Test
 	void analyzeWithAnnotationProcessor() {
 		setConfigurationStringArray(ErrorAwayPlugin.CLASS_PATH_MAVEN_COORDINATES, new String[]{"com.google.auto.value:auto-value-annotations:1.9"});
 		setConfigurationStringArray(ErrorAwayPlugin.ANNOTATION_PROCESSORS_MAVEN_COORDINATES, new String[]{"com.google.auto.value:auto-value:1.9"});
@@ -202,7 +203,12 @@ class ErrorAwaySensorTest {
 		// Javac wraps our exception in a RuntimeException
 		assertThrowsExactly(RuntimeException.class, () -> sensor.execute(context));
 
-		verify(context, times(1)).newAnalysisError();
+		if (JRE.currentVersion().compareTo(JRE.JAVA_21) < 0) {
+			verify(context, times(1)).newAnalysisError();
+		} else {
+			// Since JDK 21 one warning about implicit annotation processing
+			verify(context, times(2)).newAnalysisError();
+		}
 	}
 
 	@Test
@@ -229,7 +235,7 @@ class ErrorAwaySensorTest {
 		assertThrows(ErrorAwayException.class, () -> sensor.execute(context));
 	}
 	
-//    @Test
+    @Test
     void analyzeWithErrorProneSlf4j() {
         setConfigurationStringArray(ErrorAwayPlugin.MAVEN_REPOSITORIES, new String[] {"https://repo1.maven.org/maven2/"});
         setup(Path.of("com/bug/Slf4jSamples.java"));
@@ -245,29 +251,8 @@ class ErrorAwaySensorTest {
         verify(context, times(1)).newIssue();
 		verify(newIssue, times(1)).forRule(ruleKey);
     }
-    
-//    @Test
-    void analyzeWithAutodispose2() {
-        setConfigurationStringArray(ErrorAwayPlugin.MAVEN_REPOSITORIES, new String[] {"https://repo1.maven.org/maven2/"});
-        setup(Path.of("com/bug/AndroidActivity.java"));
-        
-		RuleKey ruleKey = RuleKey.of("autodispose2", "AutoDispose");
-		enableRule(ruleKey);
-		enableRule(RuleKey.of("errorprone", "CheckReturnValue"));
-        setConfigurationStringArray(ErrorAwayPlugin.CLASS_PATH_MAVEN_COORDINATES, new String[]{
-                "com.google.android:android:4.1.1.4",
-                "io.reactivex.rxjava3:rxjava:3.1.4"
-                });
-        
-        // Call the sensor
-        ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
-        sensor.execute(context);
 
-        verify(context, times(1)).newIssue();
-		verify(newIssue, times(1)).forRule(ruleKey);
-    }
-
-//	@Test
+	@Test
 	void analyzeWithPicnicErrorProneSupport() {
 		setConfigurationStringArray(ErrorAwayPlugin.MAVEN_REPOSITORIES, new String[]{"https://repo1.maven.org/maven2/"});
 		setup(Path.of("com/bug/PicnicErrorProneSupportSample.java"));
@@ -302,18 +287,23 @@ class ErrorAwaySensorTest {
         verify(context, times(256)).newIssue();
     }
 
-    @Test
-    void compilerWarning() {
-        setup(Path.of("com/bug/VarArgsArray.java"));
-        enableRule(RuleKey.of("errorprone", "DurationTemporalUnit"));
+	@Test
+	void compilerWarning() {
+		setup(Path.of("com/bug/VarArgsArray.java"));
+		enableRule(RuleKey.of("errorprone", "DurationTemporalUnit"));
 
-        // Call the sensor
-        ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
-        sensor.execute(context);
-        
-        // One compiler warning that there are unsage operations in the file and another to recompile for more details
-        verify(context, times(2)).newAnalysisError();
-    }
+		// Call the sensor
+		ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
+		sensor.execute(context);
+
+		if (JRE.currentVersion().compareTo(JRE.JAVA_21) < 0) {
+			// One compiler warning that there are unsage operations in the file and another to recompile for more details
+			verify(context, times(2)).newAnalysisError();
+		} else {
+			// Since JDK 21 one warning about implicit annotation processing
+			verify(context, times(3)).newAnalysisError();
+		}
+	}
 
 	@Test
 	void missingInputFile() {

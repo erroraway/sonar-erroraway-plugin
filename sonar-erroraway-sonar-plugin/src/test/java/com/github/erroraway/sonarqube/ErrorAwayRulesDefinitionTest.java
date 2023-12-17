@@ -56,7 +56,6 @@ class ErrorAwayRulesDefinitionTest {
 		verify(context, times(1)).createRepository(ErrorAwayRulesMapping.ERRORPRONE_REPOSITORY, "java");
 		verify(context, times(1)).createRepository(ErrorAwayRulesMapping.NULLAWAY_REPOSITORY, "java");
 		verify(context, times(1)).createRepository(ErrorAwayRulesMapping.ERRORPRONE_SLF4J_REPOSITORY, "java");
-		verify(context, times(1)).createRepository(ErrorAwayRulesMapping.AUTODISPOSE2_REPOSITORY, "java");
 
 		verify(newRepository, times(ErrorAwayRulesMapping.RULES_COUNT)).createRule(Mockito.anyString());
 	}
