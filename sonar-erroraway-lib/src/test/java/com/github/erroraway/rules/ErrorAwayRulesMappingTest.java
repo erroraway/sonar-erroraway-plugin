@@ -1,6 +1,5 @@
 package com.github.erroraway.rules;
 
-import static com.github.erroraway.rules.ErrorAwayRulesMapping.AUTODISPOSE2_REPOSITORY;
 import static com.github.erroraway.rules.ErrorAwayRulesMapping.ERRORPRONE_REPOSITORY;
 import static com.github.erroraway.rules.ErrorAwayRulesMapping.ERRORPRONE_SLF4J_REPOSITORY;
 import static com.github.erroraway.rules.ErrorAwayRulesMapping.NULLAWAY_REPOSITORY;
@@ -18,8 +17,7 @@ import com.google.errorprone.bugpatterns.BugChecker;
 import com.google.errorprone.bugpatterns.JavaUtilDateChecker;
 import com.uber.nullaway.NullAway;
 
-import autodispose2.errorprone.UseAutoDispose;
-import jp.skypencil.errorprone.slf4j.DoNotPublishSlf4jLogger;
+import jp.skypencil.errorprone.slf4j.Slf4jLoggerShouldBePrivate;
 import tech.picnic.errorprone.bugpatterns.JUnitValueSource;
 
 class ErrorAwayRulesMappingTest {
@@ -28,8 +26,7 @@ class ErrorAwayRulesMappingTest {
 	void mapping() {
 		assertThat(repository(JavaUtilDateChecker.class)).isEqualTo(ERRORPRONE_REPOSITORY);
 		assertThat(repository(NullAway.class)).isEqualTo(NULLAWAY_REPOSITORY);
-		assertThat(repository(DoNotPublishSlf4jLogger.class)).isEqualTo(ERRORPRONE_SLF4J_REPOSITORY);
-		assertThat(repository(UseAutoDispose.class)).isEqualTo(AUTODISPOSE2_REPOSITORY);
+		assertThat(repository(Slf4jLoggerShouldBePrivate.class)).isEqualTo(ERRORPRONE_SLF4J_REPOSITORY);
 		assertThat(repository(JUnitValueSource.class)).isEqualTo(PICNIC_REPOSITORY);
 	}
 	

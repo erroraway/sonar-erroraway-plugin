@@ -175,7 +175,7 @@ class ErrorAwaySensorTest {
 		verify(context, times(1)).newIssue();
 	}
 
-//	@Test
+	@Test
 	void analyzeWithAnnotationProcessor() {
 		setConfigurationStringArray(ErrorAwayPlugin.CLASS_PATH_MAVEN_COORDINATES, new String[]{"com.google.auto.value:auto-value-annotations:1.9"});
 		setConfigurationStringArray(ErrorAwayPlugin.ANNOTATION_PROCESSORS_MAVEN_COORDINATES, new String[]{"com.google.auto.value:auto-value:1.9"});
@@ -229,7 +229,7 @@ class ErrorAwaySensorTest {
 		assertThrows(ErrorAwayException.class, () -> sensor.execute(context));
 	}
 	
-//    @Test
+    @Test
     void analyzeWithErrorProneSlf4j() {
         setConfigurationStringArray(ErrorAwayPlugin.MAVEN_REPOSITORIES, new String[] {"https://repo1.maven.org/maven2/"});
         setup(Path.of("com/bug/Slf4jSamples.java"));
@@ -245,29 +245,8 @@ class ErrorAwaySensorTest {
         verify(context, times(1)).newIssue();
 		verify(newIssue, times(1)).forRule(ruleKey);
     }
-    
-//    @Test
-    void analyzeWithAutodispose2() {
-        setConfigurationStringArray(ErrorAwayPlugin.MAVEN_REPOSITORIES, new String[] {"https://repo1.maven.org/maven2/"});
-        setup(Path.of("com/bug/AndroidActivity.java"));
-        
-		RuleKey ruleKey = RuleKey.of("autodispose2", "AutoDispose");
-		enableRule(ruleKey);
-		enableRule(RuleKey.of("errorprone", "CheckReturnValue"));
-        setConfigurationStringArray(ErrorAwayPlugin.CLASS_PATH_MAVEN_COORDINATES, new String[]{
-                "com.google.android:android:4.1.1.4",
-                "io.reactivex.rxjava3:rxjava:3.1.4"
-                });
-        
-        // Call the sensor
-        ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
-        sensor.execute(context);
 
-        verify(context, times(1)).newIssue();
-		verify(newIssue, times(1)).forRule(ruleKey);
-    }
-
-//	@Test
+	@Test
 	void analyzeWithPicnicErrorProneSupport() {
 		setConfigurationStringArray(ErrorAwayPlugin.MAVEN_REPOSITORIES, new String[]{"https://repo1.maven.org/maven2/"});
 		setup(Path.of("com/bug/PicnicErrorProneSupportSample.java"));

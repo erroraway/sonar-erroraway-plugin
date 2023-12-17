@@ -74,11 +74,6 @@
 			<version>${errorprone.slf4j.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.uber.autodispose2</groupId>
-			<artifactId>autodispose-error-prone</artifactId>
-			<version>${autodispose2.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>tech.picnic.error-prone-support</groupId>
 			<artifactId>error-prone-contrib</artifactId>
 			<version>${picnic.errorprone.support.version}</version>

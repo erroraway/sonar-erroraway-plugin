@@ -35,7 +35,6 @@ public class ErrorAwayQualityProfile implements BuiltInQualityProfilesDefinition
 	public static final String ERROR_PRONE_PROFILE_NAME = "Error Prone";
 	public static final String NULL_AWAY_PROFILE_NAME = "Null Away";
 	public static final String ERROR_PRONE_SLF4J_PROFILE_NAME = "Error Prone SLF4J";
-	public static final String AUTODISPOSE2_PROFILE_NAME = "Autodispose2";
 	public static final String PICNIC_PROFILE_NAME = "Picnic Error Prone Support";
 	public static final String ERROR_PRONE_AND_PLUGINS_PROFILE_NAME = "Error Prone and plugins";
 	
@@ -50,7 +49,6 @@ public class ErrorAwayQualityProfile implements BuiltInQualityProfilesDefinition
 		NewBuiltInQualityProfile errorProneProfile = context.createBuiltInQualityProfile(ERROR_PRONE_PROFILE_NAME, "java");
 		NewBuiltInQualityProfile nullAwayProfile = context.createBuiltInQualityProfile(NULL_AWAY_PROFILE_NAME, "java");
 		NewBuiltInQualityProfile errorProneSlf4jProfile = context.createBuiltInQualityProfile(ERROR_PRONE_SLF4J_PROFILE_NAME, "java");
-		NewBuiltInQualityProfile autodisposeProfile = context.createBuiltInQualityProfile(AUTODISPOSE2_PROFILE_NAME, "java");
 		NewBuiltInQualityProfile picnicEerrorProneProfile = context.createBuiltInQualityProfile(PICNIC_PROFILE_NAME, "java");
 		NewBuiltInQualityProfile errorProneAndPluginsProfile = context.createBuiltInQualityProfile(ERROR_PRONE_AND_PLUGINS_PROFILE_NAME, "java");
 
@@ -58,7 +56,6 @@ public class ErrorAwayQualityProfile implements BuiltInQualityProfilesDefinition
 		pluginRepositories.put(ErrorAwayRulesMapping.ERRORPRONE_REPOSITORY, errorProneProfile);
 		pluginRepositories.put(ErrorAwayRulesMapping.NULLAWAY_REPOSITORY, nullAwayProfile);
 		pluginRepositories.put(ErrorAwayRulesMapping.ERRORPRONE_SLF4J_REPOSITORY, errorProneSlf4jProfile);
-		pluginRepositories.put(ErrorAwayRulesMapping.AUTODISPOSE2_REPOSITORY, autodisposeProfile);
 		pluginRepositories.put(ErrorAwayRulesMapping.PICNIC_REPOSITORY, picnicEerrorProneProfile);
 
 		for (String repoKey : ErrorAwayRulesMapping.REPOSITORIES) {
@@ -73,7 +70,6 @@ public class ErrorAwayQualityProfile implements BuiltInQualityProfilesDefinition
 		errorProneProfile.done();
 		nullAwayProfile.done();
 		errorProneSlf4jProfile.done();
-		autodisposeProfile.done();
 		picnicEerrorProneProfile.done();
 		errorProneAndPluginsProfile.done();
 	}

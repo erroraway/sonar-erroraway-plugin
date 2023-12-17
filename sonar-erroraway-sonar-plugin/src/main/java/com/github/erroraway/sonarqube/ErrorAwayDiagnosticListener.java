@@ -168,8 +168,6 @@ public class ErrorAwayDiagnosticListener implements DiagnosticListener<JavaFileO
 		switch (rule) {
 		case "NullAway":
 			return ErrorAwayRulesMapping.NULLAWAY_REPOSITORY;
-		case "AutoDispose":
-			return ErrorAwayRulesMapping.AUTODISPOSE2_REPOSITORY;
 		default:
 			return ErrorAwayRulesMapping.ERRORPRONE_REPOSITORY;
 		}

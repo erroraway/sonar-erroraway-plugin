@@ -3,7 +3,6 @@
  */
 package com.github.erroraway.maven;
 
-import static com.github.erroraway.rules.ErrorAwayRulesMapping.AUTODISPOSE2_REPOSITORY;
 import static com.github.erroraway.rules.ErrorAwayRulesMapping.NULLAWAY_REPOSITORY;
 
 import java.io.File;
@@ -21,7 +20,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.ServiceLoader;
 import java.util.stream.Collectors;
 
 import org.apache.maven.plugin.AbstractMojo;
@@ -88,7 +86,7 @@ public class ErrorAwayRulesMojo extends AbstractMojo {
 	}
 
 	public static Map<String, List<Class<? extends BugChecker>>> checkerClassesByRepository() {
-		Iterator<BugChecker> checkersIterator = pluginCheckers();
+		Iterator<BugChecker> checkersIterator = ErrorAwayRulesMapping.pluginCheckers();
 
 		Map<String, List<Class<? extends BugChecker>>> pluginCheckers = new HashMap<>();
 		while (checkersIterator.hasNext()) {
@@ -99,12 +97,6 @@ public class ErrorAwayRulesMojo extends AbstractMojo {
 		}
 
 		return pluginCheckers;
-	}
-	
-	public static Iterator<BugChecker> pluginCheckers() {
-		ClassLoader loader = ErrorAwayRulesMapping.class.getClassLoader();
-
-		return ServiceLoader.load(BugChecker.class, loader).iterator();
 	}
 
 	private void processCheckers(String repositoryName, Collection<BugCheckerInfo> bugCheckerInfos) throws MojoFailureException {
@@ -264,8 +256,6 @@ public class ErrorAwayRulesMojo extends AbstractMojo {
 		switch (repository(bugCheckerInfo)) {
 		case NULLAWAY_REPOSITORY:
 			return "https://github.com/uber/NullAway/wiki/Error-Messages";
-		case AUTODISPOSE2_REPOSITORY:
-			return "https://github.com/uber/AutoDispose/wiki/Error-Prone-Checker";
 		default:
 			return bugCheckerInfo.linkUrl();
 		}

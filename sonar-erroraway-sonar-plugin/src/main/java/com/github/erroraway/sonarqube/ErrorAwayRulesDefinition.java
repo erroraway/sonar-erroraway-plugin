@@ -15,7 +15,6 @@
  */
 package com.github.erroraway.sonarqube;
 
-import static com.github.erroraway.rules.ErrorAwayRulesMapping.AUTODISPOSE2_REPOSITORY;
 import static com.github.erroraway.rules.ErrorAwayRulesMapping.ERRORPRONE_REPOSITORY;
 import static com.github.erroraway.rules.ErrorAwayRulesMapping.ERRORPRONE_SLF4J_REPOSITORY;
 import static com.github.erroraway.rules.ErrorAwayRulesMapping.NULLAWAY_REPOSITORY;
@@ -28,9 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ServiceLoader;
 
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
@@ -55,7 +52,6 @@ public class ErrorAwayRulesDefinition implements RulesDefinition {
 		loadRepository(context, ERRORPRONE_REPOSITORY, "Error Prone");
 		loadRepository(context, NULLAWAY_REPOSITORY, "Null Away");
 		loadRepository(context, ERRORPRONE_SLF4J_REPOSITORY, "Error Prone SLF4J");
-		loadRepository(context, AUTODISPOSE2_REPOSITORY, "AutoDispose");
 		loadRepository(context, PICNIC_REPOSITORY, "Picnic Error Prone Support");
 	}
 	
@@ -90,12 +86,6 @@ public class ErrorAwayRulesDefinition implements RulesDefinition {
 		} catch (Exception e) {
 			throw new ErrorAwayException("Error loading repository metadata from " + resourceFolder, e);
 		}
-	}
-
-	public static Iterator<BugChecker> pluginCheckers() {
-		ClassLoader loader = ErrorAwaySensor.class.getClassLoader();
-
-		return ServiceLoader.load(BugChecker.class, loader).iterator();
 	}
 
 	public static String asRuleKey(BugCheckerInfo bugCheckerInfo) {

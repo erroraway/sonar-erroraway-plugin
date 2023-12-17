@@ -6,7 +6,6 @@ This [SonarQube](https://www.sonarqube.org/) plugin uses [Error Prone](https://e
 Additionally, some Error Prone plugins are included:
 - [Uber's NullAway](https://github.com/uber/NullAway)
 - [errorprone-slf4j](https://github.com/KengoTODA/errorprone-slf4j)
-- [Autodispose2](https://uber.github.io/AutoDispose/lint-check/)
 - [Picnic Error Prone Support](https://github.com/PicnicSupermarket/error-prone-support)
 
 ## Usage

@@ -83,7 +83,7 @@ public class ErrorAwaySensor implements Sensor {
 		addErrorProneCheckers(context, checkers, BuiltInCheckerSuppliers.ENABLED_ERRORS);
 
 		// Plugin checkers
-		Iterator<BugChecker> checkersIterator = ErrorAwayRulesDefinition.pluginCheckers();
+		Iterator<BugChecker> checkersIterator = ErrorAwayRulesMapping.pluginCheckers();
 
 		while (checkersIterator.hasNext()) {
 			BugChecker bugChecker = checkersIterator.next();
