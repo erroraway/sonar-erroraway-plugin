@@ -30,16 +30,16 @@ jobs:
       matrix:
         include:
           # 9.9 LTS 
-          - SONAR_SERVER_VERSION: 9.9.0.65466
+          - SONAR_SERVER_VERSION: 9.9.3.79811
             SONAR_PLUGIN_API_VERSION: 9.14.0.375
             SONAR_PLUGIN_API_GROUPID: org.sonarsource.api.plugin
             SONAR_JAVA_VERSION: 7.16.0.30901
             SONAR_SERVER_JAVA_VERSION: 17
           # 10.x 
-          - SONAR_SERVER_VERSION: 10.0.0.68432
-            SONAR_PLUGIN_API_VERSION: 9.14.0.375
+          - SONAR_SERVER_VERSION: 10.3.0.82913
+            SONAR_PLUGIN_API_VERSION: 10.2.0.1908
             SONAR_PLUGIN_API_GROUPID: org.sonarsource.api.plugin
-            SONAR_JAVA_VERSION: 7.16.1.31255
+            SONAR_JAVA_VERSION: 7.28.0.33738
             SONAR_SERVER_JAVA_VERSION: 17
     steps:
       - uses: actions/checkout@v3

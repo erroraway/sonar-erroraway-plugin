@@ -149,4 +149,11 @@ public class TestInputFile implements InputFile {
 	public String toString() {
 		return path.toString();
 	}
+	
+	/**
+	 * Needed for The 10.3 sonar api
+	 */
+	public String md5Hash() {
+		return null;
+	}
 }

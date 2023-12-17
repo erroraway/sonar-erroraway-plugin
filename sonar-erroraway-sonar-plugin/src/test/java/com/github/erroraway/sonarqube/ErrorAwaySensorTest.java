@@ -36,6 +36,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
+import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.FilePredicate;
 import org.sonar.api.batch.fs.FilePredicates;
 import org.sonar.api.batch.fs.FileSystem;
@@ -50,10 +51,9 @@ import org.sonar.api.batch.sensor.issue.NewIssue;
 import org.sonar.api.batch.sensor.issue.NewIssueLocation;
 import org.sonar.api.config.Configuration;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.testfixtures.log.LogAndArguments;
+import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.api.utils.TempFolder;
-import org.sonar.api.utils.log.LogAndArguments;
-import org.sonar.api.utils.log.LogTesterJUnit5;
-import org.sonar.api.utils.log.LoggerLevel;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import com.github.erroraway.ErrorAwayException;
@@ -315,7 +315,7 @@ class ErrorAwaySensorTest {
 		ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
 		sensor.execute(context);
 
-		assertThat(logTester.getLogs(LoggerLevel.WARN).stream().map(LogAndArguments::getRawMsg).collect(Collectors.toList())).contains("Could not file input file for source {}");
+		assertThat(logTester.getLogs(Level.WARN).stream().map(LogAndArguments::getRawMsg).collect(Collectors.toList())).contains("Could not file input file for source {}");
 	}
 
 	@Test

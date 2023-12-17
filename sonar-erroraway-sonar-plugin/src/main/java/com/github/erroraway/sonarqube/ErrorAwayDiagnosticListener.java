@@ -23,6 +23,8 @@ import javax.tools.Diagnostic.Kind;
 import javax.tools.DiagnosticListener;
 import javax.tools.JavaFileObject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextPointer;
@@ -31,8 +33,6 @@ import org.sonar.api.batch.sensor.error.NewAnalysisError;
 import org.sonar.api.batch.sensor.issue.NewIssue;
 import org.sonar.api.batch.sensor.issue.NewIssueLocation;
 import org.sonar.api.rule.RuleKey;
-import org.sonar.api.utils.log.Logger;
-import org.sonar.api.utils.log.Loggers;
 
 import com.github.erroraway.ErrorAwayException;
 import com.github.erroraway.rules.ErrorAwayRulesMapping;
@@ -42,7 +42,7 @@ import com.github.erroraway.rules.ErrorAwayRulesMapping;
  *
  */
 public class ErrorAwayDiagnosticListener implements DiagnosticListener<JavaFileObject> {
-	private static final Logger LOGGER = Loggers.get(ErrorAwayDiagnosticListener.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ErrorAwayDiagnosticListener.class);
 
 	public static final String ERROR_PRONE_COMPILER_CRASH_CODE = "compiler.err.error.prone.crash";
 	private static final Set<String> ERROR_PRONE_DIAGNOSTIC_CODES = Set.of("compiler.warn.error.prone",
