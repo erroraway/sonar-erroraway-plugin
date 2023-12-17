@@ -29,9 +29,9 @@
 	</developers>
 
 	<properties>
-		<sonar.server.version>8.9.7.52159</sonar.server.version>
-		<sonar-plugin-api.version>8.9.7.52159</sonar-plugin-api.version>
-		<sonar-plugin-api.groupId>org.sonarsource.sonarqube</sonar-plugin-api.groupId>
+		<sonar.server.version>9.17.0.587</sonar.server.version>
+		<sonar-plugin-api.version>9.17.0.587</sonar-plugin-api.version>
+		<sonar-plugin-api.groupId>org.sonarsource.api.plugin</sonar-plugin-api.groupId>
 		<sonar-commons-analyzers.version>1.10.2.456</sonar-commons-analyzers.version>
 		<sonar-java.version>6.0.0.20538</sonar-java.version>
 

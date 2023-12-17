@@ -149,4 +149,9 @@ public class TestInputFile implements InputFile {
 	public String toString() {
 		return path.toString();
 	}
+	
+	@Override
+	public String md5Hash() {
+		return null;
+	}
 }
