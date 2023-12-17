@@ -73,8 +73,7 @@ public class ErrorAwayRulesDefinition implements RulesDefinition {
 
 	public List<String> loadRepositoryRuleKeys(String resourceFolder) {
 		try {
-			JsonParser parser = new JsonParser();
-			JsonElement repositoryMetaData = parser.parse(toString(resourceFolder + "/repository.json", UTF_8));
+			JsonElement repositoryMetaData = JsonParser.parseString(toString(resourceFolder + "/repository.json", UTF_8));
 			JsonArray rules = repositoryMetaData.getAsJsonObject().get("rules").getAsJsonArray();
 			List<String> ruleKeys = new ArrayList<>();
 			

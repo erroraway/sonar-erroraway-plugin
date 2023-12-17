@@ -79,7 +79,7 @@ public class ErrorAwayRulesMojo extends AbstractMojo {
 			String repository = entry.getKey();
 			List<Class<? extends BugChecker>> checkers = entry.getValue();
 
-			List<BugCheckerInfo> checkersInfos = checkers.stream().map(BugCheckerInfo::create).collect(Collectors.toList());
+			List<BugCheckerInfo> checkersInfos = checkers.stream().map(BugCheckerInfo::create).toList();
 
 			processCheckers(repository, checkersInfos);
 		}
@@ -125,7 +125,7 @@ public class ErrorAwayRulesMojo extends AbstractMojo {
 		rule.put("defaultSeverity", getSeverity(bugCheckerInfo));
 		rule.put("type", RuleType.CODE_SMELL);
 		rule.put("status", RuleStatus.READY);
-		rule.put("tags", bugCheckerInfo.getTags().stream().map(this::normalizeTag).collect(Collectors.toList()));
+		rule.put("tags", bugCheckerInfo.getTags().stream().map(this::normalizeTag).toList());
 		
 		File ruleFile = new File(directory, ruleKey + ".json");
 		
