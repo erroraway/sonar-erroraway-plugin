@@ -6,6 +6,7 @@ import static com.github.erroraway.rules.ErrorAwayRulesMapping.NULLAWAY_REPOSITO
 import static com.github.erroraway.rules.ErrorAwayRulesMapping.PICNIC_REPOSITORY;
 import static com.github.erroraway.rules.ErrorAwayRulesMapping.repository;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,11 @@ class ErrorAwayRulesMappingTest {
 	@Test
 	void unknownRepository() {
 		assertThrows(ErrorAwayException.class, () -> ErrorAwayRulesMapping.repository(UnknownBugChecker.class));
+	}
+	
+	@Test
+	void pluginChecker() {
+		assertDoesNotThrow(() -> ErrorAwayRulesMapping.pluginCheckers());
 	}
 
 	@BugPattern(summary = "", severity = SeverityLevel.ERROR)
