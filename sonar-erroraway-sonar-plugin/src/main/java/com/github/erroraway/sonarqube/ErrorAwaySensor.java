@@ -240,7 +240,7 @@ public class ErrorAwaySensor implements Sensor {
 
 			return properties.getProperty("erroraway.plugin.version");
 		} catch (Exception e) {
-			LOGGER.error("Could not find version", e);
+			LOGGER.debug("Could not find version", e);
 			return "UNKNOWN: " + e.getMessage();
 		}
 	}
