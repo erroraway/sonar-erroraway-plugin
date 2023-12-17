@@ -252,11 +252,9 @@ public class ErrorAwayRulesMojo extends AbstractMojo {
 	 * @return The link for the give {@link BugCheckerInfo}
 	 */
 	private String getBugCheckerLink(BugCheckerInfo bugCheckerInfo) {
-		switch (repository(bugCheckerInfo)) {
-		case NULLAWAY_REPOSITORY:
-			return "https://github.com/uber/NullAway/wiki/Error-Messages";
-		default:
-			return bugCheckerInfo.linkUrl();
-		}
+		return switch (repository(bugCheckerInfo)) {
+			case NULLAWAY_REPOSITORY -> "https://github.com/uber/NullAway/wiki/Error-Messages";
+			default -> bugCheckerInfo.linkUrl();
+		};
 	}
 }

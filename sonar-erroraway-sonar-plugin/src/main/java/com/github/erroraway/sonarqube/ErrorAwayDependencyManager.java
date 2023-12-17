@@ -110,7 +110,7 @@ public class ErrorAwayDependencyManager {
 			return artifactResults.stream()
 					.map(ArtifactResult::getArtifact)
 					.map(Artifact::getFile)
-					.collect(Collectors.toList());
+					.toList();
 		} catch (ArtifactResolutionException e) {
 			throw new ErrorAwayException("Error resolving " + Arrays.toString(coordinates) + " from " + remoteRepositories, e);
 		}

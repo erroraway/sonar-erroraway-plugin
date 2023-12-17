@@ -165,11 +165,9 @@ public class ErrorAwayDiagnosticListener implements DiagnosticListener<JavaFileO
 			return ErrorAwayRulesMapping.PICNIC_REPOSITORY;
 		}
 
-		switch (rule) {
-		case "NullAway":
-			return ErrorAwayRulesMapping.NULLAWAY_REPOSITORY;
-		default:
-			return ErrorAwayRulesMapping.ERRORPRONE_REPOSITORY;
-		}
+		return switch (rule) {
+			case "NullAway" -> ErrorAwayRulesMapping.NULLAWAY_REPOSITORY;
+			default ->ErrorAwayRulesMapping.ERRORPRONE_REPOSITORY;
+		};
 	}
 }
