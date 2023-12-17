@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
 import org.sonar.api.batch.fs.FilePredicate;
@@ -202,7 +203,12 @@ class ErrorAwaySensorTest {
 		// Javac wraps our exception in a RuntimeException
 		assertThrowsExactly(RuntimeException.class, () -> sensor.execute(context));
 
-		verify(context, times(1)).newAnalysisError();
+		if (JRE.currentVersion().compareTo(JRE.JAVA_21) < 0) {
+			verify(context, times(1)).newAnalysisError();
+		} else {
+			// Since JDK 21 one warning about implicit annotation processing
+			verify(context, times(2)).newAnalysisError();
+		}
 	}
 
 	@Test
@@ -281,18 +287,23 @@ class ErrorAwaySensorTest {
         verify(context, times(256)).newIssue();
     }
 
-    @Test
-    void compilerWarning() {
-        setup(Path.of("com/bug/VarArgsArray.java"));
-        enableRule(RuleKey.of("errorprone", "DurationTemporalUnit"));
+	@Test
+	void compilerWarning() {
+		setup(Path.of("com/bug/VarArgsArray.java"));
+		enableRule(RuleKey.of("errorprone", "DurationTemporalUnit"));
 
-        // Call the sensor
-        ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
-        sensor.execute(context);
-        
-        // One compiler warning that there are unsage operations in the file and another to recompile for more details
-        verify(context, times(2)).newAnalysisError();
-    }
+		// Call the sensor
+		ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
+		sensor.execute(context);
+
+		if (JRE.currentVersion().compareTo(JRE.JAVA_21) < 0) {
+			// One compiler warning that there are unsage operations in the file and another to recompile for more details
+			verify(context, times(2)).newAnalysisError();
+		} else {
+			// Since JDK 21 one warning about implicit annotation processing
+			verify(context, times(3)).newAnalysisError();
+		}
+	}
 
 	@Test
 	void missingInputFile() {
