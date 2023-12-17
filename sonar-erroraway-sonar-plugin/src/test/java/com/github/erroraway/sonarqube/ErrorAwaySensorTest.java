@@ -330,9 +330,16 @@ class ErrorAwaySensorTest {
 	}
 	
 	@Test
+	void getVersion() {
+		ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
+
+		assertThat(sensor.getVersion()).doesNotStartWith("UNKNOWN");
+	}
+	
+	@Test
 	void getVersionError() {
-	    ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
-        
-        assertThat(sensor.getVersion("/foo/bar.properties")).startsWith("UNKNOWN");
+		ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
+
+		assertThat(sensor.getVersion("/foo/bar.properties")).startsWith("UNKNOWN");
 	}
 }
