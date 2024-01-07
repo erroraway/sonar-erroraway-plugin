@@ -11,12 +11,17 @@
 	<packaging>sonar-plugin</packaging>
 
 	<name>Error Away SonarQube plugin</name>
-
+	<url>https://github.com/erroraway/sonar-erroraway-plugin</url>
+	<issueManagement>
+		<system>GitHub Issues</system>
+		<url>https://github.com/erroraway/sonar-erroraway-plugin/issues</url>
+	</issueManagement>
+	
 	<dependencies>
 		<dependency>
 			<groupId>io.github.erroraway</groupId>
-		<artifactId>sonar-erroraway-lib</artifactId>
-		<version>${project.version}</version>
+			<artifactId>sonar-erroraway-lib</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 		
 		<dependency>
