@@ -32,7 +32,7 @@ When running on JDK 16 or newer add the following options due to [JEP 396](https
 --add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED
 ```
 
-See [.mvn/jvm.config](src/test/resources/projects/simple/.mvn/jvm.config) for a way to do it with Maven and [gradle.properties](src/test/resources/projects/simple/gradle.properties) for a way to do it with Gradle
+See [.mvn/jvm.config](sonar-erroraway-sonar-plugin/src/test/resources/projects/simple/.mvn/jvm.config) for a way to do it with Maven and [gradle.properties](sonar-erroraway-sonar-plugin/src/test/resources/projects/simple/gradle.properties) for a way to do it with Gradle
 
 When these options are not set you will receive errors: 
 ```
