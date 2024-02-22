@@ -15,8 +15,7 @@
  */
 package com.github.erroraway.sonarqube.it;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.util.Collections;
@@ -24,9 +23,6 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -42,9 +38,10 @@ import org.sonarqube.ws.client.qualityprofiles.QualityprofilesService;
 import com.github.erroraway.sonarqube.ErrorAwayQualityProfile;
 import com.github.erroraway.sonarqube.NullAwayOption;
 import com.sonar.orchestrator.Orchestrator;
-import com.sonar.orchestrator.OrchestratorBuilder;
 import com.sonar.orchestrator.build.GradleBuild;
 import com.sonar.orchestrator.build.MavenBuild;
+import com.sonar.orchestrator.junit5.OrchestratorExtension;
+import com.sonar.orchestrator.junit5.OrchestratorExtensionBuilder;
 import com.sonar.orchestrator.locator.FileLocation;
 
 /**
@@ -67,11 +64,12 @@ public class ErrorAwayIT {
 	public static void startOrchestrator() {
 		String sonarVersion = System.getProperty("sonar.server.version", "9.5");
 		System.out.println(FileLocation.of("./target/sonar-erroraway-plugin.jar"));
-		OrchestratorBuilder orchestratorBuilder = Orchestrator.builderEnv()
+		OrchestratorExtensionBuilder orchestratorBuilder = OrchestratorExtension.builderEnv()
 				// Since SQ 9.8 permissions for 'Anyone' group has been limited for new instances
 				.useDefaultAdminCredentialsForBuilds(true)
 				.addPlugin(FileLocation.of("./target/sonar-erroraway-plugin.jar"))
 				.keepBundledPlugins()
+				.setOrchestratorProperty("orchestrator.artifactory.url", "https://repo1.maven.org/maven2")
 				.setServerProperty("sonar.web.port", "9000")
 				.setSonarVersion("LATEST_RELEASE[" + sonarVersion + "]");
 
@@ -148,7 +146,7 @@ public class ErrorAwayIT {
 		issueRequest.setProjects(Collections.singletonList(projectKey));
 		List<Issue> issues = ISSUES_SERVICES.search(issueRequest).getIssuesList();
 
-		assertThat(issues.size(), is(22));
+		assertThat(issues).hasSize(22);
 
 		assertSimpleIssues(issues, projectKey);
 		assertApplicationSimpleIssues(issues, projectKey);
@@ -161,75 +159,60 @@ public class ErrorAwayIT {
 	@SuppressWarnings("unchecked")
 	private void assertSimpleIssues(List<Issue> issues, String projectKey) {
 		Predicate<Issue> simpleJavaPredicate = component(projectKey, "src/main/java/Simple.java");
-		assertThat(issues, containsIssueMatching(simpleJavaPredicate, rule("errorprone:DefaultPackage"), startLine(1)));
-		assertThat(issues, containsIssueMatching(simpleJavaPredicate, rule("errorprone-slf4j:Slf4jLoggerShouldBePrivate"), startLine(8)));
-		assertThat(issues, containsIssueMatching(simpleJavaPredicate, rule("errorprone:ClassNewInstance"), startLine(11)));
-		assertThat(issues, containsIssueMatching(simpleJavaPredicate, rule("errorprone:ComparisonOutOfRange"), startLine(20)));
-		assertThat(issues, containsIssueMatching(simpleJavaPredicate, rule("errorprone:UnusedMethod"), startLine(25)));
-		assertThat(issues, containsIssueMatching(simpleJavaPredicate, rule("errorprone-slf4j:Slf4jPlaceholderMismatch"), startLine(26)));
+	
+		assertThatIssuesContainsIssueMatching(issues, simpleJavaPredicate, rule("errorprone:DefaultPackage"), startLine(1));
+		assertThatIssuesContainsIssueMatching(issues, simpleJavaPredicate, rule("errorprone-slf4j:Slf4jLoggerShouldBePrivate"), startLine(8));
+		assertThatIssuesContainsIssueMatching(issues, simpleJavaPredicate, rule("errorprone:ClassNewInstance"), startLine(11));
+		assertThatIssuesContainsIssueMatching(issues, simpleJavaPredicate, rule("errorprone:ComparisonOutOfRange"), startLine(20));
+		assertThatIssuesContainsIssueMatching(issues, simpleJavaPredicate, rule("errorprone:UnusedMethod"), startLine(25));
+		assertThatIssuesContainsIssueMatching(issues, simpleJavaPredicate, rule("errorprone-slf4j:Slf4jPlaceholderMismatch"), startLine(26));
 	}
 
 	@SuppressWarnings("unchecked")
 	private void assertApplicationSimpleIssues(List<Issue> issues, String projectKey) {
 		Predicate<Issue> applicationSimpleJavaPredicate = component(projectKey, "src/main/java/application/Simple.java");
-		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("errorprone:ClassNewInstance"), startLine(15)));
-		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("nullaway:NullAway"), startLine(22)));
-		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("errorprone:ComparisonOutOfRange"), startLine(24)));
-		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("errorprone:CollectionIncompatibleType"), startLine(33)));
-		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("errorprone:UnusedMethod"), startLine(38)));
-		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("nullaway:NullAway"), startLine(45)));
-		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("errorprone:UnusedMethod"), startLine(48)));
-		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("errorprone-slf4j:Slf4jPlaceholderMismatch"), startLine(49)));
+		assertThatIssuesContainsIssueMatching(issues, applicationSimpleJavaPredicate, rule("errorprone:ClassNewInstance"), startLine(15));
+		assertThatIssuesContainsIssueMatching(issues, applicationSimpleJavaPredicate, rule("nullaway:NullAway"), startLine(22));
+		assertThatIssuesContainsIssueMatching(issues, applicationSimpleJavaPredicate, rule("errorprone:ComparisonOutOfRange"), startLine(24));
+		assertThatIssuesContainsIssueMatching(issues, applicationSimpleJavaPredicate, rule("errorprone:CollectionIncompatibleType"), startLine(33));
+		assertThatIssuesContainsIssueMatching(issues, applicationSimpleJavaPredicate, rule("errorprone:UnusedMethod"), startLine(38));
+		assertThatIssuesContainsIssueMatching(issues, applicationSimpleJavaPredicate, rule("nullaway:NullAway"), startLine(45));
+		assertThatIssuesContainsIssueMatching(issues, applicationSimpleJavaPredicate, rule("errorprone:UnusedMethod"), startLine(48));
+		assertThatIssuesContainsIssueMatching(issues, applicationSimpleJavaPredicate, rule("errorprone-slf4j:Slf4jPlaceholderMismatch"), startLine(49));
 	}
 
 	@SuppressWarnings("unchecked")
 	private void assertBugsSamplesIssues(List<Issue> issues, String projectKey) {
 		Predicate<Issue> bugsJavaPredicate = component(projectKey, "src/main/java/com/bugs/BugsSamples.java");
-		assertThat(issues, containsIssueMatching(bugsJavaPredicate, rule("errorprone:ZoneIdOfZ"), startLine(8)));
+		assertThatIssuesContainsIssueMatching(issues, bugsJavaPredicate, rule("errorprone:ZoneIdOfZ"), startLine(8));
 	}
 
 	@SuppressWarnings("unchecked")
 	private void assertHibernateEntityIssues(List<Issue> issues, String projectKey) {
 		Predicate<Issue> applicationSimpleJavaPredicate = component(projectKey, "src/main/java/application/HibernateEntity.java");
-		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("nullaway:NullAway"), startLine(15)));
-		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("nullaway:NullAway"), startLine(16)));
-		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("errorprone:DurationTemporalUnit"), startLine(31)));
-		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("nullaway:NullAway"), startLine(32)));
+		assertThatIssuesContainsIssueMatching(issues, applicationSimpleJavaPredicate, rule("nullaway:NullAway"), startLine(15));
+		assertThatIssuesContainsIssueMatching(issues, applicationSimpleJavaPredicate, rule("nullaway:NullAway"), startLine(16));
+		assertThatIssuesContainsIssueMatching(issues, applicationSimpleJavaPredicate, rule("errorprone:DurationTemporalUnit"), startLine(31));
+		assertThatIssuesContainsIssueMatching(issues, applicationSimpleJavaPredicate, rule("nullaway:NullAway"), startLine(32));
 	}
 
 	@SuppressWarnings("unchecked")
 	private void assertPicnicSamplesIssues(List<Issue> issues, String projectKey) {
 		Predicate<Issue> applicationSimpleJavaPredicate = component(projectKey,	"src/main/java/application/GrammarListener.java");
-		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("picnic-errorprone:EmptyMethod"), startLine(12)));
+		assertThatIssuesContainsIssueMatching(issues, applicationSimpleJavaPredicate, rule("picnic-errorprone:EmptyMethod"), startLine(12));
 	}
 
 	@SuppressWarnings("unchecked")
 	private void assertGrammarListenerIssues(List<Issue> issues, String projectKey) {
 		Predicate<Issue> applicationSimpleJavaPredicate = component(projectKey,	"src/main/java/application/GrammarListener.java");
-		assertThat(issues, containsIssueMatching(applicationSimpleJavaPredicate, rule("errorprone:MissingOverride"), startLine(8)));
+		assertThatIssuesContainsIssueMatching(issues, applicationSimpleJavaPredicate, rule("errorprone:MissingOverride"), startLine(8));
 	}
 
 	@SuppressWarnings("unchecked")
-	private Matcher<List<Issue>> containsIssueMatching(Predicate<Issue>... issuePredicates) {
+	private void assertThatIssuesContainsIssueMatching(List<Issue> issues, Predicate<Issue>... issuePredicates) {
 		Predicate<Issue> issuePredicate = i -> Stream.of(issuePredicates).allMatch(p -> p.test(i));
 		
-		return new BaseMatcher<List<Issue>>() {
-
-			@Override
-			public boolean matches(Object item) {
-				if (item instanceof List) {
-					List<Issue> issues = (List<Issue>) item;
-
-					return issues.stream().anyMatch(issuePredicate);
-				}
-				return false;
-			}
-
-			@Override
-			public void describeTo(Description description) {
-				description.appendText("Issues list must contain a matching item");
-			}
-		};
+		assertThat(issues).anyMatch(issuePredicate);
 	}
 
 	private Predicate<Issue> component(String projectKey, String fileName) {
