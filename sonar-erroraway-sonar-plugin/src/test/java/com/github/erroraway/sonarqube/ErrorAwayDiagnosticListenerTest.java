@@ -15,7 +15,7 @@
  */
 package com.github.erroraway.sonarqube;
 
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -107,6 +107,6 @@ class ErrorAwayDiagnosticListenerTest {
 
 		ErrorAwayDiagnosticListener listener = new ErrorAwayDiagnosticListener(context);
 
-		assertNull(listener.getInputFile(diagnostic, fs));
+		assertThat(listener.getInputFile(diagnostic, fs)).isNull();
 	}
 }
