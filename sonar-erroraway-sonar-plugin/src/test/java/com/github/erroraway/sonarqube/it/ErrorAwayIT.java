@@ -69,6 +69,7 @@ public class ErrorAwayIT {
 				.useDefaultAdminCredentialsForBuilds(true)
 				.addPlugin(FileLocation.of("./target/sonar-erroraway-plugin.jar"))
 				.keepBundledPlugins()
+				.setServerProperty("sonar.plugins.downloadOnlyRequired", "true")
 				.setOrchestratorProperty("orchestrator.artifactory.url", "https://repo1.maven.org/maven2")
 				.setServerProperty("sonar.web.port", "9000")
 				.setSonarVersion("LATEST_RELEASE[" + sonarVersion + "]");
