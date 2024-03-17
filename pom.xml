@@ -36,7 +36,7 @@
 		<sonar-java.version>6.0.0.20538</sonar-java.version>
 		<sonar-orchestrator.version>4.7.0.1861</sonar-orchestrator.version>
 
-		<errorprone.version>2.25.0</errorprone.version>
+		<errorprone.version>2.26.1</errorprone.version>
 		<nullaway.version>0.10.19</nullaway.version>
 		<errorprone.slf4j.version>0.1.20</errorprone.slf4j.version>
 		<picnic.errorprone.support.version>0.15.0</picnic.errorprone.support.version>
