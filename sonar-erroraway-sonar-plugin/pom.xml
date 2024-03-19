@@ -252,6 +252,9 @@
 					<pluginDescription>Analyze Java Code with ErrorProne, NullAway, errorprone-slf4j, Picnic ErrorProne support and Autodispose2</pluginDescription>
 					<pluginOrganizationName>ErrorAway</pluginOrganizationName>
 					<pluginOrganizationUrl>https://github.com/erroraway</pluginOrganizationUrl>
+					<pluginUrl>https://github.com/erroraway/sonar-erroraway-plugin</pluginUrl>
+					<pluginIssueTrackerUrl>https://github.com/erroraway/sonar-erroraway-plugin/issues</pluginIssueTrackerUrl>
+					<requiredForLanguages>java</requiredForLanguages>
 					<jreMinVersion>11</jreMinVersion>
 					<skipDependenciesPackaging>true</skipDependenciesPackaging>
 				</configuration>

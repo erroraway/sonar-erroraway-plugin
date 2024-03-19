@@ -8,6 +8,11 @@
 	<name>Error Away SonarQube plugin</name>
 	<description>Analyze Java Code with ErrorProne, NullAway, errorprone-slf4j and Picnic Error Prone Support</description>
 	<url>https://github.com/erroraway/sonar-erroraway-plugin</url>
+	
+	<issueManagement>
+		<system>GitHub Issues</system>
+		<url>https://github.com/erroraway/sonar-erroraway-plugin/issues</url>
+	</issueManagement>
 
 	<licenses>
 		<license>
