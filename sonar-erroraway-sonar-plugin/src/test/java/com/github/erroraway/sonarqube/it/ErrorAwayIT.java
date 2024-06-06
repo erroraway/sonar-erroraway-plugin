@@ -69,9 +69,9 @@ public class ErrorAwayIT {
 				.useDefaultAdminCredentialsForBuilds(true)
 				.addPlugin(FileLocation.of("./target/sonar-erroraway-plugin.jar"))
 				.keepBundledPlugins()
-				.setServerProperty("sonar.plugins.downloadOnlyRequired", "true")
+				.setServerProperty("sonar.plugins.downloadOnlyRequired", "false")
 				.setOrchestratorProperty("orchestrator.artifactory.url", "https://repo1.maven.org/maven2")
-				.setServerProperty("sonar.web.port", "9000")
+				.setServerProperty("sonar.web.port", getSonarWebPort())
 				.setSonarVersion("LATEST_RELEASE[" + sonarVersion + "]");
 
 		ORCHESTRATOR = orchestratorBuilder.build();
@@ -83,6 +83,10 @@ public class ErrorAwayIT {
 		QUALITY_PROFILES_SERVICE = new QualityprofilesService(connector);
 		PROJECT_SERVICES = new ProjectsService(connector);
 		ISSUES_SERVICES = new IssuesService(connector);
+	}
+	
+	private static String getSonarWebPort() {
+		return System.getProperty("sonar.web.port", "9000");
 	}
 	
 	@AfterAll
@@ -115,31 +119,34 @@ public class ErrorAwayIT {
 				.setProperty("sonar.host.url", ORCHESTRATOR.getServer().getUrl())
 				.setProperty("sonar.login", "admin")
 				.setProperty("sonar.password", "admin")
-				.setGoals("clean package org.sonarsource.scanner.maven:sonar-maven-plugin:sonar");
+				.setProperty("sonar.web.port", getSonarWebPort())
+				.setGoals("clean package org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.plugins.downloadOnlyRequired=false");
 		
 		ORCHESTRATOR.executeBuild(build);
 		
 		checkIssues(SIMPLE_MAVEN_PROJECT_KEY);
 	}
 
-    @Test
-    void analyzeSimpleGradleProject() {
-        setupProjectAndProfile(SIMPLE_GRADLE_PROJECT_KEY, "Simple - Gradle");
+	@Test
+	void analyzeSimpleGradleProject() {
+		setupProjectAndProfile(SIMPLE_GRADLE_PROJECT_KEY, "Simple - Gradle");
 
-        // Can't seem to set property nullaway.annotated.packages here, so it is set in build.gradle
-        GradleBuild build = GradleBuild.create()
-                .setProjectDirectory(FileLocation.of(new File("src/test/resources/projects/simple").getAbsoluteFile()))
-                .setProperty("sonar.host.url", ORCHESTRATOR.getServer().getUrl())
-                .setProperty("sonar.login", "admin")
-                .setProperty("sonar.password", "admin")
-                .setTasks("clean", "build")
-                .addArgument("--stacktrace")
-                .addSonarTask();
-        
-        ORCHESTRATOR.executeBuild(build);
-        
-        checkIssues(SIMPLE_GRADLE_PROJECT_KEY);
-    }
+		// Can't seem to set property nullaway.annotated.packages here, so it is set in build.gradle
+		GradleBuild build = GradleBuild.create()
+				.setProjectDirectory(FileLocation.of(new File("src/test/resources/projects/simple").getAbsoluteFile()))
+				.setProperty("sonar.host.url", ORCHESTRATOR.getServer().getUrl())
+				.setProperty("sonar.login", "admin")
+				.setProperty("sonar.password", "admin")
+				.setProperty("sonar.web.port", getSonarWebPort())
+				.setTasks("clean", "build")
+				.addArgument("--stacktrace")
+				.addArgument("-Dsonar.plugins.downloadOnlyRequired=false")
+				.addSonarTask();
+
+		ORCHESTRATOR.executeBuild(build);
+
+		checkIssues(SIMPLE_GRADLE_PROJECT_KEY);
+	}
 	
 	private void checkIssues(String projectKey) {
 		// Check the issues reported in SonarQube
