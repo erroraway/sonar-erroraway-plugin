@@ -34,7 +34,7 @@ public final class ErrorAwayRulesMapping {
 	public static final String ERRORPRONE_SLF4J_REPOSITORY = "errorprone-slf4j";
 	public static final String PICNIC_REPOSITORY = "picnic-errorprone";
 
-	public static final int ERRORPRONE_REPOSITORY_RULES_COUNT = 437;
+	public static final int ERRORPRONE_REPOSITORY_RULES_COUNT = 447;
 	public static final int NULLAWAY_REPOSITORY_RULES_COUNT = 1;
 	public static final int ERRORPRONE_SLF4J_REPOSITORY_RULES_COUNT = 8;
 	public static final int PICNIC_REPOSITORY_RULES_COUNT = 38;
@@ -49,7 +49,7 @@ public final class ErrorAwayRulesMapping {
 			NULLAWAY_REPOSITORY, 
 			ERRORPRONE_SLF4J_REPOSITORY, 
 			PICNIC_REPOSITORY));
-	
+
 	private ErrorAwayRulesMapping() {
 	}
 
@@ -67,7 +67,7 @@ public final class ErrorAwayRulesMapping {
 			throw new ErrorAwayException("Could not find rules repository for class " + className);
 		}
 	}
-	
+
 	public static Iterator<BugChecker> pluginCheckers() {
 		ClassLoader loader = ErrorAwayRulesMapping.class.getClassLoader();
 
