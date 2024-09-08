@@ -33,18 +33,15 @@ jobs:
           - SONAR_SERVER_VERSION: 9.9.3.79811
             SONAR_PLUGIN_API_VERSION: 9.14.0.375
             SONAR_PLUGIN_API_GROUPID: org.sonarsource.api.plugin
-            SONAR_JAVA_VERSION: 7.16.0.30901
             SONAR_SERVER_JAVA_VERSION: 17
           # 10.x 
           - SONAR_SERVER_VERSION: 10.4.0.87286
             SONAR_PLUGIN_API_VERSION: 10.6.0.2114
             SONAR_PLUGIN_API_GROUPID: org.sonarsource.api.plugin
-            SONAR_JAVA_VERSION: 7.30.1.34514
             SONAR_SERVER_JAVA_VERSION: 17
-          - SONAR_SERVER_VERSION: 10.5.1.90531
+          - SONAR_SERVER_VERSION: 10.6.0.92116
             SONAR_PLUGIN_API_VERSION: 10.7.0.2191
             SONAR_PLUGIN_API_GROUPID: org.sonarsource.api.plugin
-            SONAR_JAVA_VERSION: 7.34.0.35958
             SONAR_SERVER_JAVA_VERSION: 17
     steps:
       - uses: actions/checkout@v4
@@ -67,8 +64,7 @@ jobs:
           mvn -B verify \
           -Dsonar.server.version=${{ matrix.SONAR_SERVER_VERSION }} \
           -Dsonar-plugin-api.version=${{ matrix.SONAR_PLUGIN_API_VERSION }} \
-          -Dsonar-plugin-api.groupId=${{ matrix.SONAR_PLUGIN_API_GROUPID }} \
-          -Dsonar-java.version=${{ matrix.SONAR_JAVA_VERSION }}
+          -Dsonar-plugin-api.groupId=${{ matrix.SONAR_PLUGIN_API_GROUPID }}
   build:
     name: Build
     runs-on: ubuntu-latest
