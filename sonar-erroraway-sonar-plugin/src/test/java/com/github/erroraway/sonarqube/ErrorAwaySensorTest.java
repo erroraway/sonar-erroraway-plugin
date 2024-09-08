@@ -27,7 +27,6 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
@@ -125,7 +124,6 @@ class ErrorAwaySensorTest {
 		uriFilePredicate = inputFile -> inputFile.uri().equals(inputFile.uri());
 		inputFile = new TestInputFile(path.resolve(relativePath), relativePath, charset, Type.MAIN);
 		Iterable<InputFile> inputFiles = Collections.singleton(inputFile);
-		Collection<File> classpath = Collections.singleton(new File(System.getProperty("java.home") + "/lib/jrt-fs.jar"));
 
 		// Mock some methods
 		when(context.config()).thenReturn(configuration);
