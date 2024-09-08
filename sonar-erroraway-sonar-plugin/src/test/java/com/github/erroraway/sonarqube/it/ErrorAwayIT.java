@@ -52,7 +52,7 @@ import com.sonar.orchestrator.locator.FileLocation;
 public class ErrorAwayIT {
 
 	private static final String SIMPLE_MAVEN_PROJECT_KEY = "sonar-error-away-plugin:simple";
-    private static final String SIMPLE_GRADLE_PROJECT_KEY = "sonar-error-away-plugin:gradle-simple";
+	private static final String SIMPLE_GRADLE_PROJECT_KEY = "sonar-error-away-plugin:gradle-simple";
 
 	private static Orchestrator ORCHESTRATOR;
 
@@ -83,30 +83,30 @@ public class ErrorAwayIT {
 		PROJECT_SERVICES = new ProjectsService(connector);
 		ISSUES_SERVICES = new IssuesService(connector);
 	}
-	
+
 	private static String getSonarWebPort() {
 		return System.getProperty("sonar.web.port", "9000");
 	}
-	
+
 	@AfterAll
 	public static void stopOrchestrator() {
 		ORCHESTRATOR.stop();
 	}
 
-    private void setupProjectAndProfile(String projectKey, String projectName) {
-        // Create the sample project
-        CreateRequest createRequest = new CreateRequest();
-        createRequest.setName(projectName);
-        createRequest.setProject(projectKey);
-        PROJECT_SERVICES.create(createRequest);
+	private void setupProjectAndProfile(String projectKey, String projectName) {
+		// Create the sample project
+		CreateRequest createRequest = new CreateRequest();
+		createRequest.setName(projectName);
+		createRequest.setProject(projectKey);
+		PROJECT_SERVICES.create(createRequest);
 
-        // Enable the quality profile
-        AddProjectRequest addProjectRequest = new AddProjectRequest();
-        addProjectRequest.setLanguage("java");
-        addProjectRequest.setProject(projectKey);
-        addProjectRequest.setQualityProfile(ErrorAwayQualityProfile.ERROR_PRONE_AND_PLUGINS_PROFILE_NAME);
-        QUALITY_PROFILES_SERVICE.addProject(addProjectRequest);
-    }
+		// Enable the quality profile
+		AddProjectRequest addProjectRequest = new AddProjectRequest();
+		addProjectRequest.setLanguage("java");
+		addProjectRequest.setProject(projectKey);
+		addProjectRequest.setQualityProfile(ErrorAwayQualityProfile.ERROR_PRONE_AND_PLUGINS_PROFILE_NAME);
+		QUALITY_PROFILES_SERVICE.addProject(addProjectRequest);
+	}
 
 	@Test
 	void analyzeSimpleMavenProject() {
@@ -120,9 +120,9 @@ public class ErrorAwayIT {
 				.setProperty("sonar.password", "admin")
 				.setProperty("sonar.web.port", getSonarWebPort())
 				.setGoals("clean package org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.plugins.downloadOnlyRequired=false");
-		
+
 		ORCHESTRATOR.executeBuild(build);
-		
+
 		checkIssues(SIMPLE_MAVEN_PROJECT_KEY);
 	}
 
@@ -146,7 +146,7 @@ public class ErrorAwayIT {
 
 		checkIssues(SIMPLE_GRADLE_PROJECT_KEY);
 	}
-	
+
 	private void checkIssues(String projectKey) {
 		// Check the issues reported in SonarQube
 		SearchRequest issueRequest = new SearchRequest();
@@ -166,7 +166,7 @@ public class ErrorAwayIT {
 	@SuppressWarnings("unchecked")
 	private void assertSimpleIssues(List<Issue> issues, String projectKey) {
 		Predicate<Issue> simpleJavaPredicate = component(projectKey, "src/main/java/Simple.java");
-	
+
 		assertThatIssuesContainsIssueMatching(issues, simpleJavaPredicate, rule("errorprone:DefaultPackage"), startLine(1));
 		assertThatIssuesContainsIssueMatching(issues, simpleJavaPredicate, rule("errorprone-slf4j:Slf4jLoggerShouldBePrivate"), startLine(8));
 		assertThatIssuesContainsIssueMatching(issues, simpleJavaPredicate, rule("errorprone:ClassNewInstance"), startLine(11));
@@ -218,7 +218,7 @@ public class ErrorAwayIT {
 	@SuppressWarnings("unchecked")
 	private void assertThatIssuesContainsIssueMatching(List<Issue> issues, Predicate<Issue>... issuePredicates) {
 		Predicate<Issue> issuePredicate = i -> Stream.of(issuePredicates).allMatch(p -> p.test(i));
-		
+
 		assertThat(issues).anyMatch(issuePredicate);
 	}
 

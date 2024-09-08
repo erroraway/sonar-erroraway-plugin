@@ -28,7 +28,6 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.Collections;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -118,10 +117,10 @@ class ErrorAwaySensorTest {
 		dependencyManager = new ErrorAwayDependencyManager(tempFolder, configuration);
 
 		// Sample data
-		FilePredicate javaFilePredicate = inputFile -> inputFile.filename().endsWith("java");
-		FilePredicate mainFilePredicate = inputFile -> inputFile.type() == Type.MAIN;
-		mainJavaFilePredicate = inputFile -> javaFilePredicate.apply(inputFile) && mainFilePredicate.apply(inputFile);
-		uriFilePredicate = inputFile -> inputFile.uri().equals(inputFile.uri());
+		FilePredicate javaFilePredicate = file -> file.filename().endsWith("java");
+		FilePredicate mainFilePredicate = file -> file.type() == Type.MAIN;
+		mainJavaFilePredicate = file -> javaFilePredicate.apply(file) && mainFilePredicate.apply(file);
+		uriFilePredicate = file -> file.uri().equals(file.uri());
 		inputFile = new TestInputFile(path.resolve(relativePath), relativePath, charset, Type.MAIN);
 		Iterable<InputFile> inputFiles = Collections.singleton(inputFile);
 
@@ -309,7 +308,7 @@ class ErrorAwaySensorTest {
 		ErrorAwaySensor sensor = new ErrorAwaySensor(dependencyManager, tempFolder);
 		sensor.execute(context);
 
-		assertThat(logTester.getLogs(Level.WARN).stream().map(LogAndArguments::getRawMsg).collect(Collectors.toList())).contains("Could not file input file for source {}");
+		assertThat(logTester.getLogs(Level.WARN).stream().map(LogAndArguments::getRawMsg).toList()).contains("Could not file input file for source {}");
 	}
 
 	@Test
