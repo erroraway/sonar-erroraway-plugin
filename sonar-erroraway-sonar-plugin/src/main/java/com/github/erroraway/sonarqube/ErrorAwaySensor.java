@@ -46,7 +46,7 @@ import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.config.Configuration;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.TempFolder;
-import org.sonar.plugins.java.api.JavaResourceLocator;
+import org.sonar.java.classpath.ClasspathForMain;
 
 import com.github.erroraway.ErrorAwayException;
 import com.github.erroraway.rules.ErrorAwayRulesMapping;
@@ -64,12 +64,10 @@ import com.google.errorprone.scanner.ScannerSupplier;
 public class ErrorAwaySensor implements Sensor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ErrorAwaySensor.class);
 
-	private JavaResourceLocator javaResourceLocator;
 	private ErrorAwayDependencyManager dependencyManager;
 	private TempFolder tempFolder;
 
-	public ErrorAwaySensor(JavaResourceLocator javaResourceLocator, ErrorAwayDependencyManager dependencyManager, TempFolder tempFolder) {
-		this.javaResourceLocator = javaResourceLocator;
+	public ErrorAwaySensor(ErrorAwayDependencyManager dependencyManager, TempFolder tempFolder) {
 		this.dependencyManager = dependencyManager;
 		this.tempFolder = tempFolder;
 	}
@@ -106,13 +104,13 @@ public class ErrorAwaySensor implements Sensor {
 		Iterable<String> classes = Collections.emptyList();
 
 		FileSystem fs = context.fileSystem();
-		
+
 		LOGGER.info("Starting project analysis with encoding {} and base dir {}, plugin version is: {}, java version is {}", fs.encoding(), fs.baseDir(), getVersion(), Runtime.version());
 
 		try (StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnosticListener, Locale.getDefault(), fs.encoding())) {
 			Iterable<? extends JavaFileObject> compilationUnits = buildCompilationUnits(context);
-			
-			configureClasspath(fileManager, context.config());
+
+			configureClasspath(fileManager, context.config(), fs);
 			configureAnnotationProcessors(fileManager, context.config());
 			configureOutputFolders(fileManager);
 
@@ -132,7 +130,7 @@ public class ErrorAwaySensor implements Sensor {
 			if (context.activeRules().find(RuleKey.of("nullaway", "NullAway")) != null) {
 				throw new ErrorAwayException("The " + NullAwayOption.ANNOTATED_PACKAGES.getKey() + " option must be set when the NullAway rule is enabled");
 			}
-			
+
 			// When some annotation processors are enabled com.google.errorprone.ErrorPronePlugins turns on plugin
 			// scanning and tries to instanciate NullAway
 			if (configuration.hasKey(ErrorAwayPlugin.ANNOTATION_PROCESSORS_MAVEN_COORDINATES)) {
@@ -187,8 +185,9 @@ public class ErrorAwaySensor implements Sensor {
 		return paths;
 	}
 
-	private void configureClasspath(StandardJavaFileManager fileManager, Configuration configuration) throws IOException {
-		Collection<File> classpath = new ArrayList<>(javaResourceLocator.classpath());
+	private void configureClasspath(StandardJavaFileManager fileManager, Configuration configuration, FileSystem fs) throws IOException {
+		ClasspathForMain classpathForMain = new ClasspathForMain(configuration, fs);
+		Collection<File> classpath = new ArrayList<>(classpathForMain.getElements());
 		if (configuration.hasKey(ErrorAwayPlugin.CLASS_PATH_MAVEN_COORDINATES)) {
 			String[] coordinates = configuration.getStringArray(ErrorAwayPlugin.CLASS_PATH_MAVEN_COORDINATES);
 			classpath.addAll(dependencyManager.downloadDependencies(coordinates));
@@ -224,7 +223,7 @@ public class ErrorAwaySensor implements Sensor {
 		for (String repository : ErrorAwayRulesMapping.REPOSITORIES) {
 			descriptor.createIssuesForRuleRepository(repository);
 		}
-		
+
 		descriptor.onlyOnLanguage("java");
 		descriptor.name("Errorprone sensor");
 	}

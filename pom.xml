@@ -38,7 +38,7 @@
 		<sonar-plugin-api.version>9.14.0.375</sonar-plugin-api.version>
 		<sonar-plugin-api.groupId>org.sonarsource.api.plugin</sonar-plugin-api.groupId>
 		<sonar-commons-analyzers.version>1.10.2.456</sonar-commons-analyzers.version>
-		<sonar-java.version>6.0.0.20538</sonar-java.version>
+		<sonar-java-frontend.version>8.2.0.36672</sonar-java-frontend.version>
 		<sonar-orchestrator.version>4.7.0.1861</sonar-orchestrator.version>
 
 		<errorprone.version>2.26.1</errorprone.version>
