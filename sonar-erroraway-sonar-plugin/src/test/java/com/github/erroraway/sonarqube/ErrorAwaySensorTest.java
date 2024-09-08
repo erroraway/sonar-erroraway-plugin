@@ -54,7 +54,6 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.testfixtures.log.LogAndArguments;
 import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.api.utils.TempFolder;
-import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import com.github.erroraway.ErrorAwayException;
 import com.github.erroraway.rules.ErrorAwayRulesMapping;
@@ -76,7 +75,6 @@ class ErrorAwaySensorTest {
 	private SensorContext context;
 	private ActiveRules activeRules;
 	private FilePredicates filePredicates;
-	private JavaResourceLocator javaResourceLocator;
 	private TempFolder tempFolder;
 	private NewIssue newIssue;
 	private NewIssueLocation location;
@@ -108,13 +106,12 @@ class ErrorAwaySensorTest {
 	void setup(Path relativePath) {
 		Path path = Path.of("src/test/resources/samples");
 		Charset charset = Charset.forName("UTF-8");
-		
+
 		// Mocked dependencies
 		fs = mock(FileSystem.class);
 		context = mock(SensorContext.class);
 		activeRules = mock(ActiveRules.class);
 		filePredicates = mock(FilePredicates.class);
-		javaResourceLocator = mock(JavaResourceLocator.class);
 		newIssue = mock(NewIssue.class);
 		location = mock(NewIssueLocation.class);
 		analisysError = mock(NewAnalysisError.class);
@@ -139,13 +136,12 @@ class ErrorAwaySensorTest {
 		when(fs.predicates()).thenReturn(filePredicates);
 		when(fs.inputFiles(mainJavaFilePredicate)).thenReturn(inputFiles);
 		when(fs.inputFile(uriFilePredicate)).thenReturn(inputFile);
-		
+
 		when(filePredicates.hasLanguage("java")).thenReturn(javaFilePredicate);
 		when(filePredicates.hasType(Type.MAIN)).thenReturn(mainFilePredicate);
 		when(filePredicates.and(mainFilePredicate, javaFilePredicate)).thenReturn(mainJavaFilePredicate);
 		when(filePredicates.hasURI(inputFile.uri())).thenReturn(uriFilePredicate);
-		when(javaResourceLocator.classpath()).thenReturn(classpath);
-		
+
 		when(context.newIssue()).thenReturn(newIssue);
 		when(context.newAnalysisError()).thenReturn(analisysError);
 
@@ -170,7 +166,7 @@ class ErrorAwaySensorTest {
 		enableRule(RuleKey.of("errorprone", "DurationTemporalUnit"));
 
 		// Call the sensor
-		ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
+		ErrorAwaySensor sensor = new ErrorAwaySensor(dependencyManager, tempFolder);
 		sensor.execute(context);
 
 		verify(context, times(1)).newIssue();
@@ -182,12 +178,12 @@ class ErrorAwaySensorTest {
 		setConfigurationStringArray(ErrorAwayPlugin.ANNOTATION_PROCESSORS_MAVEN_COORDINATES, new String[]{"com.google.auto.value:auto-value:1.9"});
 		setConfigurationBoolean(ErrorAwayPlugin.MAVEN_USE_TEMP_LOCAL_REPOSITORY, true);
 		setConfigurationStringArray(ErrorAwayPlugin.MAVEN_REPOSITORIES, new String[]{"https://repo1.maven.org/maven2/"});
-	
+
 		setup(Path.of("com/bug/AutoValueSamples.java"));
 		enableRule(RuleKey.of("errorprone", "DurationTemporalUnit"));
 
 		// Call the sensor
-		ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
+		ErrorAwaySensor sensor = new ErrorAwaySensor(dependencyManager, tempFolder);
 		sensor.execute(context);
 
 		verify(context, times(1)).newIssue();
@@ -199,7 +195,7 @@ class ErrorAwaySensorTest {
 		enableRule(RuleKey.of("errorprone", "DurationTemporalUnit"));
 
 		// Call the sensor
-		ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
+		ErrorAwaySensor sensor = new ErrorAwaySensor(dependencyManager, tempFolder);
 		// Javac wraps our exception in a RuntimeException
 		assertThrowsExactly(RuntimeException.class, () -> sensor.execute(context));
 
@@ -215,11 +211,11 @@ class ErrorAwaySensorTest {
 	void analyzeWithNullAway() {
 		setup(Path.of("com/bug/BugSamples.java"));
 		when(activeRules.find(RuleKey.of("nullaway", "NullAway"))).thenReturn(mock(ActiveRule.class));
-		
+
 		setConfigurationStringArray(NullAwayOption.ANNOTATED_PACKAGES.getKey(), new String[] { "foo", "com.bug", "bar" });
 
 		// Call the sensor
-		ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
+		ErrorAwaySensor sensor = new ErrorAwaySensor(dependencyManager, tempFolder);
 		sensor.execute(context);
 
 		verify(context, times(1)).newIssue();
@@ -231,26 +227,26 @@ class ErrorAwaySensorTest {
 		when(activeRules.find(RuleKey.of("nullaway", "NullAway"))).thenReturn(mock(ActiveRule.class));
 
 		// Call the sensor
-		ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
+		ErrorAwaySensor sensor = new ErrorAwaySensor(dependencyManager, tempFolder);
 		assertThrows(ErrorAwayException.class, () -> sensor.execute(context));
 	}
-	
-    @Test
-    void analyzeWithErrorProneSlf4j() {
-        setConfigurationStringArray(ErrorAwayPlugin.MAVEN_REPOSITORIES, new String[] {"https://repo1.maven.org/maven2/"});
-        setup(Path.of("com/bug/Slf4jSamples.java"));
-        
+
+	@Test
+	void analyzeWithErrorProneSlf4j() {
+		setConfigurationStringArray(ErrorAwayPlugin.MAVEN_REPOSITORIES, new String[] {"https://repo1.maven.org/maven2/"});
+		setup(Path.of("com/bug/Slf4jSamples.java"));
+
 		RuleKey ruleKey = RuleKey.of("errorprone-slf4j", "Slf4jPlaceholderMismatch");
 		enableRule(ruleKey);
-        setConfigurationStringArray(ErrorAwayPlugin.CLASS_PATH_MAVEN_COORDINATES, new String[]{"org.slf4j:slf4j-api:1.7.36"});
-        
-        // Call the sensor
-        ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
-        sensor.execute(context);
+		setConfigurationStringArray(ErrorAwayPlugin.CLASS_PATH_MAVEN_COORDINATES, new String[]{"org.slf4j:slf4j-api:1.7.36"});
 
-        verify(context, times(1)).newIssue();
+		// Call the sensor
+		ErrorAwaySensor sensor = new ErrorAwaySensor(dependencyManager, tempFolder);
+		sensor.execute(context);
+
+		verify(context, times(1)).newIssue();
 		verify(newIssue, times(1)).forRule(ruleKey);
-    }
+	}
 
 	@Test
 	void analyzeWithPicnicErrorProneSupport() {
@@ -264,28 +260,28 @@ class ErrorAwaySensorTest {
 				new String[]{"com.google.guava:guava:31.1-jre"});
 
 		// Call the sensor
-		ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
+		ErrorAwaySensor sensor = new ErrorAwaySensor(dependencyManager, tempFolder);
 		sensor.execute(context);
 
 		verify(context, times(1)).newIssue();
 		verify(newIssue, times(1)).forRule(ruleKey);
 	}
 
-    @Test
-    void analyzeManyBugs() {
-        setup(Path.of("com/bug/ManyBugs.java"));
-        
-        enableRule(RuleKey.of("errorprone", "BadShiftAmount"));
-        enableRule(RuleKey.of("errorprone", "ComparingThisWithNull"));
-        enableRule(RuleKey.of("errorprone", "EqualsNaN"));
-        enableRule(RuleKey.of("errorprone", "NullTernary"));
-        
-        // Call the sensor
-        ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
-        sensor.execute(context);
+	@Test
+	void analyzeManyBugs() {
+		setup(Path.of("com/bug/ManyBugs.java"));
 
-        verify(context, times(256)).newIssue();
-    }
+		enableRule(RuleKey.of("errorprone", "BadShiftAmount"));
+		enableRule(RuleKey.of("errorprone", "ComparingThisWithNull"));
+		enableRule(RuleKey.of("errorprone", "EqualsNaN"));
+		enableRule(RuleKey.of("errorprone", "NullTernary"));
+
+		// Call the sensor
+		ErrorAwaySensor sensor = new ErrorAwaySensor(dependencyManager, tempFolder);
+		sensor.execute(context);
+
+		verify(context, times(256)).newIssue();
+	}
 
 	@Test
 	void compilerWarning() {
@@ -293,7 +289,7 @@ class ErrorAwaySensorTest {
 		enableRule(RuleKey.of("errorprone", "DurationTemporalUnit"));
 
 		// Call the sensor
-		ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
+		ErrorAwaySensor sensor = new ErrorAwaySensor(dependencyManager, tempFolder);
 		sensor.execute(context);
 
 		if (JRE.currentVersion().compareTo(JRE.JAVA_21) < 0) {
@@ -312,7 +308,7 @@ class ErrorAwaySensorTest {
 		when(fs.inputFile(uriFilePredicate)).thenReturn(null);
 
 		// Call the sensor
-		ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
+		ErrorAwaySensor sensor = new ErrorAwaySensor(dependencyManager, tempFolder);
 		sensor.execute(context);
 
 		assertThat(logTester.getLogs(Level.WARN).stream().map(LogAndArguments::getRawMsg).collect(Collectors.toList())).contains("Could not file input file for source {}");
@@ -323,22 +319,22 @@ class ErrorAwaySensorTest {
 		setup(Path.of("com/bug/BugSamples.java"));
 		SensorDescriptor descriptor = mock(SensorDescriptor.class);
 
-		ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
+		ErrorAwaySensor sensor = new ErrorAwaySensor(dependencyManager, tempFolder);
 		sensor.describe(descriptor);
 
 		verify(descriptor, times(1)).onlyOnLanguage("java");
 	}
-	
+
 	@Test
 	void getVersion() {
-		ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
+		ErrorAwaySensor sensor = new ErrorAwaySensor(dependencyManager, tempFolder);
 
 		assertThat(sensor.getVersion()).doesNotStartWith("UNKNOWN");
 	}
-	
+
 	@Test
 	void getVersionError() {
-		ErrorAwaySensor sensor = new ErrorAwaySensor(javaResourceLocator, dependencyManager, tempFolder);
+		ErrorAwaySensor sensor = new ErrorAwaySensor(dependencyManager, tempFolder);
 
 		assertThat(sensor.getVersion("/foo/bar.properties")).startsWith("UNKNOWN");
 	}

@@ -67,9 +67,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.sonarsource.java</groupId>
-			<artifactId>sonar-java-plugin</artifactId>
-			<version>${sonar-java.version}</version>
-			<scope>provided</scope>
+			<artifactId>java-frontend</artifactId>
+			<version>${sonar-java-frontend.version}</version>
 		</dependency>
 		
 		<dependency>
