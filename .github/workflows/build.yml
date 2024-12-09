@@ -27,6 +27,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     needs: unit-tests
     strategy:
+      fail-fast: false
       matrix:
         include:
           # 9.9 LTS 
@@ -46,19 +47,12 @@ jobs:
             SONAR_PLUGIN_API_GROUPID: org.sonarsource.api.plugin
             SONAR_SERVER_JAVA_VERSION: 17
             os: ubuntu-latest
+          - SONAR_SERVER_VERSION: 24.12.0.100206
+            SONAR_PLUGIN_API_VERSION: 10.14.0.2599
+            SONAR_PLUGIN_API_GROUPID: org.sonarsource.api.plugin
+            SONAR_SERVER_JAVA_VERSION: 17
+            os: ubuntu-latest
             
-          - SONAR_SERVER_VERSION: 10.4.0.87286
-            SONAR_PLUGIN_API_VERSION: 10.6.0.2114
-            SONAR_PLUGIN_API_GROUPID: org.sonarsource.api.plugin
-            SONAR_SERVER_JAVA_VERSION: 17
-            os: windows-latest
-          - SONAR_SERVER_VERSION: 10.7.0.96327
-            SONAR_PLUGIN_API_VERSION: 10.11.0.2468
-            SONAR_PLUGIN_API_GROUPID: org.sonarsource.api.plugin
-            SONAR_SERVER_JAVA_VERSION: 17
-            os: windows-latest
-    continue-on-error: true
-    
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK
