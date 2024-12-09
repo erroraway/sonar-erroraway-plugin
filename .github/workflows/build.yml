@@ -41,8 +41,8 @@ jobs:
             SONAR_PLUGIN_API_GROUPID: org.sonarsource.api.plugin
             SONAR_SERVER_JAVA_VERSION: 17
             os: ubuntu-latest
-          - SONAR_SERVER_VERSION: 10.6.0.92116
-            SONAR_PLUGIN_API_VERSION: 10.7.0.2191
+          - SONAR_SERVER_VERSION: 10.7.0.96327
+            SONAR_PLUGIN_API_VERSION: 10.11.0.2468
             SONAR_PLUGIN_API_GROUPID: org.sonarsource.api.plugin
             SONAR_SERVER_JAVA_VERSION: 17
             os: ubuntu-latest
@@ -52,8 +52,8 @@ jobs:
             SONAR_PLUGIN_API_GROUPID: org.sonarsource.api.plugin
             SONAR_SERVER_JAVA_VERSION: 17
             os: windows-latest
-          - SONAR_SERVER_VERSION: 10.6.0.92116
-            SONAR_PLUGIN_API_VERSION: 10.7.0.2191
+          - SONAR_SERVER_VERSION: 10.7.0.96327
+            SONAR_PLUGIN_API_VERSION: 10.11.0.2468
             SONAR_PLUGIN_API_GROUPID: org.sonarsource.api.plugin
             SONAR_SERVER_JAVA_VERSION: 17
             os: windows-latest
@@ -76,10 +76,10 @@ jobs:
           key: ${{ runner.os }}-sonar-${{ matrix.SONAR_SERVER_VERSION }}
           restore-keys: ${{ runner.os }}-sonar-${{ matrix.SONAR_SERVER_VERSION }}
       - name: Build and Test
-        run: |
-          mvn -B verify \
-          -Dsonar.server.version=${{ matrix.SONAR_SERVER_VERSION }} \
-          -Dsonar-plugin-api.version=${{ matrix.SONAR_PLUGIN_API_VERSION }} \
+        run: >
+          mvn -B verify
+          -Dsonar.server.version=${{ matrix.SONAR_SERVER_VERSION }}
+          -Dsonar-plugin-api.version=${{ matrix.SONAR_PLUGIN_API_VERSION }}
           -Dsonar-plugin-api.groupId=${{ matrix.SONAR_PLUGIN_API_GROUPID }}
   build:
     name: Build
