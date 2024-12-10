@@ -34,6 +34,8 @@ When running on JDK 16 or newer add the following options due to [JEP 396](https
 
 See [.mvn/jvm.config](sonar-erroraway-sonar-plugin/src/test/resources/projects/simple/.mvn/jvm.config) for a way to do it with Maven and [gradle.properties](sonar-erroraway-sonar-plugin/src/test/resources/projects/simple/gradle.properties) for a way to do it with Gradle
 
+From SonarQybe 10.6 the scanner also auto provisions a JRE and runs the analysis off that JVM. Since the JRE does not include the required compiler module, this needs to be disabled with `sonar.scanner.skipJreProvisioning=true`.
+
 When these options are not set you will receive errors: 
 ```
 Exception in thread "main" java.util.ServiceConfigurationError: com.google.errorprone.bugpatterns.BugChecker: Provider ... could not be instantiated
