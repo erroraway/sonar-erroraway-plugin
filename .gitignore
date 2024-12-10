@@ -3,3 +3,6 @@
 /.classpath
 /.project
 /dependency-reduced-pom.xml
+**/org.eclipse.jdt.core.prefs
+**/.settings
+**/.factorypath

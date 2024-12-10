@@ -24,9 +24,10 @@ jobs:
         run: mvn -B test
   integration-tests:
     name: Integration tests
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     needs: unit-tests
     strategy:
+      fail-fast: false
       matrix:
         include:
           # 9.9 LTS 
@@ -34,15 +35,24 @@ jobs:
             SONAR_PLUGIN_API_VERSION: 9.14.0.375
             SONAR_PLUGIN_API_GROUPID: org.sonarsource.api.plugin
             SONAR_SERVER_JAVA_VERSION: 17
+            os: ubuntu-latest
           # 10.x 
           - SONAR_SERVER_VERSION: 10.4.0.87286
             SONAR_PLUGIN_API_VERSION: 10.6.0.2114
             SONAR_PLUGIN_API_GROUPID: org.sonarsource.api.plugin
             SONAR_SERVER_JAVA_VERSION: 17
-          - SONAR_SERVER_VERSION: 10.6.0.92116
-            SONAR_PLUGIN_API_VERSION: 10.7.0.2191
+            os: ubuntu-latest
+          - SONAR_SERVER_VERSION: 10.7.0.96327
+            SONAR_PLUGIN_API_VERSION: 10.11.0.2468
             SONAR_PLUGIN_API_GROUPID: org.sonarsource.api.plugin
             SONAR_SERVER_JAVA_VERSION: 17
+            os: ubuntu-latest
+          - SONAR_SERVER_VERSION: 24.12.0.100206
+            SONAR_PLUGIN_API_VERSION: 10.14.0.2599
+            SONAR_PLUGIN_API_GROUPID: org.sonarsource.api.plugin
+            SONAR_SERVER_JAVA_VERSION: 17
+            os: ubuntu-latest
+            
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK
@@ -60,10 +70,22 @@ jobs:
           key: ${{ runner.os }}-sonar-${{ matrix.SONAR_SERVER_VERSION }}
           restore-keys: ${{ runner.os }}-sonar-${{ matrix.SONAR_SERVER_VERSION }}
       - name: Build and Test
-        run: |
-          mvn -B verify \
-          -Dsonar.server.version=${{ matrix.SONAR_SERVER_VERSION }} \
-          -Dsonar-plugin-api.version=${{ matrix.SONAR_PLUGIN_API_VERSION }} \
+        env:
+          SONAR_SCANNER_JAVA_OPTS: >
+            --add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED
+            --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED
+            --add-exports jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED
+            --add-exports jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED
+            --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED
+            --add-exports jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED
+            --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED
+            --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED
+            --add-opens jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED
+            --add-opens jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED
+        run: >
+          mvn -B verify
+          -Dsonar.server.version=${{ matrix.SONAR_SERVER_VERSION }}
+          -Dsonar-plugin-api.version=${{ matrix.SONAR_PLUGIN_API_VERSION }}
           -Dsonar-plugin-api.groupId=${{ matrix.SONAR_PLUGIN_API_GROUPID }}
   build:
     name: Build
