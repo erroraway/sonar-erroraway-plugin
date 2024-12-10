@@ -88,6 +88,10 @@ public class ErrorAwayIT {
 		return System.getProperty("sonar.web.port", "9000");
 	}
 
+	private String getScannerJvmOptions() {
+		return "--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED --add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED";
+	}
+
 	@AfterAll
 	public static void stopOrchestrator() {
 		ORCHESTRATOR.stop();
@@ -119,7 +123,8 @@ public class ErrorAwayIT {
 				.setProperty("sonar.login", "admin")
 				.setProperty("sonar.password", "admin")
 				.setProperty("sonar.web.port", getSonarWebPort())
-				.setGoals("clean package org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.plugins.downloadOnlyRequired=false");
+				.setProperty("sonar.scanner.javaOpts", getScannerJvmOptions())
+				.setGoals("clean package org.sonarsource.scanner.maven:sonar-maven-plugin:sonar");
 
 		ORCHESTRATOR.executeBuild(build);
 
@@ -137,9 +142,9 @@ public class ErrorAwayIT {
 				.setProperty("sonar.login", "admin")
 				.setProperty("sonar.password", "admin")
 				.setProperty("sonar.web.port", getSonarWebPort())
+				.setProperty("sonar.scanner.javaOpts", getScannerJvmOptions())
 				.setTasks("clean", "build")
 				.addArgument("--stacktrace")
-				.addArgument("-Dsonar.plugins.downloadOnlyRequired=false")
 				.addSonarTask();
 
 		ORCHESTRATOR.executeBuild(build);
