@@ -124,6 +124,7 @@ public class ErrorAwayIT {
 				.setProperty("sonar.password", "admin")
 				.setProperty("sonar.web.port", getSonarWebPort())
 				.setProperty("sonar.scanner.javaOpts", getScannerJvmOptions())
+				.setProperty("sonar.scanner.skipJreProvisioning", "true")
 				.setGoals("clean package org.sonarsource.scanner.maven:sonar-maven-plugin:sonar");
 
 		ORCHESTRATOR.executeBuild(build);
@@ -143,6 +144,7 @@ public class ErrorAwayIT {
 				.setProperty("sonar.password", "admin")
 				.setProperty("sonar.web.port", getSonarWebPort())
 				.setProperty("sonar.scanner.javaOpts", getScannerJvmOptions())
+				.setProperty("sonar.scanner.skipJreProvisioning", "true")
 				.setTasks("clean", "build")
 				.addArgument("--stacktrace")
 				.addSonarTask();
