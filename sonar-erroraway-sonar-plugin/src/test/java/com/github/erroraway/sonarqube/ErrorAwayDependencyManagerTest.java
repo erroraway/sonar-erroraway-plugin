@@ -58,7 +58,7 @@ class ErrorAwayDependencyManagerTest {
 
 	@Test
 	void invalidSettings() {
-		ErrorAwayTestUtil.setConfiguration(configuration, ErrorAwayPlugin.MAVEN_USER_SETTINGS_FILE,
+		ErrorAwayTestUtil.setConfiguration(configuration, ErrorAwayPluginConstants.MAVEN_USER_SETTINGS_FILE,
 				"src/test/resources/samples/invalid-settings.xml");
 
 		assertThrows(ErrorAwayException.class, () -> new ErrorAwayDependencyManager(tempFolder, configuration));
@@ -66,7 +66,7 @@ class ErrorAwayDependencyManagerTest {
 
 	@Test
 	void invalidArtifactCoordinates() {
-		when(configuration.getBoolean(ErrorAwayPlugin.MAVEN_WORK_OFFLINE)).thenReturn(Optional.of(true));
+		when(configuration.getBoolean(ErrorAwayPluginConstants.MAVEN_WORK_OFFLINE)).thenReturn(Optional.of(true));
 		ErrorAwayDependencyManager dependencyManager = new ErrorAwayDependencyManager(tempFolder, configuration);
 
 		assertThrows(ErrorAwayException.class, () -> dependencyManager.downloadDependencies("x:y:1.2.3"));

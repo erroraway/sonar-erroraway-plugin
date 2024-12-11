@@ -171,10 +171,10 @@ class ErrorAwaySensorTest {
 
 	@Test
 	void analyzeWithAnnotationProcessor() {
-		setConfigurationStringArray(ErrorAwayPlugin.CLASS_PATH_MAVEN_COORDINATES, new String[]{"com.google.auto.value:auto-value-annotations:1.9"});
-		setConfigurationStringArray(ErrorAwayPlugin.ANNOTATION_PROCESSORS_MAVEN_COORDINATES, new String[]{"com.google.auto.value:auto-value:1.9"});
-		setConfigurationBoolean(ErrorAwayPlugin.MAVEN_USE_TEMP_LOCAL_REPOSITORY, true);
-		setConfigurationStringArray(ErrorAwayPlugin.MAVEN_REPOSITORIES, new String[]{"https://repo1.maven.org/maven2/"});
+		setConfigurationStringArray(ErrorAwayPluginConstants.CLASS_PATH_MAVEN_COORDINATES, new String[] { "com.google.auto.value:auto-value-annotations:1.9" });
+		setConfigurationStringArray(ErrorAwayPluginConstants.ANNOTATION_PROCESSORS_MAVEN_COORDINATES, new String[] { "com.google.auto.value:auto-value:1.9" });
+		setConfigurationBoolean(ErrorAwayPluginConstants.MAVEN_USE_TEMP_LOCAL_REPOSITORY, true);
+		setConfigurationStringArray(ErrorAwayPluginConstants.MAVEN_REPOSITORIES, new String[] { "https://repo1.maven.org/maven2/" });
 
 		setup(Path.of("com/bug/AutoValueSamples.java"));
 		enableRule(RuleKey.of("errorprone", "DurationTemporalUnit"));
@@ -230,12 +230,12 @@ class ErrorAwaySensorTest {
 
 	@Test
 	void analyzeWithErrorProneSlf4j() {
-		setConfigurationStringArray(ErrorAwayPlugin.MAVEN_REPOSITORIES, new String[] {"https://repo1.maven.org/maven2/"});
+		setConfigurationStringArray(ErrorAwayPluginConstants.MAVEN_REPOSITORIES, new String[] { "https://repo1.maven.org/maven2/" });
 		setup(Path.of("com/bug/Slf4jSamples.java"));
 
 		RuleKey ruleKey = RuleKey.of("errorprone-slf4j", "Slf4jPlaceholderMismatch");
 		enableRule(ruleKey);
-		setConfigurationStringArray(ErrorAwayPlugin.CLASS_PATH_MAVEN_COORDINATES, new String[]{"org.slf4j:slf4j-api:1.7.36"});
+		setConfigurationStringArray(ErrorAwayPluginConstants.CLASS_PATH_MAVEN_COORDINATES, new String[] { "org.slf4j:slf4j-api:1.7.36" });
 
 		// Call the sensor
 		ErrorAwaySensor sensor = new ErrorAwaySensor(dependencyManager, tempFolder);
@@ -247,13 +247,13 @@ class ErrorAwaySensorTest {
 
 	@Test
 	void analyzeWithPicnicErrorProneSupport() {
-		setConfigurationStringArray(ErrorAwayPlugin.MAVEN_REPOSITORIES, new String[]{"https://repo1.maven.org/maven2/"});
+		setConfigurationStringArray(ErrorAwayPluginConstants.MAVEN_REPOSITORIES, new String[] { "https://repo1.maven.org/maven2/" });
 		setup(Path.of("com/bug/PicnicErrorProneSupportSample.java"));
 
 		RuleKey ruleKey = RuleKey.of(ErrorAwayRulesMapping.PICNIC_REPOSITORY, "IdentityConversion");
 		enableRule(ruleKey);
 		setConfigurationStringArray(
-				ErrorAwayPlugin.CLASS_PATH_MAVEN_COORDINATES,
+				ErrorAwayPluginConstants.CLASS_PATH_MAVEN_COORDINATES,
 				new String[]{"com.google.guava:guava:31.1-jre"});
 
 		// Call the sensor
