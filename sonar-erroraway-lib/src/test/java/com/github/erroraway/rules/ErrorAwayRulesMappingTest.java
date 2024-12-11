@@ -30,15 +30,15 @@ class ErrorAwayRulesMappingTest {
 		assertThat(repository(Slf4jLoggerShouldBePrivate.class)).isEqualTo(ERRORPRONE_SLF4J_REPOSITORY);
 		assertThat(repository(JUnitValueSource.class)).isEqualTo(PICNIC_REPOSITORY);
 	}
-	
+
 	@Test
 	void unknownRepository() {
 		assertThrows(ErrorAwayException.class, () -> ErrorAwayRulesMapping.repository(UnknownBugChecker.class));
 	}
-	
+
 	@Test
 	void pluginChecker() {
-		assertDoesNotThrow(() -> ErrorAwayRulesMapping.pluginCheckers());
+		assertDoesNotThrow(ErrorAwayRulesMapping::pluginCheckers);
 	}
 
 	@BugPattern(summary = "", severity = SeverityLevel.ERROR)
