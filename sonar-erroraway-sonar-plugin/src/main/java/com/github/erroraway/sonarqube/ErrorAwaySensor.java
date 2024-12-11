@@ -133,7 +133,7 @@ public class ErrorAwaySensor implements Sensor {
 
 			// When some annotation processors are enabled com.google.errorprone.ErrorPronePlugins turns on plugin
 			// scanning and tries to instanciate NullAway
-			if (configuration.hasKey(ErrorAwayPlugin.ANNOTATION_PROCESSORS_MAVEN_COORDINATES)) {
+			if (configuration.hasKey(ErrorAwayPluginConstants.ANNOTATION_PROCESSORS_MAVEN_COORDINATES)) {
 				options.add("-XepOpt:NullAway:" + NullAwayOption.ANNOTATED_PACKAGES.getErrorproneOption() + "=foo.bar");
 			}
 		}
@@ -188,8 +188,8 @@ public class ErrorAwaySensor implements Sensor {
 	private void configureClasspath(StandardJavaFileManager fileManager, Configuration configuration, FileSystem fs) throws IOException {
 		ClasspathForMain classpathForMain = new ClasspathForMain(configuration, fs);
 		Collection<File> classpath = new ArrayList<>(classpathForMain.getElements());
-		if (configuration.hasKey(ErrorAwayPlugin.CLASS_PATH_MAVEN_COORDINATES)) {
-			String[] coordinates = configuration.getStringArray(ErrorAwayPlugin.CLASS_PATH_MAVEN_COORDINATES);
+		if (configuration.hasKey(ErrorAwayPluginConstants.CLASS_PATH_MAVEN_COORDINATES)) {
+			String[] coordinates = configuration.getStringArray(ErrorAwayPluginConstants.CLASS_PATH_MAVEN_COORDINATES);
 			classpath.addAll(dependencyManager.downloadDependencies(coordinates));
 		}
 
@@ -197,8 +197,8 @@ public class ErrorAwaySensor implements Sensor {
 	}
 
 	private void configureAnnotationProcessors(StandardJavaFileManager fileManager, Configuration configuration) throws IOException {
-		if (configuration.hasKey(ErrorAwayPlugin.ANNOTATION_PROCESSORS_MAVEN_COORDINATES)) {
-			String[] coordinates = configuration.getStringArray(ErrorAwayPlugin.ANNOTATION_PROCESSORS_MAVEN_COORDINATES);
+		if (configuration.hasKey(ErrorAwayPluginConstants.ANNOTATION_PROCESSORS_MAVEN_COORDINATES)) {
+			String[] coordinates = configuration.getStringArray(ErrorAwayPluginConstants.ANNOTATION_PROCESSORS_MAVEN_COORDINATES);
 			Collection<File> annotationProcessors = dependencyManager.downloadDependencies(coordinates);
 
 			fileManager.setLocation(StandardLocation.ANNOTATION_PROCESSOR_PATH, annotationProcessors);
