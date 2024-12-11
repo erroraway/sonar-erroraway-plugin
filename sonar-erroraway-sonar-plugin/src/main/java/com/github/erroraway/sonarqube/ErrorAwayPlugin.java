@@ -15,6 +15,14 @@
  */
 package com.github.erroraway.sonarqube;
 
+import static com.github.erroraway.sonarqube.ErrorAwayPluginConstants.ANNOTATION_PROCESSORS_MAVEN_COORDINATES;
+import static com.github.erroraway.sonarqube.ErrorAwayPluginConstants.CLASS_PATH_MAVEN_COORDINATES;
+import static com.github.erroraway.sonarqube.ErrorAwayPluginConstants.MAVEN_LOCAL_REPOSITORY;
+import static com.github.erroraway.sonarqube.ErrorAwayPluginConstants.MAVEN_REPOSITORIES;
+import static com.github.erroraway.sonarqube.ErrorAwayPluginConstants.MAVEN_USER_SETTINGS_FILE;
+import static com.github.erroraway.sonarqube.ErrorAwayPluginConstants.MAVEN_USE_TEMP_LOCAL_REPOSITORY;
+import static com.github.erroraway.sonarqube.ErrorAwayPluginConstants.MAVEN_WORK_OFFLINE;
+
 import org.sonar.api.Plugin;
 import org.sonar.api.PropertyType;
 import org.sonar.api.config.PropertyDefinition;
@@ -29,14 +37,6 @@ public class ErrorAwayPlugin implements Plugin {
 	private static final String PROPERTY_ERRORAWAY_CATEGORY = "ErrorAway";
 	private static final String PROPERTY_MAVEN_SUBCATEGORY = "Maven";
 
-	public static final String MAVEN_WORK_OFFLINE = "erroraway.maven.work.offline";
-	public static final String MAVEN_USER_SETTINGS_FILE = "erroraway.maven.user.settings.file";
-	public static final String MAVEN_LOCAL_REPOSITORY = "erroraway.maven.local.repository";
-	public static final String MAVEN_USE_TEMP_LOCAL_REPOSITORY = "erroraway.maven.use.temp.local.repository";
-	public static final String MAVEN_REPOSITORIES = "erroraway.maven.repositories";
-	public static final String CLASS_PATH_MAVEN_COORDINATES = "erroraway.classpath.maven.coordinates";
-	public static final String ANNOTATION_PROCESSORS_MAVEN_COORDINATES = "erroraway.annotation.processors.maven.coordinates";
-
 	@Override
 	public void define(Context context) {
 		context.addExtension(PropertyDefinition
@@ -48,7 +48,7 @@ public class ErrorAwayPlugin implements Plugin {
 				.onQualifiers(Qualifiers.PROJECT)
 				.type(PropertyType.BOOLEAN)
 				.build());
-		
+
 		context.addExtension(PropertyDefinition
 				.builder(MAVEN_USER_SETTINGS_FILE)
 				.name("Maven user settings file")
@@ -57,7 +57,7 @@ public class ErrorAwayPlugin implements Plugin {
 				.subCategory(PROPERTY_MAVEN_SUBCATEGORY)
 				.onQualifiers(Qualifiers.PROJECT)
 				.build());
-		
+
 		context.addExtension(PropertyDefinition
 				.builder(MAVEN_LOCAL_REPOSITORY)
 				.name("Maven local repository")
@@ -66,7 +66,7 @@ public class ErrorAwayPlugin implements Plugin {
 				.subCategory(PROPERTY_MAVEN_SUBCATEGORY)
 				.onQualifiers(Qualifiers.PROJECT)
 				.build());
-		
+
 		context.addExtension(PropertyDefinition
 				.builder(MAVEN_USE_TEMP_LOCAL_REPOSITORY)
 				.name("Use Maven temporary local repository")
@@ -76,7 +76,7 @@ public class ErrorAwayPlugin implements Plugin {
 				.onQualifiers(Qualifiers.PROJECT)
 				.type(PropertyType.BOOLEAN)
 				.build());
-		
+
 		context.addExtension(PropertyDefinition
 				.builder(MAVEN_REPOSITORIES)
 				.name("Maven repositories")
@@ -86,7 +86,7 @@ public class ErrorAwayPlugin implements Plugin {
 				.onQualifiers(Qualifiers.PROJECT)
 				.multiValues(true)
 				.build());
-		
+
 		context.addExtension(PropertyDefinition
 				.builder(CLASS_PATH_MAVEN_COORDINATES)
 				.name("Classpath Maven coordinates")
@@ -96,7 +96,7 @@ public class ErrorAwayPlugin implements Plugin {
 				.onQualifiers(Qualifiers.PROJECT)
 				.multiValues(true)
 				.build());
-		
+
 		context.addExtension(PropertyDefinition
 				.builder(ANNOTATION_PROCESSORS_MAVEN_COORDINATES)
 				.name("Annotation processors Maven coordinates")
@@ -106,7 +106,7 @@ public class ErrorAwayPlugin implements Plugin {
 				.onQualifiers(Qualifiers.PROJECT)
 				.multiValues(true)
 				.build());
-		
+
 		for (NullAwayOption option : NullAwayOption.values()) {
 			context.addExtension(PropertyDefinition
 					.builder(option.getKey())
@@ -117,7 +117,7 @@ public class ErrorAwayPlugin implements Plugin {
 					.multiValues(true)
 					.build());
 		}
-		
+
 		context.addExtension(ErrorAwayRulesDefinition.class);
 		context.addExtension(ErrorAwayQualityProfile.class);
 		context.addExtension(ErrorAwaySensor.class);

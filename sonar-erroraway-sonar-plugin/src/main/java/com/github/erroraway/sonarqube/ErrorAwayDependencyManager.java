@@ -70,7 +70,7 @@ public class ErrorAwayDependencyManager {
 		this.tempFolder = tempFolder;
 		this.configuration = configuration;
 
-		workOffline = configuration.getBoolean(ErrorAwayPlugin.MAVEN_WORK_OFFLINE).orElse(false);
+		workOffline = configuration.getBoolean(ErrorAwayPluginConstants.MAVEN_WORK_OFFLINE).orElse(false);
 
 		DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
 		locator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
@@ -120,7 +120,7 @@ public class ErrorAwayDependencyManager {
 		SettingsBuildingRequest request = new DefaultSettingsBuildingRequest();
 
 		File userSettingsFile;
-		Optional<String> userSettingsFileValue = configuration.get(ErrorAwayPlugin.MAVEN_USER_SETTINGS_FILE);
+		Optional<String> userSettingsFileValue = configuration.get(ErrorAwayPluginConstants.MAVEN_USER_SETTINGS_FILE);
 		if (userSettingsFileValue.isPresent()) {
 			userSettingsFile = new File(userSettingsFileValue.get());
 		} else {
@@ -139,8 +139,8 @@ public class ErrorAwayDependencyManager {
 
 	private LocalRepository localRepository(Settings settings) {
 		File localRepositoryDir;
-		Optional<String> localRepositoryValue = configuration.get(ErrorAwayPlugin.MAVEN_LOCAL_REPOSITORY);
-		Optional<Boolean> useTemporaryLocalRepositoryValue = configuration.getBoolean(ErrorAwayPlugin.MAVEN_USE_TEMP_LOCAL_REPOSITORY);
+		Optional<String> localRepositoryValue = configuration.get(ErrorAwayPluginConstants.MAVEN_LOCAL_REPOSITORY);
+		Optional<Boolean> useTemporaryLocalRepositoryValue = configuration.getBoolean(ErrorAwayPluginConstants.MAVEN_USE_TEMP_LOCAL_REPOSITORY);
 
 		if (localRepositoryValue.isPresent()) {
 			localRepositoryDir = new File(localRepositoryValue.get());
@@ -157,7 +157,7 @@ public class ErrorAwayDependencyManager {
 	}
 
 	private List<RemoteRepository> remoteRepositories() {
-		String[] configurationRepositories = configuration.getStringArray(ErrorAwayPlugin.MAVEN_REPOSITORIES);
+		String[] configurationRepositories = configuration.getStringArray(ErrorAwayPluginConstants.MAVEN_REPOSITORIES);
 		List<RemoteRepository> repositories = new ArrayList<>();
 		int i = 0;
 
