@@ -60,18 +60,18 @@ public class ErrorAwayRulesMojo extends AbstractMojo {
 	
 	@Parameter(defaultValue = "${project}", required = true, readonly = true)
 	MavenProject project;
-	
+
 	@Parameter(defaultValue = "${project.build.outputDirectory}", required = true, readonly = true)
 	File outputDirectory;
-	
+
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		Collection<BugCheckerInfo> errorProneBugCheckerInfos = new ArrayList<>();
 		errorProneBugCheckerInfos.addAll(BuiltInCheckerSuppliers.ENABLED_WARNINGS);
 		errorProneBugCheckerInfos.addAll(BuiltInCheckerSuppliers.ENABLED_ERRORS);
-		
+
 		processCheckers(ErrorAwayRulesMapping.ERRORPRONE_REPOSITORY, errorProneBugCheckerInfos);
-		
+
 		Map<String, List<Class<? extends BugChecker>>> pluginCheckers = checkerClassesByRepository();
 
 		for (Map.Entry<String, List<Class<? extends BugChecker>>> entry : pluginCheckers.entrySet()) {
@@ -101,46 +101,46 @@ public class ErrorAwayRulesMojo extends AbstractMojo {
 	private void processCheckers(String repositoryName, Collection<BugCheckerInfo> bugCheckerInfos) throws MojoFailureException {
 		File repositoryOutputDirectory = new File(outputDirectory, repositoryName);
 		repositoryOutputDirectory.mkdirs();
-		
+
 		List<String> ruleKeys = new ArrayList<>();
-		
+
 		for (BugCheckerInfo bugCheckerInfo : bugCheckerInfos) {
 			String ruleKey = asRuleKey(bugCheckerInfo);
-			
+
 			ruleKeys.add(ruleKey);
-			
+
 			generateRuleMetaData(repositoryOutputDirectory, bugCheckerInfo);
 			generateRuleDescription(repositoryOutputDirectory, bugCheckerInfo);
 		}
-		
+
 		generateRepositoryMetaData(repositoryName, repositoryOutputDirectory, ruleKeys);
 	}
 
 	public void generateRuleMetaData(File directory, BugCheckerInfo bugCheckerInfo) throws MojoFailureException {
 		String ruleKey = asRuleKey(bugCheckerInfo);
 		JSONObject rule = new JSONObject();
-		
+
 		rule.put("title", bugCheckerInfo.canonicalName());
 		rule.put("defaultSeverity", getSeverity(bugCheckerInfo));
 		rule.put("type", RuleType.CODE_SMELL);
 		rule.put("status", RuleStatus.READY);
 		rule.put("tags", bugCheckerInfo.getTags().stream().map(this::normalizeTag).toList());
-		
+
 		File ruleFile = new File(directory, ruleKey + ".json");
-		
+
 		try (FileWriter writer = new FileWriter(ruleFile, StandardCharsets.UTF_8)) {
 			rule.write(writer);
 		} catch (IOException e) {
 			throw new MojoFailureException("Error processing " + bugCheckerInfo, e);
 		}
 	}
-	
+
 	private void generateRuleDescription(File directory, BugCheckerInfo bugCheckerInfo) throws MojoFailureException {
 		String ruleKey = asRuleKey(bugCheckerInfo);
-		
+
 		URL resource = findDescriptionResource(ruleKey);
 		String html;
-		
+
 		if (resource != null) {
 			try (InputStream in =  resource.openStream(); InputStreamReader reader = new InputStreamReader(in, StandardCharsets.UTF_8)) {
 				html = convertMdToHtml(reader);
@@ -157,24 +157,24 @@ public class ErrorAwayRulesMojo extends AbstractMojo {
 				throw handleDescriptionReadException(ruleKey, e);
 			}
 		}
-		
+
 		File ruleFile = new File(directory, ruleKey + ".html");
-		
+
 		try (FileWriter writer = new FileWriter(ruleFile, StandardCharsets.UTF_8)) {
 			writer.write(html);
 		} catch (IOException e) {
 			throw new MojoFailureException("Error processing " + bugCheckerInfo, e);
 		}
 	}
-	
+
 	public void generateRepositoryMetaData(String repositoryName, File repositoryOutputDirectory, List<String> ruleKeys)
 			throws MojoFailureException {
 		JSONObject repository = new JSONObject();
 		repository.put("name", repositoryName);
 		repository.put("rules", ruleKeys);
-		
+
 		File ruleFile = new File(repositoryOutputDirectory, "repository.json");
-		
+
 		try (FileWriter writer = new FileWriter(ruleFile, StandardCharsets.UTF_8)) {
 			repository.write(writer);
 		} catch (IOException e) {
@@ -184,7 +184,7 @@ public class ErrorAwayRulesMojo extends AbstractMojo {
 
 	public MojoFailureException handleDescriptionReadException(String ruleName, Exception e) {
 		getLog().warn("Error parsing MD description for" + ruleName, e);
-		
+
 		return new MojoFailureException("Error parsing MD description for" + ruleName, e);
 	}
 
@@ -197,7 +197,7 @@ public class ErrorAwayRulesMojo extends AbstractMojo {
 		return renderer.render(node);
 	}
 
-	private URL findDescriptionResource(String ruleName) {
+	protected URL findDescriptionResource(String ruleName) {
 		for (String folder : DESCRIPTION_FOLDERS) {
 			URL url = findDescriptionResource(ruleName, folder);
 
@@ -216,7 +216,7 @@ public class ErrorAwayRulesMojo extends AbstractMojo {
 			return getClass().getResource("/errorprone/bugpattern/" + directory + "/" + ruleName + ".md");
 		}
 	}
-	
+
 	public static String getSeverity(BugCheckerInfo bugCheckerInfo) {
 		switch (bugCheckerInfo.defaultSeverity()) {
 		case ERROR:
@@ -229,7 +229,6 @@ public class ErrorAwayRulesMojo extends AbstractMojo {
 			throw new IllegalArgumentException("Unexpected severity: " + bugCheckerInfo.defaultSeverity());
 		}
 	}
-	
 
 	public static String asRuleKey(BugCheckerInfo bugCheckerInfo) {
 		return bugCheckerInfo.canonicalName();

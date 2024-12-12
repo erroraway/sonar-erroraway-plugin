@@ -115,5 +115,11 @@
  				<version>3.8.2</version>
 			</plugin>
 		</plugins>
+		
+		<testResources>
+			<testResource>
+				<directory>${project.basedir}/../sonar-erroraway-sonar-plugin/src/main/resources/</directory>
+			</testResource>
+		</testResources>
 	</build>
 </project>
