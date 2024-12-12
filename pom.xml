@@ -44,7 +44,7 @@
 		<errorprone.version>2.36.0</errorprone.version>
 		<nullaway.version>0.12.1</nullaway.version>
 		<errorprone.slf4j.version>0.1.20</errorprone.slf4j.version>
-		<picnic.errorprone.support.version>0.18.0</picnic.errorprone.support.version>
+		<picnic.errorprone.support.version>0.19.1</picnic.errorprone.support.version>
 		
 		<commonmark.version>0.20.0</commonmark.version>
 		
