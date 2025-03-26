@@ -160,7 +160,7 @@ public class ErrorAwayIT {
 		issueRequest.setProjects(Collections.singletonList(projectKey));
 		List<Issue> issues = ISSUES_SERVICES.search(issueRequest).getIssuesList();
 
-		assertThat(issues).hasSize(22);
+		assertThat(issues).hasSize(24);
 
 		assertSimpleIssues(issues, projectKey);
 		assertApplicationSimpleIssues(issues, projectKey);
