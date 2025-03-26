@@ -49,7 +49,7 @@ import com.sonar.orchestrator.locator.FileLocation;
  *
  */
 @IntegrationTest
-public class ErrorAwayIT {
+class ErrorAwayIT {
 
 	private static final String SIMPLE_MAVEN_PROJECT_KEY = "sonar-error-away-plugin:simple";
 	private static final String SIMPLE_GRADLE_PROJECT_KEY = "sonar-error-away-plugin:gradle-simple";
@@ -61,7 +61,7 @@ public class ErrorAwayIT {
 	private static IssuesService ISSUES_SERVICES;
 
 	@BeforeAll
-	public static void startOrchestrator() {
+	static void startOrchestrator() {
 		String sonarVersion = System.getProperty("sonar.server.version", "9.5");
 		System.out.println(FileLocation.of("./target/sonar-erroraway-plugin.jar"));
 		OrchestratorExtensionBuilder orchestratorBuilder = OrchestratorExtension.builderEnv()
@@ -93,7 +93,7 @@ public class ErrorAwayIT {
 	}
 
 	@AfterAll
-	public static void stopOrchestrator() {
+	static void stopOrchestrator() {
 		ORCHESTRATOR.stop();
 	}
 
