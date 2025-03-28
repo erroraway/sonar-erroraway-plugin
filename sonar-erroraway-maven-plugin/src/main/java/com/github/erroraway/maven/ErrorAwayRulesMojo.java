@@ -56,8 +56,8 @@ public class ErrorAwayRulesMojo extends AbstractMojo {
 			"inject", 
 			"javadoc", 
 			"nullness", 
-			"time" };
-	
+	"time" };
+
 	@Parameter(defaultValue = "${project}", required = true, readonly = true)
 	MavenProject project;
 
@@ -218,16 +218,11 @@ public class ErrorAwayRulesMojo extends AbstractMojo {
 	}
 
 	public static String getSeverity(BugCheckerInfo bugCheckerInfo) {
-		switch (bugCheckerInfo.defaultSeverity()) {
-		case ERROR:
-			return Severity.MAJOR;
-		case WARNING:
-			return Severity.MINOR;
-		case SUGGESTION:
-			return Severity.INFO;
-		default:
-			throw new IllegalArgumentException("Unexpected severity: " + bugCheckerInfo.defaultSeverity());
-		}
+		return switch (bugCheckerInfo.defaultSeverity()) {
+			case ERROR -> Severity.MAJOR;
+			case WARNING -> Severity.MINOR;
+			case SUGGESTION -> Severity.INFO;
+		};
 	}
 
 	public static String asRuleKey(BugCheckerInfo bugCheckerInfo) {
