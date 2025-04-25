@@ -6,6 +6,7 @@
 
 ## Releasing a version
 
+- Update the versions `pom.xml` with `mvn versions:set -DgenerateBackupPoms=false -DnewVersion=<NEW VERSION>` as follows:
 - Commit the `pom.xml` with a stable version (e.g. 1.2.3) and push, the build will deploy the plugin to maven central
 - Commit the `pom.xml` with the next snapshot version (e.g. 1.2.4-SNAPSHOT)
 - Create a Github release on the commit corresponding to stable version
