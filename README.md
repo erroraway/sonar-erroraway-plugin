@@ -43,8 +43,6 @@ Exception in thread "main" java.util.ServiceConfigurationError: com.google.error
 Caused by: java.lang.IllegalAccessError: class ... (in unnamed module @...) cannot access class com.sun.tools.javac.code.Symbol (in module jdk.compiler) because module jdk.compiler does not export com.sun.tools.javac.code to unnamed module @...
 ```
 
-In SonarQube 10.5 the new feature to only download required plugins causes a NoClassDefFoundError. The workaround for this issue is to enable the `sonar.plugins.downloadOnlyRequired` option on the server AND on the analyzer: `-Dsonar.plugins.downloadOnlyRequired=false`
-
 ## NullAway configuration
 
 NullAway needs to be configured with the `nullaway.annotated.packages` option, for instance:
