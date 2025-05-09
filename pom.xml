@@ -36,7 +36,6 @@
 	<properties>
 		<sonar.server.version>9.9.3.79811</sonar.server.version>
 		<sonar-plugin-api.version>9.14.0.375</sonar-plugin-api.version>
-		<sonar-plugin-api.groupId>org.sonarsource.api.plugin</sonar-plugin-api.groupId>
 		<sonar-commons-analyzers.version>1.10.2.456</sonar-commons-analyzers.version>
 		<sonar-java-frontend.version>8.2.0.36672</sonar-java-frontend.version>
 		<sonar-orchestrator.version>5.6.0.2578</sonar-orchestrator.version>

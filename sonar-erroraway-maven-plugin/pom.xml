@@ -14,7 +14,7 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>${sonar-plugin-api.groupId}</groupId>
+			<groupId>org.sonarsource.api.plugin</groupId>
 			<artifactId>sonar-plugin-api</artifactId>
 			<version>${sonar-plugin-api.version}</version>
 		</dependency>
