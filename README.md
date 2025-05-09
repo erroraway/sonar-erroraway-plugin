@@ -14,7 +14,7 @@ Enable a quality profile including some rules, for NullAway you will need to con
 
 ## Compatibility
 
-The plugin is compatible with SonarQube from version 9.9 LTS through 10.x.
+The plugin is compatible with SonarQube from version 9.9 LTS through 10.x and 25.x
 
 The Sonar analyzer and Error Prone must run on JDK 11 or newer but can analyze Java 8 code.
 When running on JDK 16 or newer add the following options due to [JEP 396](https://openjdk.java.net/jeps/396):
