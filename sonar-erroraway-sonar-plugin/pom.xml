@@ -248,7 +248,7 @@
 				<configuration>
 					<pluginClass>com.github.erroraway.sonarqube.ErrorAwayPlugin</pluginClass>
 					<pluginName>ErrorAway</pluginName>
-					<pluginDescription>Analyze Java Code with ErrorProne, NullAway, errorprone-slf4j, Picnic ErrorProne support and Autodispose2</pluginDescription>
+					<pluginDescription>Analyze Java Code with ErrorProne, NullAway, errorprone-slf4j and Picnic ErrorProne support</pluginDescription>
 					<pluginOrganizationName>ErrorAway</pluginOrganizationName>
 					<pluginOrganizationUrl>https://github.com/erroraway</pluginOrganizationUrl>
 					<pluginUrl>https://github.com/erroraway/sonar-erroraway-plugin</pluginUrl>
