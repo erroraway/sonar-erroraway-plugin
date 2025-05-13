@@ -46,6 +46,8 @@
 		<errorprone.slf4j.version>0.1.28</errorprone.slf4j.version>
 		<picnic.errorprone.support.version>0.23.0</picnic.errorprone.support.version>
 		
+		<protobuf.version>4.30.1</protobuf.version>
+		
 		<commonmark.version>0.20.0</commonmark.version>
 		
 		<org.json.version>20231013</org.json.version>
