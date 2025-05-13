@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>io.github.erroraway</groupId>
 		<artifactId>sonar-erroraway-plugin-parent</artifactId>
-		<version>2.2.3-SNAPSHOT</version>
+		<version>2.2.3</version>
 	</parent>
 	
 	<artifactId>sonar-erroraway-sonar-plugin</artifactId>
@@ -246,6 +246,7 @@
 				<version>1.21.0.505</version>
 				<extensions>true</extensions>
 				<configuration>
+					<pluginKey>erroraway</pluginKey>
 					<pluginClass>com.github.erroraway.sonarqube.ErrorAwayPlugin</pluginClass>
 					<pluginName>ErrorAway</pluginName>
 					<pluginDescription>Analyze Java Code with ErrorProne, NullAway, errorprone-slf4j and Picnic ErrorProne support</pluginDescription>
