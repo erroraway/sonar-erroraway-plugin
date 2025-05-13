@@ -153,7 +153,7 @@
 		<dependency>
 			<groupId>org.sonarsource.sonarqube</groupId>
 			<artifactId>sonar-ws</artifactId>
-			<version>10.5.1.90531</version>
+			<version>${sonar-ws.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -282,4 +282,14 @@
 			</plugin>
 		</plugins>
 	</build>
+	
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.google.protobuf</groupId>
+				<artifactId>protobuf-java</artifactId>
+				<version>4.30.1</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 </project>
