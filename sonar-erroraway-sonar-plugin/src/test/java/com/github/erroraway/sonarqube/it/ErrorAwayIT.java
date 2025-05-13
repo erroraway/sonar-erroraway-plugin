@@ -27,6 +27,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.sonarqube.ws.Issues.Issue;
+import org.sonarqube.ws.Rules.ShowResponse;
 import org.sonarqube.ws.client.HttpConnector;
 import org.sonarqube.ws.client.issues.IssuesService;
 import org.sonarqube.ws.client.issues.SearchRequest;
@@ -34,6 +35,8 @@ import org.sonarqube.ws.client.projects.CreateRequest;
 import org.sonarqube.ws.client.projects.ProjectsService;
 import org.sonarqube.ws.client.qualityprofiles.AddProjectRequest;
 import org.sonarqube.ws.client.qualityprofiles.QualityprofilesService;
+import org.sonarqube.ws.client.rules.RulesService;
+import org.sonarqube.ws.client.rules.ShowRequest;
 
 import com.github.erroraway.sonarqube.ErrorAwayQualityProfile;
 import com.github.erroraway.sonarqube.NullAwayOption;
@@ -59,10 +62,11 @@ class ErrorAwayIT {
 	private static QualityprofilesService QUALITY_PROFILES_SERVICE;
 	private static ProjectsService PROJECT_SERVICES;
 	private static IssuesService ISSUES_SERVICES;
+	private static RulesService RULES_SERVICES;
 
 	@BeforeAll
 	static void startOrchestrator() {
-		String sonarVersion = System.getProperty("sonar.server.version", "9.5");
+		String sonarVersion = System.getProperty("sonar.server.version", "25.4");
 		System.out.println(FileLocation.of("./target/sonar-erroraway-plugin.jar"));
 		OrchestratorExtensionBuilder orchestratorBuilder = OrchestratorExtension.builderEnv()
 				// Since SQ 9.8 permissions for 'Anyone' group has been limited for new instances
@@ -82,6 +86,7 @@ class ErrorAwayIT {
 		QUALITY_PROFILES_SERVICE = new QualityprofilesService(connector);
 		PROJECT_SERVICES = new ProjectsService(connector);
 		ISSUES_SERVICES = new IssuesService(connector);
+		RULES_SERVICES = new RulesService(connector);
 	}
 
 	private static String getSonarWebPort() {
@@ -95,6 +100,17 @@ class ErrorAwayIT {
 	@AfterAll
 	static void stopOrchestrator() {
 		ORCHESTRATOR.stop();
+	}
+
+	@Test
+	void checkRuleDefinition() {
+		ShowRequest request = new ShowRequest();
+		request.setKey("errorprone:DefaultPackage");
+
+		ShowResponse showResponse = RULES_SERVICES.show(request);
+
+		String htmlDesc = showResponse.getRule().getHtmlDesc();
+		assertThat(htmlDesc).isEqualTo("<p>Declaring classes in the default package is discouraged.</p>");
 	}
 
 	private void setupProjectAndProfile(String projectKey, String projectName) {
