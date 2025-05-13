@@ -95,8 +95,8 @@ jobs:
           java-version: 17
           cache: 'maven'
           server-id: ossrh
-          server-username: OSSRH_USERNAME
-          server-password: OSSRH_TOKEN
+          server-username: SONATYPE_USERNAME
+          server-password: SONATYPE_TOKEN
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
       - name: Cache SonarCloud packages
