@@ -109,6 +109,8 @@ class ErrorAwayIT {
 
 		ShowResponse showResponse = RULES_SERVICES.show(request);
 
+		assertThat(showResponse.getRule().getSeverity()).isEqualTo("MINOR");
+
 		String htmlDesc = showResponse.getRule().getHtmlDesc();
 		assertThat(htmlDesc).isEqualTo("<p>Declaring classes in the default package is discouraged.</p>");
 	}
