@@ -239,7 +239,7 @@
 				<version>1.21.0.505</version>
 				<extensions>true</extensions>
 				<configuration>
-					<pluginKey>erroraway</pluginKey>
+					<pluginKey>errorawaysonar</pluginKey>
 					<pluginClass>com.github.erroraway.sonarqube.ErrorAwayPlugin</pluginClass>
 					<pluginName>ErrorAway</pluginName>
 					<pluginDescription>Analyze Java Code with ErrorProne, NullAway, errorprone-slf4j and Picnic ErrorProne support</pluginDescription>
