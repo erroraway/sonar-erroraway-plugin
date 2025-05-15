@@ -164,13 +164,6 @@
 		</dependency>
 	</dependencies>
 
-	<distributionManagement>
-		<snapshotRepository>
-			<id>central</id>
-			<url>https://central.sonatype.com</url>
-		</snapshotRepository>
-	</distributionManagement>
-
 	<build>
 		<finalName>sonar-erroraway-plugin</finalName>
 		<resources>
