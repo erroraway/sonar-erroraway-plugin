@@ -43,7 +43,7 @@
 
 		<errorprone.version>2.39.0</errorprone.version>
 		<nullaway.version>0.12.7</nullaway.version>
-		<errorprone.slf4j.version>0.1.28</errorprone.slf4j.version>
+		<errorprone.slf4j.version>0.1.29</errorprone.slf4j.version>
 		<picnic.errorprone.support.version>0.23.0</picnic.errorprone.support.version>
 		
 		<protobuf.version>4.30.1</protobuf.version>
