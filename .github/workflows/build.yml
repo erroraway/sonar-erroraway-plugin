@@ -44,7 +44,7 @@ jobs:
             SONAR_SERVER_JAVA_VERSION: 17
             os: ubuntu-latest
           # 25.x
-          - SONAR_SERVER_VERSION: 25.6.0.109173
+          - SONAR_SERVER_VERSION: 25.7.0.110598
             SONAR_SERVER_JAVA_VERSION: 17
             os: ubuntu-latest
             
