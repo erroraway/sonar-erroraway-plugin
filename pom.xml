@@ -56,6 +56,7 @@
 		<junit.version>5.10.1</junit.version>
 		<mockito.version>4.5.1</mockito.version>
 		<assertj.version>3.21.0</assertj.version>
+		<jacoco.version>0.8.14</jacoco.version>
 		
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -95,7 +96,7 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.11</version>
+				<version>${jacoco.version}</version>
 				<executions>
 					<execution>
 						<id>prepare-agent</id>
