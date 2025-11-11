@@ -34,7 +34,7 @@ public final class ErrorAwayRulesMapping {
 	public static final String ERRORPRONE_SLF4J_REPOSITORY = "errorprone-slf4j";
 	public static final String PICNIC_REPOSITORY = "picnic-errorprone";
 
-	public static final int ERRORPRONE_REPOSITORY_RULES_COUNT = 471;
+	public static final int ERRORPRONE_REPOSITORY_RULES_COUNT = 475;
 	public static final int NULLAWAY_REPOSITORY_RULES_COUNT = 1;
 	public static final int ERRORPRONE_SLF4J_REPOSITORY_RULES_COUNT = 8;
 	public static final int PICNIC_REPOSITORY_RULES_COUNT = 45;
